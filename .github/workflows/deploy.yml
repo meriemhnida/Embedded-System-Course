@@ -16,4 +16,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: withastro/action@v3
         id: deployment
+        with:
+          node-version: 22
       - uses: actions/deploy-pages@v4
