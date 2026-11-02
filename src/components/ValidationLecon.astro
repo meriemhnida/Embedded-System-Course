@@ -1,0 +1,145 @@
+---
+import type { Lecon } from '../scripts/leconsDuParcours';
+
+interface Props {
+	lecon: Lecon;
+	lecons: Lecon[];
+	suivante?: Lecon;
+	accueilParcours: string;
+}
+
+const { lecon, lecons, suivante, accueilParcours } = Astro.props;
+---
+
+<section class="validation" data-href={lecon.href} data-label={lecon.label} data-suivante={suivante?.href ?? ''} data-accueil={accueilParcours} data-lecons={JSON.stringify(lecons.map((l) => l.href))}>
+	<div class="entete">
+		<strong>Ta progression</strong>
+		<span class="compteur"></span>
+	</div>
+	<div class="barre" aria-hidden="true"><span class="remplissage"></span></div>
+	<p class="etat"></p>
+	<div class="actions">
+		<button type="button" class="bouton secondaire" data-role="basculer"></button>
+		<button type="button" class="bouton principal" data-role="suivant"></button>
+	</div>
+</section>
+
+<script>
+	import { basculer, lire, valider } from '../scripts/progression';
+
+	function initialiser(section: HTMLElement) {
+		const href = section.dataset.href ?? '';
+		const label = section.dataset.label ?? '';
+		const suivante = section.dataset.suivante ?? '';
+		const accueil = section.dataset.accueil ?? '/';
+		const lecons: string[] = JSON.parse(section.dataset.lecons ?? '[]');
+
+		const compteur = section.querySelector<HTMLElement>('.compteur')!;
+		const remplissage = section.querySelector<HTMLElement>('.remplissage')!;
+		const etat = section.querySelector<HTMLElement>('.etat')!;
+		const boutonBasculer = section.querySelector<HTMLButtonElement>('[data-role="basculer"]')!;
+		const boutonSuivant = section.querySelector<HTMLButtonElement>('[data-role="suivant"]')!;
+
+		function rafraichir() {
+			const p = lire();
+			const estValidee = Boolean(p.valides[href]);
+			const nbValidees = lecons.filter((h) => p.valides[h]).length;
+			const pourcent = lecons.length ? Math.round((nbValidees / lecons.length) * 100) : 0;
+
+			compteur.textContent = `${nbValidees} / ${lecons.length} leçons`;
+			remplissage.style.width = `${pourcent}%`;
+			etat.textContent = estValidee
+				? '✔ Leçon validée.'
+				: 'Quand tu as compris cette leçon, valide-la pour passer à la suivante.';
+			boutonBasculer.textContent = estValidee ? 'Annuler la validation' : 'Marquer comme terminée';
+
+			if (suivante) {
+				boutonSuivant.textContent = estValidee
+					? 'Leçon suivante →'
+					: 'Valider et passer à la suivante →';
+			} else {
+				boutonSuivant.textContent = estValidee
+					? 'Voir mon parcours →'
+					: 'Valider et terminer le chapitre →';
+			}
+		}
+
+		boutonBasculer.addEventListener('click', () => {
+			basculer(href, label);
+			rafraichir();
+		});
+
+		boutonSuivant.addEventListener('click', () => {
+			valider(href, label);
+			window.location.href = suivante || accueil;
+		});
+
+		rafraichir();
+	}
+
+	document.querySelectorAll<HTMLElement>('.validation').forEach(initialiser);
+</script>
+
+<style>
+	.validation {
+		margin-top: 2rem;
+		padding: 1.25rem;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: 0.75rem;
+		background: var(--sl-color-gray-6);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	.entete {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+	}
+	.compteur {
+		color: var(--sl-color-gray-2);
+		font-size: 0.9rem;
+	}
+	.barre {
+		height: 0.5rem;
+		border-radius: 999px;
+		background: var(--sl-color-gray-5);
+		overflow: hidden;
+	}
+	.remplissage {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--sl-color-accent);
+		transition: width 0.3s ease;
+	}
+	.etat {
+		margin: 0;
+		color: var(--sl-color-gray-2);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	.bouton {
+		font: inherit;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		border: 1px solid var(--sl-color-accent);
+	}
+	.principal {
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+		font-weight: 600;
+	}
+	.secondaire {
+		background: transparent;
+		color: var(--sl-color-accent-high);
+	}
+	.bouton:hover {
+		filter: brightness(1.1);
+	}
+</style>
