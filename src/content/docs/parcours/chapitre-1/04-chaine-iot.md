@@ -57,6 +57,27 @@ Le **TinyML** consiste à exécuter un modèle d'intelligence artificielle direc
 - Pourquoi un capteur de vibrations relié à une passerelle Edge est-il préférable à l'envoi brut de toutes les mesures vers le cloud ?
 - Un capteur fonctionne sur pile pendant plusieurs années, à plusieurs kilomètres de la passerelle. Quelle famille de réseau choisis-tu ?
 
+## Illustrations du cours
+
+![Diapositive 20 du cours](../../../../assets/parcours/chapitre-1/diapo-20.webp)
+
+![Diapositive 21 du cours](../../../../assets/parcours/chapitre-1/diapo-21.webp)
+
+![Diapositive 22 du cours](../../../../assets/parcours/chapitre-1/diapo-22.webp)
+
+![Diapositive 23 du cours](../../../../assets/parcours/chapitre-1/diapo-23.webp)
+
+![Diapositive 38 du cours](../../../../assets/parcours/chapitre-1/diapo-38.webp)
+
+![Diapositive 39 du cours](../../../../assets/parcours/chapitre-1/diapo-39.webp)
+
+![Diapositive 40 du cours](../../../../assets/parcours/chapitre-1/diapo-40.webp)
+
+![Diapositive 41 du cours](../../../../assets/parcours/chapitre-1/diapo-41.webp)
+
+![Diapositive 43 du cours](../../../../assets/parcours/chapitre-1/diapo-43.webp)
+
+
 :::note
 Quand tu as répondu à ces questions, valide cette leçon en bas de page.
 :::

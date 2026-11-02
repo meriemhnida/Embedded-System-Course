@@ -45,6 +45,21 @@ Lance la simulation et observe la LED.
 - Que se passe-t-il si tu remplaces `delay(250)` par `delay(50)` ?
 - Pourquoi la résistance de 220 Ω est-elle nécessaire ? Avec une tension de 5 V et une LED qui consomme environ 2 V, quel courant traverse la LED ? (Loi d'Ohm : I = (5 − 2) / 220, soit environ 14 mA.)
 
+## Illustrations du cours
+
+![Diapositive 57 du cours](../../../../assets/parcours/chapitre-1/diapo-57.webp)
+
+![Diapositive 59 du cours](../../../../assets/parcours/chapitre-1/diapo-59.webp)
+
+![Diapositive 60 du cours](../../../../assets/parcours/chapitre-1/diapo-60.webp)
+
+![Diapositive 62 du cours](../../../../assets/parcours/chapitre-1/diapo-62.webp)
+
+![Diapositive 86 du cours](../../../../assets/parcours/chapitre-1/diapo-86.webp)
+
+![Diapositive 87 du cours](../../../../assets/parcours/chapitre-1/diapo-87.webp)
+
+
 :::note
 Quand la LED clignote comme prévu et que tu as répondu aux questions, valide cette leçon en bas de page.
 :::

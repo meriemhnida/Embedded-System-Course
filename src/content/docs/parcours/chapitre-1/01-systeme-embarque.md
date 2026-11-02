@@ -52,6 +52,29 @@ Un système embarqué relié à Internet devient un **objet connecté** (IoT).
 - Donne deux contraintes qui s'appliquent à un capteur alimenté par pile.
 - Quelle est la différence entre un système embarqué et un système temps réel ?
 
+## Illustrations du cours
+
+![Diapositive 1 du cours](../../../../assets/parcours/chapitre-1/diapo-01.webp)
+
+![Diapositive 5 du cours](../../../../assets/parcours/chapitre-1/diapo-05.webp)
+
+![Diapositive 6 du cours](../../../../assets/parcours/chapitre-1/diapo-06.webp)
+
+![Diapositive 8 du cours](../../../../assets/parcours/chapitre-1/diapo-08.webp)
+
+![Diapositive 9 du cours](../../../../assets/parcours/chapitre-1/diapo-09.webp)
+
+![Diapositive 15 du cours](../../../../assets/parcours/chapitre-1/diapo-15.webp)
+
+![Diapositive 17 du cours](../../../../assets/parcours/chapitre-1/diapo-17.webp)
+
+![Diapositive 29 du cours](../../../../assets/parcours/chapitre-1/diapo-29.webp)
+
+![Diapositive 33 du cours](../../../../assets/parcours/chapitre-1/diapo-33.webp)
+
+![Diapositive 35 du cours](../../../../assets/parcours/chapitre-1/diapo-35.webp)
+
+
 :::note
 Quand tu as répondu à ces questions, valide cette leçon en bas de page.
 :::

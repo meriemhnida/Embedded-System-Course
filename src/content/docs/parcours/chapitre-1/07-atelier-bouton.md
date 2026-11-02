@@ -39,6 +39,13 @@ Lance la simulation. Clique sur le bouton dans Wokwi et observe la LED.
 - Que se passe-t-il si tu retires la résistance ?
 - Comment faire pour que la LED reste allumée après un appui ? (Indice : pense à une variable qui mémorise l'état.)
 
+## Illustrations du cours
+
+![Diapositive 88 du cours](../../../../assets/parcours/chapitre-1/diapo-88.webp)
+
+![Diapositive 89 du cours](../../../../assets/parcours/chapitre-1/diapo-89.webp)
+
+
 :::note
 Quand le bouton allume la LED et que tu as répondu aux questions, valide cette leçon en bas de page.
 :::

@@ -64,6 +64,29 @@ Le **DHT22** : il mesure à la fois la température et l'humidité, sur une plag
 - Donne un exemple de capteur et un exemple d'actionneur dans une machine à laver.
 - Pourquoi place-t-on un transistor ou un relais entre le microcontrôleur et un moteur ?
 
+## Illustrations du cours
+
+![Diapositive 18 du cours](../../../../assets/parcours/chapitre-1/diapo-18.webp)
+
+![Diapositive 46 du cours](../../../../assets/parcours/chapitre-1/diapo-46.webp)
+
+![Diapositive 47 du cours](../../../../assets/parcours/chapitre-1/diapo-47.webp)
+
+![Diapositive 49 du cours](../../../../assets/parcours/chapitre-1/diapo-49.webp)
+
+![Diapositive 50 du cours](../../../../assets/parcours/chapitre-1/diapo-50.webp)
+
+![Diapositive 52 du cours](../../../../assets/parcours/chapitre-1/diapo-52.webp)
+
+![Diapositive 53 du cours](../../../../assets/parcours/chapitre-1/diapo-53.webp)
+
+![Diapositive 54 du cours](../../../../assets/parcours/chapitre-1/diapo-54.webp)
+
+![Diapositive 55 du cours](../../../../assets/parcours/chapitre-1/diapo-55.webp)
+
+![Diapositive 56 du cours](../../../../assets/parcours/chapitre-1/diapo-56.webp)
+
+
 :::note
 Quand tu as répondu à ces questions, valide cette leçon en bas de page.
 :::

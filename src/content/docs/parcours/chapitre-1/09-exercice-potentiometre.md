@@ -43,6 +43,17 @@ void loop() {
 - Que se passe-t-il si tu enlèves `delay(20)` ? Pourquoi ce délai peut-il être utile ?
 - Pourquoi la broche 11 et non la broche 12 ?
 
+## Illustrations du cours
+
+![Diapositive 76 du cours](../../../../assets/parcours/chapitre-1/diapo-76.webp)
+
+![Diapositive 78 du cours](../../../../assets/parcours/chapitre-1/diapo-78.webp)
+
+![Diapositive 94 du cours](../../../../assets/parcours/chapitre-1/diapo-94.webp)
+
+![Diapositive 95 du cours](../../../../assets/parcours/chapitre-1/diapo-95.webp)
+
+
 :::note
 Quand la luminosité de la LED varie avec le potentiomètre et que tu as répondu aux questions, valide cette leçon en bas de page.
 :::

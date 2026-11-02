@@ -56,6 +56,25 @@ Une carte comme le Raspberry Pi 5 est un **ordinateur monocarte** : son processe
 - Dans quelle catégorie rangerais-tu un téléphone ? Une machine à laver ?
 - Pourquoi une carte de développement est-elle plus pratique qu'un microcontrôleur nu ?
 
+## Illustrations du cours
+
+![Diapositive 24 du cours](../../../../assets/parcours/chapitre-1/diapo-24.webp)
+
+![Diapositive 25 du cours](../../../../assets/parcours/chapitre-1/diapo-25.webp)
+
+![Diapositive 26 du cours](../../../../assets/parcours/chapitre-1/diapo-26.webp)
+
+![Diapositive 27 du cours](../../../../assets/parcours/chapitre-1/diapo-27.webp)
+
+![Diapositive 28 du cours](../../../../assets/parcours/chapitre-1/diapo-28.webp)
+
+![Diapositive 36 du cours](../../../../assets/parcours/chapitre-1/diapo-36.webp)
+
+![Diapositive 37 du cours](../../../../assets/parcours/chapitre-1/diapo-37.webp)
+
+![Diapositive 44 du cours](../../../../assets/parcours/chapitre-1/diapo-44.webp)
+
+
 :::note
 Quand tu as répondu à ces questions, valide cette leçon en bas de page.
 :::

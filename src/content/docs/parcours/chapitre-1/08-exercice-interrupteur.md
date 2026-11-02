@@ -46,6 +46,17 @@ Il suffit d'inverser la valeur lue : `digitalWrite(LED, !interrupteurState);`. L
 
 </details>
 
+## Illustrations du cours
+
+![Diapositive 90 du cours](../../../../assets/parcours/chapitre-1/diapo-90.webp)
+
+![Diapositive 91 du cours](../../../../assets/parcours/chapitre-1/diapo-91.webp)
+
+![Diapositive 92 du cours](../../../../assets/parcours/chapitre-1/diapo-92.webp)
+
+![Diapositive 93 du cours](../../../../assets/parcours/chapitre-1/diapo-93.webp)
+
+
 :::note
 Quand la LED réagit à l'interrupteur et que tu as compris la logique inversée, valide cette leçon en bas de page.
 :::

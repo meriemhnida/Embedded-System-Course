@@ -86,6 +86,39 @@ Broches numériques : signaux HAUT ou BAS. Broches analogiques : valeurs continu
 - Quelles broches permettent `analogWrite()` ?
 - Pourquoi place-t-on une résistance en série avec une LED ?
 
+## Illustrations du cours
+
+![Diapositive 58 du cours](../../../../assets/parcours/chapitre-1/diapo-58.webp)
+
+![Diapositive 61 du cours](../../../../assets/parcours/chapitre-1/diapo-61.webp)
+
+![Diapositive 63 du cours](../../../../assets/parcours/chapitre-1/diapo-63.webp)
+
+![Diapositive 64 du cours](../../../../assets/parcours/chapitre-1/diapo-64.webp)
+
+![Diapositive 67 du cours](../../../../assets/parcours/chapitre-1/diapo-67.webp)
+
+![Diapositive 68 du cours](../../../../assets/parcours/chapitre-1/diapo-68.webp)
+
+![Diapositive 70 du cours](../../../../assets/parcours/chapitre-1/diapo-70.webp)
+
+![Diapositive 71 du cours](../../../../assets/parcours/chapitre-1/diapo-71.webp)
+
+![Diapositive 72 du cours](../../../../assets/parcours/chapitre-1/diapo-72.webp)
+
+![Diapositive 73 du cours](../../../../assets/parcours/chapitre-1/diapo-73.webp)
+
+![Diapositive 74 du cours](../../../../assets/parcours/chapitre-1/diapo-74.webp)
+
+![Diapositive 77 du cours](../../../../assets/parcours/chapitre-1/diapo-77.webp)
+
+![Diapositive 80 du cours](../../../../assets/parcours/chapitre-1/diapo-80.webp)
+
+![Diapositive 82 du cours](../../../../assets/parcours/chapitre-1/diapo-82.webp)
+
+![Diapositive 85 du cours](../../../../assets/parcours/chapitre-1/diapo-85.webp)
+
+
 :::note
 Quand tu as répondu à ces questions, valide cette leçon en bas de page.
 :::
