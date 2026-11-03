@@ -4,10 +4,9 @@ description: "Trois mots que l'on confond souvent : la puce MCU, le microprocess
 ---
 
 :::note[Objectifs de l'atelier]
-À la fin de cette page, tu seras capable de :
-- expliquer en une phrase ce qu'est un microcontrôleur (MCU) et un microprocesseur (MPU) ;
-- dire ce que contient une carte de développement en plus de la puce ;
-- savoir pourquoi on utilise une carte Arduino pour apprendre.
+À la fin de  cette partie, vous serez capables de :
+- expliquer la différence entre une carte de développement, un microcontrôleur (MCU) et un microprocesseur (MPU) ;
+-
 :::
 
 ## Trois mots, trois choses différentes
@@ -43,7 +42,7 @@ Un MPU est **beaucoup plus puissant**, mais il ne contient ni mémoire ni périp
 **MPU** : très puissant, mais il faut ajouter mémoire et périphériques autour.
 :::
 
-## La carte de développement : la puce prête à l'emploi
+## La carte de développement : exemple
 
 Un MCU seul est difficile à utiliser : il faut l'alimenter, le programmer, lui connecter des fils. La **carte de développement** règle tous ces problèmes. Elle contient :
 
@@ -71,7 +70,7 @@ Ne confonds pas **la puce et la carte**. L'ATmega328P est le **microcontrôleur*
 L'Arduino UNO est une carte à **microcontrôleur**, simple et peu chère. Elle se programme en quelques lignes, se branche en USB et fonctionne seule une fois programmée. Elle est idéale pour comprendre ce qu'est un système embarqué, avant de passer à des cartes plus puissantes.
 :::
 
-## Teste-toi
+##  Quizz
 
 1. Que contient un microcontrôleur que ne contient pas un microprocesseur ?
 2. L'Arduino UNO est-elle un microcontrôleur ?
