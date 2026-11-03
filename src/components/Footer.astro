@@ -1,6 +1,7 @@
 ---
 import Default from '@astrojs/starlight/components/Footer.astro';
 import ValidationLecon from './ValidationLecon.astro';
+import ResumeReponses from './ResumeReponses.astro';
 import { leconsDuParcours } from '../scripts/leconsDuParcours';
 
 const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
@@ -10,6 +11,8 @@ const suivante = estLecon ? lecons[index + 1] : undefined;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const accueilParcours = `${base}mon-parcours/`;
 ---
+
+<ResumeReponses />
 
 <Default />
 

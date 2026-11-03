@@ -21,15 +21,38 @@ function vide(): Progression {
 	return { valides: {}, journal: [] };
 }
 
+// Pages déplacées : la progression déjà enregistrée suit la page à sa nouvelle adresse.
+const RENOMMAGES: Record<string, string> = {
+	'parcours/atelier-1/01-mcu-mpu-carte/': 'parcours/chapitre-2/01-mcu-mpu-carte/',
+	'parcours/atelier-1/02-presentation/': 'parcours/chapitre-2/02-presentation/',
+};
+
+function migrer(p: Progression): boolean {
+	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+	let modifiee = false;
+	for (const [ancien, nouveau] of Object.entries(RENOMMAGES)) {
+		const a = base + ancien;
+		const n = base + nouveau;
+		if (p.valides[a]) {
+			if (!p.valides[n]) p.valides[n] = p.valides[a];
+			delete p.valides[a];
+			modifiee = true;
+		}
+	}
+	return modifiee;
+}
+
 export function lire(): Progression {
 	try {
 		const brut = localStorage.getItem(CLE);
 		if (!brut) return vide();
 		const donnees = JSON.parse(brut);
-		return {
+		const p: Progression = {
 			valides: donnees.valides && typeof donnees.valides === 'object' ? donnees.valides : {},
 			journal: Array.isArray(donnees.journal) ? donnees.journal : [],
 		};
+		if (migrer(p)) ecrire(p);
+		return p;
 	} catch {
 		return vide();
 	}

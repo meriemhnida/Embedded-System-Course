@@ -1,0 +1,69 @@
+---
+title: TP1 · D. Défi ingénieur et rendu
+description: Défi du TP1 — variateur de LED avec consignation de sécurité, plan de tests et livrables.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de la partie]
+Réunir les exercices 3, 4 et 5 dans un programme **non bloquant** qui respecte une règle de sécurité : la **consignation**.
+:::
+
+## Le défi : un variateur avec consignation de maintenance
+
+Dans une armoire électrique, avant d'intervenir, un technicien **consigne** l'installation : il la met dans un état où **aucune commande ne peut la remettre en marche**. Vous réalisez la maquette de ce principe avec l'éclairage de l'armoire.
+
+### Cahier des charges
+
+| Exigence | Description |
+|---|---|
+| D1 | Le **potentiomètre** (A0) règle en continu la luminosité de la LED (D11, PWM). |
+| D2 | Chaque appui sur le **bouton** (D2) allume ou éteint la LED. Un appui = un seul basculement (anti-rebond). |
+| D3 | L'**interrupteur** (D5) est l'organe de consignation. Quand D5 est à **HIGH** (position par défaut, ou fil coupé), l'installation est **consignée** : la LED est forcée éteinte et le bouton est ignoré. |
+| D4 | À la déconsignation, la LED **reste éteinte** : il faut un nouvel appui pour la rallumer. |
+| D5 | Chaque événement est **journalisé** sur la liaison série avec sa date en millisecondes, par exemple `[12345 ms] LED ON`. |
+| D6 | `loop()` ne contient **aucun `delay()`** ; les broches et les durées sont des **constantes nommées**. |
+
+### Câblage
+
+Reprenez les câblages des exercices 3 (bouton sur D2 avec résistance de 10 kΩ), 4 (interrupteur : commun sur GND, broche 3 sur D5) et 5 (potentiomètre sur A0, LED et sa résistance de 220 Ω sur D11).
+
+:::caution[Important]
+La consignation est **prioritaire** sur toutes les autres commandes : testez-la en premier dans `loop()`, avant de traiter le bouton et le potentiomètre.
+:::
+
+<Question id="tp1-qd.1" label="QD.1">
+Décrivez le comportement attendu sous forme de **tableau** (état de l'interrupteur, événement, effet sur la LED) ou de **diagramme d'états**.
+</Question>
+
+<Question id="tp1-qd.2" label="QD.2" type="code" lignes={14}>
+Collez votre **programme complet**.
+</Question>
+
+<Question id="tp1-qd.3" label="QD.3" categorie="surete" lignes={6}>
+**Plan de tests.** Proposez au moins **cinq tests** qui prouvent que le cahier des charges est respecté, en particulier D3 et D4. Pour chacun : l'action réalisée, le résultat attendu, le résultat obtenu.
+</Question>
+
+<Question id="tp1-qd.4" label="QD.4" categorie="surete">
+Pourquoi la LED ne doit-elle **pas se rallumer toute seule** à la déconsignation (exigence D4) ? Citez une situation industrielle où ce principe protège un opérateur.
+</Question>
+
+## Livrables du TP1
+
+À déposer selon les consignes du [guide des TP](/Embedded-System-Course/parcours/chapitre-2/03-guide-tp/) :
+
+1. le **compte rendu** du TP1, exporté en PDF depuis [Mes réponses](/Embedded-System-Course/mes-reponses/) (sélection « TP1 ») ;
+2. les **liens Wokwi** des exercices 2 à 5 et du défi ;
+3. le **programme du défi** (`sketch.ino`).
+
+## Auto-évaluation
+
+- [ ] Je sais calculer la résistance de protection d'une LED.
+- [ ] Je sais expliquer pourquoi une entrée doit avoir un niveau fixé au repos.
+- [ ] Je sais filtrer les rebonds d'un bouton sans bloquer le programme.
+- [ ] Je sais lire une tension avec `analogRead()` et commander une sortie avec `analogWrite()`.
+- [ ] Je sais justifier un choix de câblage par le principe de sécurité positive.
+
+:::note[Prochaine étape]
+Validez cette page. Le [TP2](/Embedded-System-Course/parcours/chapitre-2/tp2/01-presentation/) réutilise ces briques pour construire le contrôleur de température.
+:::

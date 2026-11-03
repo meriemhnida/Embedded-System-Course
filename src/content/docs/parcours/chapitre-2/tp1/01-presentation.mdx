@@ -1,0 +1,116 @@
+---
+title: "TP1 — Mise en route : entrées et sorties"
+description: Présentation du TP1, préparation de l'environnement Wokwi et découverte de la carte Arduino UNO.
+---
+
+import FicheTP from '../../../../../components/FicheTP.astro';
+import ChaineInformation from '../../../../../components/ChaineInformation.astro';
+import Question from '../../../../../components/Question.astro';
+
+<FicheTP
+	duree="3 h (1 séance)"
+	modalite="Binôme"
+	plateforme="Simulateur Wokwi, carte Arduino UNO"
+	prerequis="Chapitre 1 (leçons 5 à 9) et leçons 1 et 2 du chapitre 2"
+	livrables="Compte rendu exporté, liens Wokwi des exercices 2 à 5 et du défi"
+/>
+
+## Mise en situation
+
+Vous rejoignez le bureau d'études d'une PME qui conçoit des **boîtiers de surveillance pour armoires électriques**. Avant de développer le produit (TP2) puis de le sécuriser (TP3), l'équipe vous confie la prise en main des briques de base de son interface homme-machine : **voyants, boutons, interrupteurs, réglage analogique** et **liaison série de diagnostic**.
+
+Arduino est la plateforme de prototypage retenue. Une carte Arduino associe un **microcontrôleur** et un **circuit imprimé** qui l'alimente, donne accès à ses entrées-sorties et le relie à l'ordinateur par USB. Vous la programmerez en langage C/C++ et la simulerez avec **Wokwi**.
+
+## Objectifs
+
+À l'issue de ce TP, vous serez capables de :
+
+<ol class="objectifs-liste">
+	<li><span><strong>Identifier</strong> les broches de la carte UNO et leur rôle : numériques, PWM, analogiques, alimentation.</span></li>
+	<li><span><strong>Piloter</strong> une sortie numérique et <strong>dimensionner</strong> la résistance de protection d'une LED.</span></li>
+	<li><span><strong>Lire</strong> une entrée numérique avec une résistance de tirage et <strong>filtrer</strong> les rebonds d'un bouton.</span></li>
+	<li><span><strong>Convertir</strong> une tension analogique et <strong>commander</strong> une sortie PWM.</span></li>
+	<li><span><strong>Diagnostiquer</strong> un programme grâce à la liaison série.</span></li>
+	<li><span><strong>Appliquer</strong> le principe de sécurité positive à une entrée et à une commande.</span></li>
+</ol>
+
+## Le système étudié
+
+<ChaineInformation
+	acquerir={['Bouton-poussoir (D2)', 'Interrupteur coulissant (D5)', 'Potentiomètre (A0)']}
+	traiter={['Microcontrôleur ATmega328P', 'Programme : setup() puis loop()']}
+	agir={['LED intégrée « L » (D13)', 'LED externe (D13 puis D11 en PWM)', 'Moniteur série (USB)']}
+	legende="Chaîne d'information du TP1 : chaque exercice ajoute un maillon."
+/>
+
+## Matériel
+
+| Composant | Quantité | Référence dans Wokwi | Rôle |
+|---|---|---|---|
+| Carte Arduino UNO | 1 | `wokwi-arduino-uno` | Unité de traitement |
+| LED rouge | 1 | `wokwi-led` | Voyant (actionneur) |
+| Résistance 220 Ω | 1 | `wokwi-resistor` | Limite le courant de la LED |
+| Résistance 10 kΩ | 1 | `wokwi-resistor` | Tirage (*pull-down*) du bouton |
+| Bouton-poussoir | 1 | `wokwi-pushbutton` | Commande momentanée (capteur) |
+| Interrupteur coulissant | 1 | `wokwi-slide-switch` | Commande à deux positions stables |
+| Potentiomètre | 1 | `wokwi-potentiometer` ou `wokwi-slide-potentiometer` | Consigne analogique |
+
+## Organisation du TP
+
+| Partie | Contenu | Durée indicative |
+|---|---|---|
+| Présentation | Préparation de Wokwi, découverte de la carte | 30 min |
+| [A. Sorties numériques](/Embedded-System-Course/parcours/chapitre-2/tp1/02-sorties-numeriques/) | Exercice 1 : LED intégrée ; exercice 2 : clignotement | 40 min |
+| [B. Entrées numériques](/Embedded-System-Course/parcours/chapitre-2/tp1/03-entrees-numeriques/) | Exercice 3 : bouton-poussoir ; exercice 4 : interrupteur et liaison série | 50 min |
+| [C. Analogique et PWM](/Embedded-System-Course/parcours/chapitre-2/tp1/04-analogique-pwm/) | Exercice 5 : luminosité réglée par un potentiomètre | 30 min |
+| [D. Défi et rendu](/Embedded-System-Course/parcours/chapitre-2/tp1/05-defi-rendu/) | Variateur avec consignation de sécurité, livrables | 30 min |
+
+## Préparation : simulation dans le cloud avec Wokwi
+
+1. Ouvrez [wokwi.com](https://wokwi.com/) et connectez-vous avec votre **compte GitHub**.
+2. Créez un nouveau projet en choisissant la carte **Arduino Uno**.
+3. Enregistrez-le aussitôt sous un nom explicite, par exemple `TP1-Ex1-Dupont-Martin`.
+
+![Écran de démarrage de Wokwi : choix de la carte Arduino Uno, Mega ou Nano](../../../../../assets/parcours/chapitre-2/tp2/wokwi-nouveau-projet.webp)
+
+*Dans Wokwi, un nouveau projet commence par le choix de la carte.*
+
+:::caution[Important]
+Créez **un projet par exercice** : vous pourrez ainsi rendre un lien par exercice et revenir à une version qui fonctionnait.
+:::
+
+## Découvrir la carte Arduino UNO
+
+Ouvrez la page interactive [Présentation de la carte](/Embedded-System-Course/parcours/chapitre-2/02-presentation/) et le schéma de la carte dans Wokwi, puis répondez.
+
+<Question id="tp1-q0.1" label="Q0.1">
+Localisez le **microcontrôleur** sur la carte. Quelle est sa référence exacte ? Pourquoi dit-on que la carte UNO **contient** un microcontrôleur plutôt qu'elle **est** un microcontrôleur ?
+</Question>
+
+<Question id="tp1-q0.2" label="Q0.2">
+Localisez les **sources d'alimentation** de la carte. Citez les deux façons de l'alimenter et la plage de tension acceptée par chacune.
+</Question>
+
+<Question id="tp1-q0.3" label="Q0.3">
+Localisez les broches **numériques 0 à 13** et les broches **analogiques A0 à A5**. Quel est le rôle de chacun de ces deux groupes ? Quelle est la différence entre un signal numérique et un signal analogique ?
+</Question>
+
+<Question id="tp1-q0.4" label="Q0.4">
+Pourquoi certaines broches portent-elles le symbole **~** ? Que signifie le sigle **PWM** ? Listez les broches concernées.
+</Question>
+
+<Question id="tp1-q0.5" label="Q0.5">
+Quel est le rôle des broches du connecteur **POWER** (5V, 3V3, VIN, GND) ?
+</Question>
+
+<Question id="tp1-q0.6" label="Q0.6" categorie="ingenieur">
+Une broche numérique de l'UNO fournit au plus **20 mA** en usage normal. Un petit moteur à courant continu consomme environ 200 mA. Pourquoi ne faut-il jamais le brancher directement sur une broche ? Proposez un moyen de le commander quand même.
+</Question>
+
+<Question id="tp1-q0.7" label="Q0.7" categorie="ingenieur">
+Les broches D0 et D1 sont aussi notées RX et TX. Pourquoi est-il déconseillé d'y brancher un composant pendant le téléversement d'un programme ?
+</Question>
+
+:::note[Prochaine étape]
+Quand Wokwi est prêt et que vous avez répondu aux questions de découverte, validez cette page et passez à la [partie A](/Embedded-System-Course/parcours/chapitre-2/tp1/02-sorties-numeriques/).
+:::

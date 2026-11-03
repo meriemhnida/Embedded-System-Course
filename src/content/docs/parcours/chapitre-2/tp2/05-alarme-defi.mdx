@@ -1,0 +1,108 @@
+---
+title: TP2 · D. Alarme sonore, unités et défi
+description: Exercices 5 et 6 du TP2 — avertisseur sonore au-delà de 40 °C, affichage en °C ou °F, puis défi ingénieur et livrables.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de la partie]
+Ajouter l'**avertisseur sonore** (EF4) et le **choix de l'unité** (EF5), puis restructurer le programme pour que la surveillance soit **continue** et **non bloquante**.
+:::
+
+## Exercice 5 — Avertisseur sonore en cas de température élevée
+
+Ajoutez un **buzzer** qui émet un son lorsque la température dépasse **40 °C**.
+
+### Câblage
+
+| Buzzer | Relier à |
+|---|---|
+| broche 2 (+, fil rouge) | **D8** |
+| broche 1 (−, fil noir) | **GND** |
+
+Le buzzer de Wokwi est **passif** : il ne sonne que si on lui envoie un signal périodique. La fonction `tone(broche, fréquence)` produit ce signal ; `tone(broche, fréquence, durée)` s'arrête seule après la durée indiquée ; `noTone(broche)` coupe le son.
+
+```cpp
+const int buzzerPin = 8;
+const float SEUIL_ALARME = 40.0;  // °C
+
+// Dans loop(), après une mesure valide :
+if (temperature > SEUIL_ALARME) {
+  tone(buzzerPin, 1000);  // 1 kHz
+} else {
+  noTone(buzzerPin);
+}
+```
+
+<Question id="tp2-q5.1" label="Q5.1">
+Pourquoi faut-il utiliser `tone()` plutôt que `digitalWrite()` pour faire sonner ce buzzer ?
+</Question>
+
+<Question id="tp2-q5.2" label="Q5.2" categorie="surete">
+Dans la partie C, la mesure n'a lieu **que si l'on appuie sur le bouton**. Que se passe-t-il si la température dépasse 40 °C alors que personne n'appuie ? Proposez une nouvelle organisation de `loop()` qui sépare la **fonction de sécurité** (mesure périodique, LED, alarme) de la **fonction d'affichage** (LCD à la demande).
+</Question>
+
+<Question id="tp2-q5.3" label="Q5.3" categorie="ingenieur">
+Consultez la [documentation de `tone()`](https://docs.arduino.cc/language-reference/en/functions/advanced-io/tone/). Sur l'UNO, quelles broches PWM sont perturbées pendant qu'un son est joué ? Notre LED RVB est-elle concernée ? Pourquoi les couleurs pures (valeurs 0 ou 255) s'affichent-elles quand même correctement ? Proposez un câblage qui supprime le conflit.
+</Question>
+
+## Exercice 6 — Basculer entre deux unités
+
+Ajoutez un **interrupteur coulissant** qui bascule l'affichage de la température entre **degrés Celsius** et **degrés Fahrenheit**.
+
+| Interrupteur coulissant | Relier à |
+|---|---|
+| broche 1 | **D7** |
+| broche 2 (commun) | **GND** |
+
+Configurez D7 en `INPUT_PULLUP`. Interrupteur à gauche (position par défaut), D7 est relié à GND et lit LOW : affichage en °C. À droite, D7 lit HIGH : affichage en °F. La conversion s'écrit **°F = °C × 9 / 5 + 32**.
+
+<Question id="tp2-q6.1" label="Q6.1">
+Convertissez 40 °C et 10 °C en degrés Fahrenheit.
+</Question>
+
+<Question id="tp2-q6.2" label="Q6.2" categorie="ingenieur">
+Où faut-il effectuer la conversion pour que les seuils (10, 38 et 40 °C) restent justes quel que soit le mode d'affichage ? Quel défaut apparaîtrait si le programme comparait une température exprimée en °F au seuil de 40 ?
+</Question>
+
+## Défi ingénieur — Un contrôleur digne d'une exploitation réelle
+
+Faites évoluer votre programme pour respecter les exigences suivantes, **en plus** de EF1 à EF6.
+
+| Exigence | Description |
+|---|---|
+| DF1 | **Surveillance continue** : la mesure a lieu toutes les 2 s, sans `delay()` dans `loop()`. La LED et l'alarme ne dépendent pas du bouton. |
+| DF2 | **Hystérésis** : l'alarme se déclenche au-dessus de 40 °C et ne s'arrête qu'au-dessous de 39 °C. |
+| DF3 | **Acquittement** : pendant une alarme, un appui sur le bouton coupe le son. La LED reste rouge tant que la température est élevée. Hors alarme, le bouton met à jour l'écran. |
+| DF4 | **Défaut capteur** : si la lecture échoue, la LED clignote en **magenta**, le buzzer émet un bip grave par seconde et l'écran indique `Defaut capteur`. |
+| DF5 | **Test des voyants** au démarrage : rouge, vert, bleu puis un bip court, pour vérifier que les sorties fonctionnent. |
+
+<Question id="tp2-qd.1" label="QD.1" type="code" lignes={16}>
+Collez votre **programme final**.
+</Question>
+
+<Question id="tp2-qd.2" label="QD.2" categorie="surete" lignes={6}>
+**Plan de tests.** Décrivez au moins **six tests** (réglage de la température ou action sur le montage, résultat attendu, résultat obtenu) qui couvrent EF2, EF4, DF2, DF3 et DF4. Pensez aux valeurs limites.
+</Question>
+
+<Question id="tp2-qd.3" label="QD.3" categorie="surete">
+Pourquoi un **acquittement** coupe-t-il le son sans faire disparaître la signalisation visuelle ? Que risquerait-on si le bouton remettait tout à zéro ?
+</Question>
+
+## Livrables du TP2
+
+1. Le **compte rendu** du TP2, exporté en PDF depuis [Mes réponses](/Embedded-System-Course/mes-reponses/) (sélection « TP2 »).
+2. Les **liens Wokwi** des parties A, B, C et du programme final.
+3. Le **programme final** (`sketch.ino`).
+
+## Auto-évaluation
+
+- [ ] Je sais utiliser une bibliothèque de capteur et détecter une lecture invalide.
+- [ ] Je sais expliquer la logique d'une LED RVB à anode commune.
+- [ ] Je sais relier un écran par le bus I²C et respecter ses 16 caractères par ligne.
+- [ ] Je sais séparer une fonction de sécurité d'une fonction d'affichage dans un programme non bloquant.
+- [ ] Je sais justifier une hystérésis et un acquittement d'alarme.
+
+:::note[Prochaine étape]
+Validez cette page. Le [TP3](/Embedded-System-Course/parcours/chapitre-2/tp3/01-presentation/) part de ce contrôleur et le rend robuste face aux pannes et aux attaques.
+:::

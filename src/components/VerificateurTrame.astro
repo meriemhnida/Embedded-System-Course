@@ -1,0 +1,168 @@
+---
+// Vérifie des trames de télémétrie du TP3 : $TEL,seq,t_ms,temp,hum,etat,qualite*CRC16
+// Le CRC-16/CCITT-FALSE porte sur les caractères compris entre '$' et '*'.
+---
+
+<div class="verificateur">
+	<label for="trames">Collez ici des lignes copiées depuis le moniteur série de Wokwi :</label>
+	<textarea id="trames" rows="6" spellcheck="false" placeholder="$TEL,0,1608,24.0,40.0,NORMAL,OK*XXXX"></textarea>
+	<div class="actions">
+		<button type="button" data-action="verifier">Vérifier les trames</button>
+		<span class="bilan" aria-live="polite"></span>
+	</div>
+	<div class="table-conteneur" hidden>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">Séq.</th>
+					<th scope="col">t (s)</th>
+					<th scope="col">T (°C)</th>
+					<th scope="col">HR (%)</th>
+					<th scope="col">État</th>
+					<th scope="col">Qualité</th>
+					<th scope="col">CRC reçu</th>
+					<th scope="col">CRC calculé</th>
+					<th scope="col">Verdict</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	function crc16(texte: string): number {
+		let crc = 0xffff;
+		for (const octet of new TextEncoder().encode(texte)) {
+			crc ^= octet << 8;
+			for (let i = 0; i < 8; i++) crc = crc & 0x8000 ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff;
+		}
+		return crc;
+	}
+
+	document.querySelectorAll<HTMLElement>('.verificateur').forEach((bloc) => {
+		const zone = bloc.querySelector<HTMLTextAreaElement>('textarea')!;
+		const corps = bloc.querySelector<HTMLTableSectionElement>('tbody')!;
+		const conteneur = bloc.querySelector<HTMLElement>('.table-conteneur')!;
+		const bilan = bloc.querySelector<HTMLElement>('.bilan')!;
+
+		bloc.querySelector('[data-action="verifier"]')!.addEventListener('click', () => {
+			corps.replaceChildren();
+			let valides = 0;
+			let invalides = 0;
+			let precedente: number | null = null;
+			let manquantes = 0;
+			const lignes = zone.value.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.startsWith('$'));
+			for (const ligne of lignes) {
+				const m = ligne.match(/^\$(.*)\*([0-9A-Fa-f]{4})$/);
+				const contenu = m ? m[1] : ligne.slice(1);
+				const champs = contenu.split(',');
+				const recu = m ? m[2].toUpperCase() : '—';
+				const calcule = crc16(contenu).toString(16).toUpperCase().padStart(4, '0');
+				const formatOk = m !== null && champs.length === 7 && champs[0] === 'TEL';
+				const ok = formatOk && recu === calcule;
+				const seq = Number(champs[1]);
+				let remarque = '';
+				if (ok && precedente !== null && Number.isInteger(seq)) {
+					const attendu = (precedente + 1) % 65536;
+					if (seq !== attendu) {
+						const ecart = (seq - attendu + 65536) % 65536;
+						if (seq === precedente) remarque = ' (doublon)';
+						else if (ecart < 1000) {
+							manquantes += ecart;
+							remarque = ` (${ecart} trame${ecart > 1 ? 's' : ''} manquante${ecart > 1 ? 's' : ''})`;
+						} else remarque = ' (séquence réinitialisée : redémarrage ?)';
+					}
+				}
+				if (ok && Number.isInteger(seq)) precedente = seq;
+				if (ok) valides++;
+				else invalides++;
+
+				const tr = document.createElement('tr');
+				tr.className = ok ? 'ok' : 'ko';
+				const cellules = [
+					champs[1] ?? '',
+					champs[2] ? (Number(champs[2]) / 1000).toFixed(1) : '',
+					champs[3] || '—',
+					champs[4] || '—',
+					champs[5] ?? '',
+					champs[6] ?? '',
+					recu,
+					calcule,
+					(ok ? '✔ intègre' : formatOk ? '✘ CRC faux' : '✘ format invalide') + remarque,
+				];
+				for (const valeur of cellules) {
+					const td = document.createElement('td');
+					td.textContent = valeur;
+					tr.append(td);
+				}
+				corps.append(tr);
+			}
+			conteneur.hidden = lignes.length === 0;
+			bilan.textContent = lignes.length
+				? `${valides} trame(s) intègre(s), ${invalides} rejetée(s)${manquantes ? `, ${manquantes} manquante(s)` : ''}.`
+				: 'Aucune ligne commençant par « $ » trouvée.';
+		});
+	});
+</script>
+
+<style>
+	.verificateur {
+		margin: 1.25rem 0;
+		padding: 1rem;
+		border-radius: 0.6rem;
+		border: 1px solid var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+	}
+	label {
+		display: block;
+		font-weight: 600;
+		margin-bottom: 0.4rem;
+	}
+	textarea {
+		width: 100%;
+		font-family: var(--__sl-font-mono, ui-monospace, monospace);
+		font-size: var(--sl-text-sm);
+		padding: 0.5rem 0.6rem;
+		border-radius: 0.4rem;
+		border: 1px solid var(--sl-color-gray-4);
+		background: var(--sl-color-black);
+		color: var(--sl-color-white);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+		margin-top: 0.6rem;
+	}
+	button {
+		font: inherit;
+		font-weight: 600;
+		padding: 0.45rem 0.9rem;
+		border-radius: 0.5rem;
+		border: 1px solid var(--sl-color-accent);
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+		cursor: pointer;
+	}
+	.table-conteneur {
+		overflow-x: auto;
+		margin-top: 0.75rem;
+	}
+	.table-conteneur[hidden] {
+		display: none;
+	}
+	table {
+		font-size: var(--sl-text-xs);
+		margin: 0;
+	}
+	tr.ok td:last-child {
+		color: var(--cadre-vert-titre);
+		font-weight: 600;
+	}
+	tr.ko td:last-child {
+		color: var(--cadre-rouge-titre);
+		font-weight: 600;
+	}
+</style>

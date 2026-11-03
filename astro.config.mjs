@@ -5,9 +5,21 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	site: 'https://meriemhnida.github.io',
 	base: '/Embedded-System-Course',
+	// Anciennes adresses du chapitre 2 (dossier atelier-1) : les liens déjà partagés restent valides.
+	// La destination doit inclure la base du site.
+	redirects: {
+		'/parcours/atelier-1/01-mcu-mpu-carte': '/Embedded-System-Course/parcours/chapitre-2/01-mcu-mpu-carte/',
+		'/parcours/atelier-1/02-presentation': '/Embedded-System-Course/parcours/chapitre-2/02-presentation/',
+		'/parcours/atelier-1/01-presentation': '/Embedded-System-Course/parcours/chapitre-2/02-presentation/',
+	},
 	integrations: [
 		starlight({
 			title: 'Systèmes Embarqués',
+			// Interface de Starlight en français (recherche, sommaire, navigation…)
+			defaultLocale: 'root',
+			locales: {
+				root: { label: 'Français', lang: 'fr' },
+			},
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				Footer: './src/components/Footer.astro',
@@ -28,13 +40,48 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Atelier 1 : Carte Arduino',
+					label: 'Chapitre 2 : Carte Arduino et travaux pratiques',
 					items: [
-						{ label: 'Carte, MCU ou MPU ?', slug: 'parcours/atelier-1/01-mcu-mpu-carte' },
-						{ label: 'Présentation', slug: 'parcours/atelier-1/02-presentation' },
+						{ label: '1. Carte, MCU ou MPU ?', slug: 'parcours/chapitre-2/01-mcu-mpu-carte' },
+						{ label: '2. Présentation de la carte', slug: 'parcours/chapitre-2/02-presentation' },
+						{ label: '3. Guide des travaux pratiques', slug: 'parcours/chapitre-2/03-guide-tp' },
+						{
+							label: 'TP1 · Entrées et sorties',
+							collapsed: true,
+							items: [
+								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp1/01-presentation' },
+								{ label: 'A. Sorties numériques', slug: 'parcours/chapitre-2/tp1/02-sorties-numeriques' },
+								{ label: 'B. Entrées numériques', slug: 'parcours/chapitre-2/tp1/03-entrees-numeriques' },
+								{ label: 'C. Analogique et PWM', slug: 'parcours/chapitre-2/tp1/04-analogique-pwm' },
+								{ label: 'D. Défi et rendu', slug: 'parcours/chapitre-2/tp1/05-defi-rendu' },
+							],
+						},
+						{
+							label: 'TP2 · Contrôleur de température',
+							collapsed: true,
+							items: [
+								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp2/01-presentation' },
+								{ label: 'A. Acquisition (DHT22)', slug: 'parcours/chapitre-2/tp2/02-acquisition' },
+								{ label: 'B. Signalisation RVB', slug: 'parcours/chapitre-2/tp2/03-signalisation-rvb' },
+								{ label: 'C. Bouton et écran LCD', slug: 'parcours/chapitre-2/tp2/04-bouton-lcd' },
+								{ label: 'D. Alarme et défi', slug: 'parcours/chapitre-2/tp2/05-alarme-defi' },
+							],
+						},
+						{
+							label: 'TP3 · Nœud de surveillance sécurisé',
+							collapsed: true,
+							items: [
+								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp3/01-presentation' },
+								{ label: 'A. Analyse de risques', slug: 'parcours/chapitre-2/tp3/02-analyse-risques' },
+								{ label: 'B. Sûreté de fonctionnement', slug: 'parcours/chapitre-2/tp3/03-surete' },
+								{ label: 'C. Cybersécurité', slug: 'parcours/chapitre-2/tp3/04-cybersecurite' },
+								{ label: 'D. Données et recette', slug: 'parcours/chapitre-2/tp3/05-donnees-recette' },
+							],
+						},
 					],
 				},
 				{ label: 'Mon parcours', link: '/mon-parcours/' },
+				{ label: 'Mes réponses', link: '/mes-reponses/' },
 			],
 		}),
 	],

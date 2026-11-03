@@ -11,12 +11,15 @@ hero:
     - text: Commencer le chapitre 1
       link: /Embedded-System-Course/parcours/chapitre-1/01-systeme-embarque/
       icon: right-arrow
+    - text: Travaux pratiques
+      link: /Embedded-System-Course/parcours/chapitre-2/03-guide-tp/
+      variant: secondary
     - text: Mon parcours
       link: /Embedded-System-Course/mon-parcours/
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 import ReprendreParcours from '../../components/ReprendreParcours.astro';
 
 <ReprendreParcours />
@@ -43,7 +46,7 @@ import ReprendreParcours from '../../components/ReprendreParcours.astro';
 		Des cadres colorés repèrent l'essentiel : bleu pour l'information, jaune pour l'important, rouge pour ce qu'il faut retenir.
 	</Card>
 	<Card title="3. Pratiquer" icon="laptop">
-		Des ateliers sur le simulateur Wokwi te font construire et programmer de vrais montages.
+		Des ateliers et des travaux pratiques sur le simulateur Wokwi te font construire et programmer de vrais montages. Tes réponses aux questions s'enregistrent directement dans la page.
 	</Card>
 	<Card title="4. Valider" icon="approve-check-circle">
 		Tu valides chaque leçon, et le parcours te guide vers la suivante. Ta progression est conservée dans ton navigateur.
@@ -61,6 +64,37 @@ import ReprendreParcours from '../../components/ReprendreParcours.astro';
 7. [Atelier 2 : bouton-poussoir](/Embedded-System-Course/parcours/chapitre-1/07-atelier-bouton/)
 8. [Exercice : interrupteur coulissant](/Embedded-System-Course/parcours/chapitre-1/08-exercice-interrupteur/)
 9. [Exercice : LED et potentiomètre](/Embedded-System-Course/parcours/chapitre-1/09-exercice-potentiometre/)
+
+## Chapitre 2 : carte Arduino et travaux pratiques
+
+Deux leçons pour bien connaître la carte, puis trois TP qui construisent pas à pas un **boîtier de surveillance de température**, jusqu'à une version robuste face aux pannes et aux attaques.
+
+<CardGrid>
+	<LinkCard
+		title="Guide des travaux pratiques"
+		description="Organisation des TP, méthode de travail, réponses en ligne, livrables et grille d'évaluation."
+		href="/Embedded-System-Course/parcours/chapitre-2/03-guide-tp/"
+	/>
+	<LinkCard
+		title="TP1 · Entrées et sorties"
+		description="LED, bouton, interrupteur, potentiomètre, PWM et liaison série. 3 h."
+		href="/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/"
+	/>
+	<LinkCard
+		title="TP2 · Contrôleur de température"
+		description="Capteur DHT22, LED RVB, écran LCD I²C et alarme sonore. 6 h."
+		href="/Embedded-System-Course/parcours/chapitre-2/tp2/01-presentation/"
+	/>
+	<LinkCard
+		title="TP3 · Nœud de surveillance sécurisé"
+		description="Analyse de risques, sûreté de fonctionnement, cybersécurité, télémétrie et recette. 6 h."
+		href="/Embedded-System-Course/parcours/chapitre-2/tp3/01-presentation/"
+	/>
+</CardGrid>
+
+:::tip[Répondre en ligne]
+Les questions des TP se répondent dans des cadres, directement dans les pages. Retrouve, imprime et sauvegarde toutes tes réponses dans [Mes réponses](/Embedded-System-Course/mes-reponses/).
+:::
 
 ## Modalités d'apprentissage et d'évaluation
 

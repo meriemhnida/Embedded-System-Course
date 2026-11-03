@@ -142,4 +142,9 @@ const { lecon, lecons, suivante, accueilParcours } = Astro.props;
 	.bouton:hover {
 		filter: brightness(1.1);
 	}
+	@media print {
+		.validation {
+			display: none;
+		}
+	}
 </style>

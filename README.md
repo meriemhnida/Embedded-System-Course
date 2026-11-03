@@ -1,49 +1,63 @@
-# Starlight Starter Kit: Basics
+# Systèmes embarqués — site du cours
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+Site du cours « Développement des applications embarquées », construit avec [Astro](https://docs.astro.build) et [Starlight](https://starlight.astro.build), publié sur GitHub Pages : <https://meriemhnida.github.io/Embedded-System-Course/>.
+
+## Commandes
+
+| Commande | Action |
+| :-- | :-- |
+| `npm install` | Installe les dépendances (après avoir récupéré le projet) |
+| `npm run dev` | Lance le site en local sur `localhost:4321` |
+| `npm run build` | Construit le site dans `./dist/` |
+| `npm run preview` | Affiche localement le site construit |
+
+Un `git push` sur la branche `main` déclenche la publication (fichier `.github/workflows/deploy.yml`).
+
+## Organisation du contenu
 
 ```
-npm create astro@latest -- --template starlight
+src/content/docs/
+├── index.mdx                      accueil
+├── mon-parcours.mdx               progression de l'étudiant
+├── mes-reponses.mdx               réponses aux questions : export, import, impression
+└── parcours/
+    ├── chapitre-1/                leçons 1 à 9
+    └── chapitre-2/
+        ├── 01-mcu-mpu-carte.mdx   leçon : carte, MCU ou MPU
+        ├── 02-presentation.mdx    leçon : carte Arduino interactive
+        ├── 03-guide-tp.mdx        guide commun des TP
+        ├── tp1/                   TP1 · Entrées et sorties (présentation + parties A à D)
+        ├── tp2/                   TP2 · Contrôleur de température
+        └── tp3/                   TP3 · Nœud de surveillance sécurisé
+public/tp/tp3/                     fichiers de départ du TP3 (sketch.ino, diagram.json, libraries.txt)
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Le menu se règle dans `astro.config.mjs` (clé `sidebar`). Toute page placée sous `parcours/` et présente dans le menu devient une leçon du parcours, avec le bouton de validation.
 
-## 🚀 Project Structure
+## Ajouter une question avec zone de réponse
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
+Dans une page `.mdx` :
 
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```mdx
+import Question from '../../../../../components/Question.astro';
+
+<Question id="tp2-q3.5" label="Q3.5" categorie="surete">
+Énoncé de la question, en **Markdown**.
+</Question>
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+- `id` : identifiant **unique sur tout le site** et **définitif** (il sert de clé d'enregistrement : le changer fait « perdre » les réponses déjà saisies).
+- `label` : numéro affiché.
+- `type="code"` : zone en police à chasse fixe, pour coller du code.
+- `categorie` (facultatif) : `ingenieur`, `surete`, `securite` ou `donnees`, affiché sous forme de badge.
+- `lignes` (facultatif) : hauteur minimale de la zone.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+La page « Mes réponses » retrouve automatiquement toutes les questions, dans l'ordre du menu.
 
-Static assets, like favicons, can be placed in the `public/` directory.
+## Où sont enregistrées les réponses ?
 
-## 🧞 Commands
+Le site est statique : les réponses sont enregistrées **dans le navigateur de l'étudiant** (`localStorage`) et ne sont envoyées nulle part. L'étudiant les rend en exportant un **PDF** (impression) ou un fichier **Markdown** depuis « Mes réponses », et peut les transférer d'un appareil à l'autre avec une **sauvegarde JSON**. Vider les données du navigateur efface les réponses : les étudiants doivent sauvegarder en fin de séance.
 
-All commands are run from the root of the project, from a terminal:
+## Anciennes adresses
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+Les pages de l'ancien dossier `parcours/atelier-1/` sont redirigées vers `parcours/chapitre-2/` (clé `redirects` de `astro.config.mjs`), et la progression déjà enregistrée par les étudiants est reportée automatiquement (`src/scripts/progression.ts`).

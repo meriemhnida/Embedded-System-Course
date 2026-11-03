@@ -2,6 +2,12 @@
 import { leconsDuParcours } from '../scripts/leconsDuParcours';
 
 const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
+const chapitres: { titre: string; lecons: typeof lecons }[] = [];
+for (const lecon of lecons) {
+	const dernier = chapitres[chapitres.length - 1];
+	if (dernier && dernier.titre === lecon.chapitre) dernier.lecons.push(lecon);
+	else chapitres.push({ titre: lecon.chapitre, lecons: [lecon] });
+}
 ---
 
 <section class="mon-parcours" data-lecons={JSON.stringify(lecons)}>
@@ -11,16 +17,21 @@ const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
 	</div>
 
 	<h2>Mes leçons</h2>
-	<ol class="liste">
-		{
-			lecons.map((lecon) => (
-				<li data-href={lecon.href}>
-					<a href={lecon.href}>{lecon.label}</a>
-					<span class="statut">À faire</span>
-				</li>
-			))
-		}
-	</ol>
+	{
+		chapitres.map((chapitre) => (
+			<>
+				<h3 class="chapitre">{chapitre.titre}</h3>
+				<ol class="liste">
+					{chapitre.lecons.map((lecon) => (
+						<li data-href={lecon.href}>
+							<a href={lecon.href}>{lecon.label}</a>
+							<span class="statut">À faire</span>
+						</li>
+					))}
+				</ol>
+			</>
+		))
+	}
 
 	<h2>Historique de mes actions</h2>
 	<ul class="journal"></ul>
@@ -114,6 +125,10 @@ const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
 		width: 0;
 		background: var(--sl-color-accent);
 		transition: width 0.3s ease;
+	}
+	.chapitre {
+		font-size: var(--sl-text-lg);
+		margin-top: 1.25rem;
 	}
 	.liste {
 		padding-left: 1.25rem;
