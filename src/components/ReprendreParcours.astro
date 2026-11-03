@@ -36,7 +36,7 @@ const accueilParcours = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}mon-par
 			bouton.textContent = 'Reprendre là où j’en étais →';
 			bouton.href = suivante.href;
 		} else {
-			detail.textContent = `Bravo, tu as validé les ${lecons.length} leçons du chapitre.`;
+			detail.textContent = `Bravo, tu as validé les ${lecons.length} leçons du parcours.`;
 			bouton.textContent = 'Voir mon parcours →';
 			bouton.href = accueil;
 		}

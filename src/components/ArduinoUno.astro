@@ -1,0 +1,350 @@
+---
+import { categories, elements } from '../data/arduino-uno';
+
+const couleur = Object.fromEntries(categories.map((c) => [c.id, c.couleur]));
+const info = (id: string) => elements[id];
+
+// En-tête du haut : de gauche (côté USB) à droite
+const haut = ['scl', 'sda', 'aref', 'gnd1', 'd13', 'd12', 'd11', 'd10', 'd9', 'd8', 'd7', 'd6', 'd5', 'd4', 'd3', 'd2', 'd1', 'd0'];
+const hautX = (i: number) => 330 + i * 24 + (i >= 10 ? 20 : 0);
+const alim = ['nc', 'ioref', 'reset', 'v33', 'v5', 'gnd2', 'gnd3', 'vin'];
+const alimX = (i: number) => 430 + i * 24;
+const analog = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5'];
+const analogX = (i: number) => 640 + i * 24;
+
+const donnees = JSON.stringify(elements);
+const ordre = JSON.stringify((await import('../data/arduino-uno')).ordre);
+---
+
+<div class="uno" data-elements={donnees} data-ordre={ordre}>
+	<div class="legende" role="group" aria-label="Filtrer par type de broche">
+		{categories.map((c) => (
+			<button type="button" class="filtre" data-cat={c.id} aria-pressed="false">
+				<span class="pastille" style={`background:${c.couleur}`}></span>{c.nom}
+			</button>
+		))}
+	</div>
+
+	<div class="scene">
+		<svg viewBox="0 0 900 540" role="group" aria-label="Schéma interactif de la carte Arduino UNO. Clique sur une broche ou un composant pour obtenir son explication.">
+			<rect class="carte" x="30" y="30" width="830" height="480" rx="16"></rect>
+			<rect class="trou" x="52" y="48" width="14" height="14" rx="7"></rect>
+			<rect class="trou" x="52" y="478" width="14" height="14" rx="7"></rect>
+			<rect class="trou" x="826" y="48" width="14" height="14" rx="7"></rect>
+			<rect class="trou" x="826" y="478" width="14" height="14" rx="7"></rect>
+
+			<text class="grand" x="470" y="400" text-anchor="middle">ARDUINO UNO</text>
+			<text class="titre-zone" x="560" y="136" text-anchor="middle">BROCHES NUMÉRIQUES  (~ = PWM)</text>
+			<text class="titre-zone" x="514" y="418" text-anchor="middle">ALIMENTATION</text>
+			<text class="titre-zone" x="700" y="418" text-anchor="middle">ENTRÉES ANALOGIQUES</text>
+
+			<!-- Composants -->
+			<g class="el" data-id="usb" data-cat="composant" tabindex="0" role="button" aria-label="Port USB">
+				<rect class="hit" x="2" y="104" width="112" height="104"></rect>
+				<rect x="6" y="110" width="100" height="92" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x="18" y="128" width="76" height="56" fill="#94a3b8" stroke="#64748b"></rect>
+				<text class="etiq" x="56" y="162" text-anchor="middle" fill="#0f172a">USB</text>
+			</g>
+			<g class="el" data-id="jack" data-cat="composant" tabindex="0" role="button" aria-label="Prise jack">
+				<rect class="hit" x="2" y="324" width="100" height="112"></rect>
+				<rect x="6" y="330" width="88" height="100" rx="4" fill="#1e293b" stroke="#0f172a" stroke-width="2"></rect>
+				<circle cx="50" cy="380" r="20" fill="#0f172a" stroke="#475569" stroke-width="3"></circle>
+				<circle cx="50" cy="380" r="6" fill="#475569"></circle>
+				<text class="etiq" x="50" y="425" text-anchor="middle" fill="#e2e8f0">7–12 V</text>
+			</g>
+			<g class="el" data-id="usbchip" data-cat="composant" tabindex="0" role="button" aria-label="Convertisseur USB-série">
+				<rect class="hit" x="140" y="218" width="84" height="64"></rect>
+				<rect x="150" y="230" width="60" height="40" rx="3" fill="#111827" stroke="#334155"></rect>
+				<text class="etiq" x="180" y="254" text-anchor="middle" fill="#e2e8f0">16U2</text>
+			</g>
+			<g class="el" data-id="rst" data-cat="composant" tabindex="0" role="button" aria-label="Bouton reset">
+				<rect class="hit" x="128" y="58" width="64" height="64"></rect>
+				<rect x="132" y="62" width="56" height="56" rx="6" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<circle cx="160" cy="90" r="17" fill="#dc2626" stroke="#7f1d1d" stroke-width="3"></circle>
+			</g>
+			<g class="el" data-id="reg" data-cat="composant" tabindex="0" role="button" aria-label="Régulateur 5 V">
+				<rect class="hit" x="120" y="346" width="84" height="64"></rect>
+				<rect x="130" y="358" width="60" height="36" rx="3" fill="#111827" stroke="#334155"></rect>
+				<text class="etiq" x="160" y="381" text-anchor="middle" fill="#e2e8f0">5 V</text>
+			</g>
+			<g class="el" data-id="ledon" data-cat="composant" tabindex="0" role="button" aria-label="LED ON">
+				<rect class="hit" x="224" y="172" width="44" height="40"></rect>
+				<rect class="led led-on" x="232" y="178" width="22" height="12" rx="2"></rect>
+				<text class="mini" x="243" y="203" text-anchor="middle">ON</text>
+			</g>
+			<g class="el" data-id="ledl" data-cat="composant" tabindex="0" role="button" aria-label="LED L">
+				<rect class="hit" x="224" y="116" width="44" height="46"></rect>
+				<rect class="led led-l" x="232" y="124" width="22" height="12" rx="2"></rect>
+				<text class="mini" x="243" y="149" text-anchor="middle">L</text>
+			</g>
+			<g class="el" data-id="ledtx" data-cat="composant" tabindex="0" role="button" aria-label="LED TX et RX">
+				<rect class="hit" x="268" y="116" width="82" height="46"></rect>
+				<rect class="led led-tx" x="276" y="124" width="22" height="12" rx="2"></rect>
+				<rect class="led led-rx" x="316" y="124" width="22" height="12" rx="2"></rect>
+				<text class="mini" x="287" y="149" text-anchor="middle">TX</text>
+				<text class="mini" x="327" y="149" text-anchor="middle">RX</text>
+			</g>
+			<g class="el" data-id="mcu" data-cat="composant" tabindex="0" role="button" aria-label="Microcontrôleur ATmega328P">
+				<rect class="hit" x="392" y="206" width="268" height="100"></rect>
+				<rect x="400" y="222" width="252" height="68" rx="4" fill="#111827" stroke="#334155" stroke-width="2"></rect>
+				{Array.from({ length: 14 }, (_, i) => (
+					<>
+						<rect x={410 + i * 17.5} y="214" width="7" height="9" fill="#94a3b8"></rect>
+						<rect x={410 + i * 17.5} y="289" width="7" height="9" fill="#94a3b8"></rect>
+					</>
+				))}
+				<circle cx="414" cy="238" r="4" fill="#334155"></circle>
+				<text class="etiq" x="526" y="262" text-anchor="middle" fill="#e2e8f0" font-size="15">ATmega328P</text>
+			</g>
+			<g class="el" data-id="quartz" data-cat="composant" tabindex="0" role="button" aria-label="Quartz 16 MHz">
+				<rect class="hit" x="318" y="316" width="84" height="48"></rect>
+				<rect x="328" y="326" width="64" height="26" rx="13" fill="#e2e8f0" stroke="#64748b" stroke-width="2"></rect>
+				<text class="etiq" x="360" y="344" text-anchor="middle" fill="#0f172a">16 MHz</text>
+			</g>
+			<g class="el" data-id="icsp" data-cat="composant" tabindex="0" role="button" aria-label="Connecteur ICSP">
+				<rect class="hit" x="786" y="206" width="58" height="96"></rect>
+				<rect x="800" y="222" width="32" height="56" rx="3" fill="#111827" stroke="#334155"></rect>
+				{[0, 1, 2].flatMap((r) => [0, 1].map((c) => <circle cx={809 + c * 14} cy={232 + r * 18} r="4" fill="#fbbf24"></circle>))}
+				<text class="mini" x="816" y="295" text-anchor="middle">ICSP</text>
+			</g>
+
+			<!-- Broches du haut -->
+			<rect class="rail" x={hautX(0) - 8} y="40" width={hautX(17) - hautX(0) + 16 + 16} height="34" rx="4"></rect>
+			{haut.map((id, i) => {
+				const e = info(id);
+				const x = hautX(i);
+				return (
+					<g class="el pin" data-id={id} data-cat={e.categorie} tabindex="0" role="button" aria-label={e.titre} transform={`translate(${x},0)`}>
+						<rect class="hit" x="-5" y="36" width="26" height="104"></rect>
+						<rect class="contact" x="0" y="49" width="16" height="16" rx="3" fill={couleur[e.categorie]}></rect>
+						<text class="lab" transform="translate(11,76) rotate(90)">{e.label}</text>
+					</g>
+				);
+			})}
+
+			<!-- Broches du bas : alimentation -->
+			<rect class="rail" x={alimX(0) - 8} y="476" width={alimX(7) - alimX(0) + 32} height="34" rx="4"></rect>
+			{alim.map((id, i) => {
+				const e = info(id);
+				const x = alimX(i);
+				return (
+					<g class="el pin" data-id={id} data-cat={e.categorie} tabindex="0" role="button" aria-label={e.titre} transform={`translate(${x},0)`}>
+						<rect class="hit" x="-5" y="400" width="26" height="110"></rect>
+						<rect class="contact" x="0" y="485" width="16" height="16" rx="3" fill={couleur[e.categorie]}></rect>
+						<text class="lab" transform="translate(11,474) rotate(-90)">{e.label}</text>
+					</g>
+				);
+			})}
+
+			<!-- Broches du bas : analogiques -->
+			<rect class="rail" x={analogX(0) - 8} y="476" width={analogX(5) - analogX(0) + 32} height="34" rx="4"></rect>
+			{analog.map((id, i) => {
+				const e = info(id);
+				const x = analogX(i);
+				return (
+					<g class="el pin" data-id={id} data-cat={e.categorie} tabindex="0" role="button" aria-label={e.titre} transform={`translate(${x},0)`}>
+						<rect class="hit" x="-5" y="400" width="26" height="110"></rect>
+						<rect class="contact" x="0" y="485" width="16" height="16" rx="3" fill={couleur[e.categorie]}></rect>
+						<text class="lab" transform="translate(11,474) rotate(-90)">{e.label}</text>
+					</g>
+				);
+			})}
+		</svg>
+		<div class="info-bulle" role="tooltip" hidden></div>
+	</div>
+
+	<div class="panneau" aria-live="polite">
+		<p class="invite">👆 <strong>Clique sur une broche ou un composant</strong> de la carte pour afficher son explication. Passe la souris dessus pour un aperçu rapide.</p>
+		<div class="contenu" hidden>
+			<div class="entete">
+				<span class="badge"></span>
+				<h3 class="titre"></h3>
+			</div>
+			<p class="resume"></p>
+			<ul class="points"></ul>
+			<pre class="code" hidden><code></code></pre>
+			<div class="cadre cadre-astuce" hidden><strong>À savoir</strong><p></p></div>
+			<div class="cadre cadre-attention" hidden><strong>Attention</strong><p></p></div>
+		</div>
+		<div class="nav">
+			<button type="button" class="prec">← Précédent</button>
+			<span class="compteur"></span>
+			<button type="button" class="suiv">Visite guidée : suivant →</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { categories, elements, ordre } from '../data/arduino-uno';
+
+	const nom = Object.fromEntries(categories.map((c) => [c.id, c]));
+	const echapper = (t: string) =>
+		t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!).replace(/`([^`]+)`/g, '<code>$1</code>');
+
+	document.querySelectorAll<HTMLElement>('.uno').forEach((racine) => {
+		const scene = racine.querySelector<HTMLElement>('.scene')!;
+		const bulle = racine.querySelector<HTMLElement>('.info-bulle')!;
+		const panneau = racine.querySelector<HTMLElement>('.panneau')!;
+		const contenu = panneau.querySelector<HTMLElement>('.contenu')!;
+		const invite = panneau.querySelector<HTMLElement>('.invite')!;
+		const compteur = panneau.querySelector<HTMLElement>('.compteur')!;
+		const noeuds = Array.from(racine.querySelectorAll<SVGGElement>('.el'));
+		const parId = (id: string) => noeuds.filter((n) => n.dataset.id === id);
+		let courant: string | null = null;
+		let filtre: string | null = null;
+
+		const afficherBulle = (n: Element) => {
+			const e = elements[(n as HTMLElement).dataset.id!];
+			if (!e) return;
+			bulle.innerHTML = `<strong>${echapper(e.titre)}</strong><span>${echapper(e.resume)}</span><em>Clique pour en savoir plus</em>`;
+			bulle.hidden = false;
+			const s = scene.getBoundingClientRect();
+			const r = n.getBoundingClientRect();
+			const lb = bulle.offsetWidth;
+			let gauche = r.left + r.width / 2 - s.left - lb / 2;
+			gauche = Math.max(4, Math.min(gauche, s.width - lb - 4));
+			const dessous = r.top - s.top < 150 ? true : r.top - s.top < bulle.offsetHeight + 12;
+			bulle.style.left = `${gauche}px`;
+			bulle.style.top = dessous ? `${r.bottom - s.top + 8}px` : `${r.top - s.top - bulle.offsetHeight - 8}px`;
+		};
+		const cacherBulle = () => { bulle.hidden = true; };
+
+		const choisir = (id: string) => {
+			const e = elements[id];
+			if (!e) return;
+			courant = id;
+			noeuds.forEach((n) => n.classList.toggle('sel', n.dataset.id === id));
+			racine.classList.add('lance');
+			invite.hidden = true;
+			contenu.hidden = false;
+			const badge = contenu.querySelector<HTMLElement>('.badge')!;
+			badge.textContent = nom[e.categorie].nom;
+			badge.style.background = nom[e.categorie].couleur;
+			contenu.querySelector('.titre')!.textContent = e.titre;
+			contenu.querySelector('.resume')!.textContent = e.resume;
+			contenu.querySelector('.points')!.innerHTML = e.points.map((p) => `<li>${echapper(p)}</li>`).join('');
+			const code = contenu.querySelector<HTMLElement>('.code')!;
+			code.hidden = !e.code;
+			if (e.code) code.querySelector('code')!.textContent = e.code;
+			const astuce = contenu.querySelector<HTMLElement>('.cadre-astuce')!;
+			astuce.hidden = !e.astuce;
+			if (e.astuce) astuce.querySelector('p')!.innerHTML = echapper(e.astuce);
+			const att = contenu.querySelector<HTMLElement>('.cadre-attention')!;
+			att.hidden = !e.attention;
+			if (e.attention) att.querySelector('p')!.innerHTML = echapper(e.attention);
+			const i = ordre.indexOf(id);
+			compteur.textContent = i >= 0 ? `${i + 1} / ${ordre.length}` : '';
+			// anime les LED de la carte selon l'élément choisi
+			racine.dataset.actif = id;
+		};
+
+		noeuds.forEach((n) => {
+			n.addEventListener('pointerenter', () => afficherBulle(n));
+			n.addEventListener('pointerleave', cacherBulle);
+			n.addEventListener('focus', () => afficherBulle(n));
+			n.addEventListener('blur', cacherBulle);
+			n.addEventListener('click', () => { choisir(n.dataset.id!); afficherBulle(n); });
+			n.addEventListener('keydown', (ev) => {
+				if ((ev as KeyboardEvent).key === 'Enter' || (ev as KeyboardEvent).key === ' ') {
+					ev.preventDefault();
+					choisir(n.dataset.id!);
+				}
+			});
+		});
+
+		const pas = (d: number) => {
+			const i = courant ? ordre.indexOf(courant) : -1;
+			const suivant = ordre[(i + d + ordre.length) % ordre.length] ?? ordre[0];
+			choisir(suivant);
+			cacherBulle();
+		};
+		panneau.querySelector('.prec')!.addEventListener('click', () => pas(-1));
+		panneau.querySelector('.suiv')!.addEventListener('click', () => pas(1));
+
+		racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((b) => {
+			b.addEventListener('click', () => {
+				filtre = filtre === b.dataset.cat ? null : b.dataset.cat!;
+				racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cat === filtre)));
+				noeuds.forEach((n) => n.classList.toggle('estompe', !!filtre && n.dataset.cat !== filtre));
+			});
+		});
+		void parId;
+	});
+</script>
+
+<style>
+	.uno { margin-block: 1.5rem; }
+	.legende { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.filtre {
+		display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;
+		padding: 0.25rem 0.65rem; font-size: 0.8rem;
+		border: 1px solid var(--sl-color-gray-4); border-radius: 999px;
+		background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.filtre[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); }
+	.pastille { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; }
+
+	.scene { position: relative; }
+	svg { width: 100%; height: auto; display: block; border-radius: 0.75rem; background: var(--sl-color-gray-6); border: 1px solid var(--sl-color-gray-5); }
+	.carte { fill: #0e7c86; stroke: #0a5a62; stroke-width: 4; }
+	.trou { fill: var(--sl-color-gray-6); }
+	.rail { fill: #111827; }
+	.grand { font: 800 34px/1 sans-serif; fill: #ffffff; opacity: 0.85; letter-spacing: 3px; }
+	.titre-zone { font: 700 11px sans-serif; fill: #d6f5f7; letter-spacing: 1px; }
+	.lab { font: 700 12px monospace; fill: #ffffff; dominant-baseline: middle; }
+	.etiq { font: 700 12px sans-serif; }
+	.mini { font: 700 9px sans-serif; fill: #ffffff; }
+	.hit { fill: transparent; }
+	.el { cursor: pointer; outline: none; transition: opacity 0.2s; }
+	.el:hover .contact, .el:focus-visible .contact { stroke: #fff; stroke-width: 3; }
+	.el:focus-visible .hit { stroke: #fff; stroke-width: 2; stroke-dasharray: 4 3; }
+	.el:hover > rect:not(.hit):not(.led), .el:focus-visible > rect:not(.hit):not(.led) { filter: brightness(1.2); }
+	.estompe { opacity: 0.18; }
+	.sel .contact { stroke: #fff; stroke-width: 3; animation: pulse 1.1s ease-in-out infinite; }
+	.sel > rect:not(.hit):not(.led):not(.contact) { stroke: #fde047; stroke-width: 4; animation: pulse 1.1s ease-in-out infinite; }
+	@keyframes pulse { 50% { filter: drop-shadow(0 0 8px #fde047) brightness(1.3); } }
+
+	.led { fill: #475569; stroke: #1e293b; }
+	.led-on { fill: #22c55e; filter: drop-shadow(0 0 4px #22c55e); }
+	.led-l { fill: #f59e0b; opacity: 0.35; animation: clignote 1.6s steps(1) infinite; }
+	.led-tx, .led-rx { fill: #f59e0b; opacity: 0.35; }
+	:global(.uno[data-actif='ledtx']) .led-tx { animation: clignote 0.6s steps(1) infinite; }
+	:global(.uno[data-actif='ledtx']) .led-rx { animation: clignote 0.6s steps(1) infinite 0.3s; }
+	:global(.uno[data-actif='d13']) .led-l, :global(.uno[data-actif='ledl']) .led-l { animation: clignote 0.8s steps(1) infinite; }
+	@keyframes clignote { 0%, 49% { opacity: 1; filter: drop-shadow(0 0 5px #f59e0b); } 50%, 100% { opacity: 0.3; filter: none; } }
+	@media (prefers-reduced-motion: reduce) { .led-l, .sel .contact, .sel > rect { animation: none !important; } }
+
+	.info-bulle {
+		position: absolute; z-index: 5; max-width: 17rem; pointer-events: none;
+		padding: 0.5rem 0.7rem; border-radius: 0.5rem; font-size: 0.82rem; line-height: 1.35;
+		background: var(--sl-color-black); color: var(--sl-color-white);
+		border: 1px solid var(--sl-color-gray-3); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		display: flex; flex-direction: column; gap: 0.15rem;
+	}
+	.info-bulle[hidden] { display: none; }
+	.info-bulle em { color: var(--sl-color-accent-high); font-size: 0.75rem; }
+
+	.panneau {
+		margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-bleu-bord); background: var(--cadre-bleu-fond);
+	}
+	.invite { margin: 0; }
+	.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+	.badge { color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; }
+	.titre { margin: 0; font-size: 1.25rem; }
+	.resume { font-weight: 600; margin: 0.5rem 0; }
+	.points { margin: 0 0 0.75rem 1.2rem; }
+	.code { margin: 0 0 0.75rem; padding: 0.6rem 0.8rem; border-radius: 0.4rem; background: #0b1020; color: #e2e8f0; font-size: 0.85rem; overflow-x: auto; }
+	.cadre { padding: 0.5rem 0.8rem; margin-bottom: 0.6rem; border-radius: 0.4rem; border-left: 5px solid; }
+	.cadre p { margin: 0.2rem 0 0; }
+	.cadre-astuce { background: var(--cadre-vert-fond); border-color: var(--cadre-vert-bord); color: var(--sl-color-text); }
+	.cadre-attention { background: var(--cadre-jaune-fond); border-color: var(--cadre-jaune-bord); color: var(--sl-color-text); }
+	.cadre[hidden], .contenu[hidden], .code[hidden], .invite[hidden] { display: none; }
+	.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
+	.nav button {
+		cursor: pointer; padding: 0.4rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.nav .suiv { background: var(--sl-color-accent); color: var(--sl-color-black); border-color: var(--sl-color-accent); }
+	.compteur { font-size: 0.85rem; opacity: 0.8; }
+</style>
