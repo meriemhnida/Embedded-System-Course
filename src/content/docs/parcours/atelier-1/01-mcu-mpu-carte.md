@@ -4,9 +4,10 @@ description: "Trois mots que l'on confond souvent : la puce MCU, le microprocess
 ---
 
 :::note[Objectifs de l'atelier]
-À la fin de  cette partie, vous serez capables de :
-- expliquer la différence entre une carte de développement, un microcontrôleur (MCU) et un microprocesseur (MPU) ;
--
+À la fin de cette page, tu seras capable de :
+- expliquer en une phrase ce qu'est un microcontrôleur (MCU) et un microprocesseur (MPU) ;
+- dire ce que contient une carte de développement en plus de la puce ;
+- savoir pourquoi on utilise une carte Arduino pour apprendre.
 :::
 
 ## Trois mots, trois choses différentes
@@ -42,7 +43,7 @@ Un MPU est **beaucoup plus puissant**, mais il ne contient ni mémoire ni périp
 **MPU** : très puissant, mais il faut ajouter mémoire et périphériques autour.
 :::
 
-## La carte de développement : exemple
+## La carte de développement : la puce prête à l'emploi
 
 Un MCU seul est difficile à utiliser : il faut l'alimenter, le programmer, lui connecter des fils. La **carte de développement** règle tous ces problèmes. Elle contient :
 
@@ -70,7 +71,21 @@ Ne confonds pas **la puce et la carte**. L'ATmega328P est le **microcontrôleur*
 L'Arduino UNO est une carte à **microcontrôleur**, simple et peu chère. Elle se programme en quelques lignes, se branche en USB et fonctionne seule une fois programmée. Elle est idéale pour comprendre ce qu'est un système embarqué, avant de passer à des cartes plus puissantes.
 :::
 
-##  Quizz
+## Tableau récapitulatif
+
+| Image | Ce que c'est | Type |
+|---|---|---|
+| ![Une carte Arduino UNO à gauche et, à droite, un microcontrôleur seul](<../../../../assets/parcours/chapitre-1/img/arduino-carte-et-mcu.webp>) | **Arduino UNO** : une carte de développement, avec à droite le microcontrôleur qu'elle contient. | Carte + **MCU** |
+| ![Carte Raspberry Pi Pico](<../../../../assets/parcours/chapitre-1/img/pico-carte.webp>) | **Raspberry Pi Pico** : une carte de développement basée sur le microcontrôleur RP2040. | Carte + **MCU** |
+| ![Puce RP2040 vue de dessus et de dessous](<../../../../assets/parcours/chapitre-1/img/rp2040-puce.webp>) | **RP2040** : le microcontrôleur de la carte Pico, vendu seul sous forme de puce. | **MCU** (la puce) |
+| ![Carte Raspberry Pi 4 Model B avec ses ports USB, HDMI et Ethernet](<../../../../assets/parcours/chapitre-1/img/raspberry-pi-4.webp>) | **Raspberry Pi 4** : une carte qui contient un microprocesseur, de la mémoire, des ports USB, HDMI et Ethernet. | Carte + **MPU** |
+| ![Raspberry Pi 4 dans son boîtier](<../../../../assets/parcours/chapitre-1/img/raspberry-pi-boitier.webp>) | **Raspberry Pi 4 dans son boîtier** : il se présente comme un mini-ordinateur, on y branche écran, clavier et souris. | **Mini-ordinateur** |
+
+:::danger[À retenir]
+Une **puce** (RP2040) n'est pas une **carte** (Pico). Une carte à **microcontrôleur** (Arduino, Pico) exécute un programme dédié. Une carte à **microprocesseur** (Raspberry Pi 4) se comporte comme un **mini-ordinateur** avec un système d'exploitation.
+:::
+
+## Teste-toi
 
 1. Que contient un microcontrôleur que ne contient pas un microprocesseur ?
 2. L'Arduino UNO est-elle un microcontrôleur ?

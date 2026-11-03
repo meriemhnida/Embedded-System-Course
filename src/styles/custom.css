@@ -123,3 +123,12 @@
 	display: grid;
 	place-items: center;
 }
+
+/* Images dans les tableaux récapitulatifs */
+.sl-markdown-content td img {
+	max-height: 9rem;
+	max-width: 14rem;
+	width: auto;
+	margin: 0 auto;
+}
+.sl-markdown-content td { vertical-align: middle; }
