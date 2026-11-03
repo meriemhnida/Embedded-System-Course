@@ -5,16 +5,45 @@ description: Régler la luminosité d'une LED avec un potentiomètre, grâce à 
 
 **Exercice à faire avant la séance suivante.**
 
-**Objectif :** lire une valeur analogique avec un potentiomètre et l'utiliser pour régler la luminosité d'une LED en PWM.
+**Objectif :** relier une lecture analogique à une sortie PWM, pour régler la luminosité d'une LED avec un potentiomètre.
+
+## Deux idées à combiner
+
+Cet exercice combine deux notions vues dans ce chapitre :
+
+1. la **lecture analogique** : `analogRead()` transforme la position du curseur du potentiomètre en un nombre entre 0 et 1023 ;
+2. la **PWM** : `analogWrite()` règle la puissance moyenne envoyée à la LED, avec une valeur entre 0 et 255.
+
+Il faut donc convertir l'une dans l'autre.
+
+![Diapositive 76 : entrées analogiques et sorties PWM](../../../../assets/parcours/chapitre-1/diapo-76.webp)
+
+*Diapositive 76 : les broches analogiques lisent des tensions, et les broches PWM en produisent une imitation.*
+
+## La PWM expliquée
+
+La PWM envoie un signal qui alterne très vite entre HAUT et BAS. La LED ne voit pas le clignotement, elle perçoit une luminosité moyenne proportionnelle à la durée passée à l'état HAUT.
+
+![Diapositive 78 : le signal PWM et son rapport cyclique](../../../../assets/parcours/chapitre-1/diapo-78.webp)
+
+*Diapositive 78 : plus le rapport cyclique est élevé, plus la tension moyenne, donc la luminosité, est forte.*
 
 ## Le montage
 
+![Diapositive 94 : câblage du potentiomètre et de la LED](../../../../assets/parcours/chapitre-1/diapo-94.webp)
+
+*Diapositive 94 : la LED est reliée à la broche 11, PWM, et le curseur du potentiomètre à A0.*
+
 - L'anode (patte longue) de la **LED** est reliée à la **broche 11**, une sortie PWM.
 - La cathode (patte courte) est reliée à une **résistance**, puis à la **masse GND**.
-- La broche centrale du **potentiomètre** (le curseur, ou wiper) est reliée à **A0**.
+- Le curseur (broche centrale) du **potentiomètre** est relié à **A0**.
 - Une des deux autres broches du potentiomètre est reliée à **GND**, l'autre au **5 V**.
 
 ## Le programme
+
+![Diapositive 95 : le programme de réglage de la luminosité](../../../../assets/parcours/chapitre-1/diapo-95.webp)
+
+*Diapositive 95 : le code qui relie la lecture de A0 au réglage de la broche 11.*
 
 ```cpp
 const int LED_pin = 11;
@@ -23,36 +52,20 @@ void setup() {
 }
 
 void loop() {
-  int value = analogRead(A0);                 // valeur de 0 à 1023
-  int brightness = map(value, 0, 1023, 0, 255); // convertie de 0 à 255
-  analogWrite(LED_pin, brightness);           // luminosité en PWM
-  delay(20);
+  int value = analogRead(A0);                    // valeur de 0 à 1023
+  int brightness = map(value, 0, 1023, 0, 255);  // convertie de 0 à 255
+  analogWrite(LED_pin, brightness);              // luminosité réglée en PWM
+  delay(20);                                     // petite pause entre deux lectures
 }
 ```
 
-## Ce qu'il faut comprendre
-
-- `analogRead()` renvoie une valeur entre **0** et **1023** selon la position du curseur.
-- `analogWrite()` attend une valeur entre **0** (éteinte) et **255** (allumée). Il faut donc convertir la première valeur dans la seconde : c'est le rôle de `map()`.
-- `analogWrite()` ne fournit pas une vraie tension variable : il allume et éteint la broche très vite. C'est la **PWM**, dont le rapport cyclique règle la luminosité perçue.
-- Seules certaines broches savent faire de la PWM sur la UNO : 3, 5, 6, 9, 10 et 11.
+La fonction `map()` fait la conversion d'échelle. Elle prend une valeur comprise entre 0 et 1023, et la transforme proportionnellement en une valeur entre 0 et 255.
 
 ## Questions
 
-- Que vaut `brightness` quand le curseur est à mi-course ?
+- Que vaut `brightness` quand le curseur est à mi-course ? (Réponse : environ 127.)
 - Que se passe-t-il si tu enlèves `delay(20)` ? Pourquoi ce délai peut-il être utile ?
-- Pourquoi la broche 11 et non la broche 12 ?
-
-## Illustrations du cours
-
-![Diapositive 76 du cours](../../../../assets/parcours/chapitre-1/diapo-76.webp)
-
-![Diapositive 78 du cours](../../../../assets/parcours/chapitre-1/diapo-78.webp)
-
-![Diapositive 94 du cours](../../../../assets/parcours/chapitre-1/diapo-94.webp)
-
-![Diapositive 95 du cours](../../../../assets/parcours/chapitre-1/diapo-95.webp)
-
+- Pourquoi la broche 11 et non la broche 12 ? (Indice : regarde la liste des broches PWM.)
 
 :::note
 Quand la luminosité de la LED varie avec le potentiomètre et que tu as répondu aux questions, valide cette leçon en bas de page.
