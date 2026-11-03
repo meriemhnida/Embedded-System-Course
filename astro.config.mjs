@@ -27,6 +27,10 @@ export default defineConfig({
 						{ label: '9. Exercice : LED et potentiomètre', slug: 'parcours/chapitre-1/09-exercice-potentiometre' },
 					],
 				},
+				{
+					label: 'Atelier 1 : Carte Arduino',
+					items: [{ label: 'Présentation', slug: 'parcours/atelier-1/01-presentation' }],
+				},
 				{ label: 'Mon parcours', link: '/mon-parcours/' },
 			],
 		}),
