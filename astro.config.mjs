@@ -8,9 +8,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Systèmes Embarqués',
-			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/meriemhnida/Embedded-System-Course' },
-			],
+			customCss: ['./src/styles/custom.css'],
 			components: {
 				Footer: './src/components/Footer.astro',
 			},

@@ -1,9 +1,12 @@
 ---
 title: Systèmes embarqués
-description: Cours de systèmes embarqués, de l'Arduino à l'IoT.
+description: Cours de développement des applications embarquées, de l'Arduino à l'IoT.
 template: splash
 hero:
-  tagline: Des capteurs au cloud, en passant par le microcontrôleur. Un parcours guidé, leçon après leçon.
+  title: Développement des applications embarquées
+  tagline: Du capteur au cloud, apprends pas à pas à concevoir, simuler et programmer un système embarqué.
+  image:
+    file: ../../assets/parcours/chapitre-1/img/ensemble-iot.webp
   actions:
     - text: Commencer le chapitre 1
       link: /Embedded-System-Course/parcours/chapitre-1/01-systeme-embarque/
@@ -13,4 +16,57 @@ hero:
       variant: minimal
 ---
 
-Ce cours est organisé en chapitres. Chaque leçon se termine par une validation : une fois validée, tu passes automatiquement à la suivante. Ta progression reste dans ton navigateur et tu peux la consulter à tout moment dans **Mon parcours**.
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import ReprendreParcours from '../../components/ReprendreParcours.astro';
+
+<ReprendreParcours />
+
+## Objectifs pédagogiques du chapitre 1
+
+À la fin de ce chapitre, tu seras capable de :
+
+<ol class="objectifs-liste">
+	<li><span><strong>Définir</strong> un système embarqué et ses contraintes : temps réel, énergie, coût, mémoire.</span></li>
+	<li><span><strong>Situer</strong> un système embarqué dans une chaîne IoT, du capteur jusqu'au cloud.</span></li>
+	<li><span><strong>Distinguer</strong> un microcontrôleur d'un microprocesseur, et un capteur d'un actionneur.</span></li>
+	<li><span><strong>Repérer</strong> les broches d'une Arduino UNO : numériques, analogiques, PWM et alimentation.</span></li>
+	<li><span><strong>Simuler et programmer</strong> un premier montage sur Wokwi, avec une LED et un bouton-poussoir.</span></li>
+</ol>
+
+## Comment se déroule le parcours
+
+<CardGrid>
+	<Card title="1. Comprendre" icon="open-book">
+		Chaque leçon explique un concept avec des exemples et des illustrations.
+	</Card>
+	<Card title="2. Retenir" icon="star">
+		Des cadres colorés repèrent l'essentiel : bleu pour l'information, jaune pour l'important, rouge pour ce qu'il faut retenir.
+	</Card>
+	<Card title="3. Pratiquer" icon="laptop">
+		Des ateliers sur le simulateur Wokwi te font construire et programmer de vrais montages.
+	</Card>
+	<Card title="4. Valider" icon="approve-check-circle">
+		Tu valides chaque leçon, et le parcours te guide vers la suivante. Ta progression est conservée dans ton navigateur.
+	</Card>
+</CardGrid>
+
+## Les 9 leçons du chapitre
+
+1. [Qu'est-ce qu'un système embarqué ?](/Embedded-System-Course/parcours/chapitre-1/01-systeme-embarque/)
+2. [Microcontrôleur ou microprocesseur ?](/Embedded-System-Course/parcours/chapitre-1/02-microcontroleur/)
+3. [Capteurs et actionneurs](/Embedded-System-Course/parcours/chapitre-1/03-capteurs-actionneurs/)
+4. [De l'objet au cloud : la chaîne IoT](/Embedded-System-Course/parcours/chapitre-1/04-chaine-iot/)
+5. [Découvrir la carte Arduino UNO](/Embedded-System-Course/parcours/chapitre-1/05-arduino-uno/)
+6. [Atelier 1 : première LED](/Embedded-System-Course/parcours/chapitre-1/06-atelier-led/)
+7. [Atelier 2 : bouton-poussoir](/Embedded-System-Course/parcours/chapitre-1/07-atelier-bouton/)
+8. [Exercice : interrupteur coulissant](/Embedded-System-Course/parcours/chapitre-1/08-exercice-interrupteur/)
+9. [Exercice : LED et potentiomètre](/Embedded-System-Course/parcours/chapitre-1/09-exercice-potentiometre/)
+
+## Modalités d'apprentissage et d'évaluation
+
+:::note[Organisation du cours]
+- **Format** : cours magistraux et ateliers en présentiel, **24 h** au total.
+- **Ateliers de prise en main** : réalisés en groupe, avec questions-réponses.
+- **Évaluation** : contrôle continu avec un **projet en binômes (40 %)** et un **examen final (60 %)**.
+- **Participation** : ton implication pendant les séances compte.
+:::

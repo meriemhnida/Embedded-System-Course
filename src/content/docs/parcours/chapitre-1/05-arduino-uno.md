@@ -3,25 +3,29 @@ title: Découvrir la carte Arduino UNO
 description: Localiser le microcontrôleur, les broches numériques, analogiques et d'alimentation de l'Arduino UNO.
 ---
 
-**Objectif :** savoir localiser le microcontrôleur, les broches numériques, analogiques et d'alimentation d'une Arduino UNO, et comprendre à quoi sert chacune.
+:::note[Objectifs de la leçon]
+À la fin de cette leçon, tu seras capable de :
+- localiser le microcontrôleur et l'alimentation sur la carte ;
+- distinguer les broches numériques, analogiques, PWM et d'alimentation ;
+- configurer une broche en entrée ou en sortie et lire une valeur analogique.
+:::
 
 ## Une carte, un cerveau
 
 L'Arduino UNO R3 est la carte de référence pour débuter. Son cœur est un **ATmega328P**, un microcontrôleur 8 bits fabriqué par Microchip. C'est lui qui exécute le programme et gère toutes les entrées-sorties.
 
-![Diapositive 61 : la famille Arduino, de l'UNO à la Nano](../../../../assets/parcours/chapitre-1/diapo-61.webp)
+![Carte Arduino UNO R3 vue de dessus](../../../../assets/parcours/chapitre-1/img/uno-schema.webp)
 
-*Diapositive 61 : la carte UNO est la plus connue, la Nano est plus compacte et le Mega dispose de plus de broches et de mémoire.*
+*La carte Arduino UNO R3. Le grand circuit intégré noir, au centre, est le microcontrôleur ATmega328P.*
 
-Sur la carte, le microcontrôleur est le circuit intégré noir le plus visible, au centre.
+La famille Arduino compte d'autres cartes, adaptées à des besoins différents :
 
-![Diapositive 63 : repérer le microcontrôleur sur la carte Arduino](../../../../assets/parcours/chapitre-1/diapo-63.webp)
+![Arduino UNO](../../../../assets/parcours/chapitre-1/img/famille-uno.webp)
+![Arduino Mega](../../../../assets/parcours/chapitre-1/img/famille-mega.webp)
+![Arduino Nano](../../../../assets/parcours/chapitre-1/img/famille-nano.webp)
+![ATtiny85](../../../../assets/parcours/chapitre-1/img/famille-attiny85.webp)
 
-![Diapositive 64 : le microcontrôleur ATmega328P](../../../../assets/parcours/chapitre-1/diapo-64.webp)
-
-*Diapositives 63 et 64 : le microcontrôleur ATmega328P, qui exécute le programme.*
-
-Le ATmega328P possède 32 Ko de mémoire Flash pour le programme, 2 Ko de SRAM pour les variables et 1 Ko d'EEPROM pour les données qui doivent survivre à une coupure.
+*UNO (la plus connue, idéale pour débuter), Mega (plus de broches et de mémoire), Nano (compacte) et ATtiny85 (microcontrôleur minuscule et économique).*
 
 ## Les caractéristiques à retenir
 
@@ -35,51 +39,38 @@ Le ATmega328P possède 32 Ko de mémoire Flash pour le programme, 2 Ko de SRAM p
 | Tension des E/S | 5 V, 20 mA par broche |
 | Alimentation | VIN 7 à 12 V (jack) ou USB 5 V |
 
-**Points forts :** robuste, fonctionne en 5 V, immense écosystème de shields et de bibliothèques.
-**Limites :** 2 Ko de RAM, pas de Wi-Fi ni de Bluetooth.
+:::note[Points forts et limites]
+**Points forts** : robuste, fonctionne en 5 V, immense écosystème de shields et de bibliothèques.
+**Limites** : 2 Ko de RAM seulement, et ni Wi-Fi ni Bluetooth.
+:::
 
-## L'alimentation : deux sources possibles
+## L'alimentation
 
-La carte peut être alimentée par le **câble USB**, pendant le développement sur l'ordinateur, ou par une **alimentation externe** branchée sur le jack ou la broche VIN, quand elle fonctionne seule.
-
-![Diapositive 65 : sources d'alimentation de la carte Arduino](../../../../assets/parcours/chapitre-1/diapo-65.webp)
-
-*Diapositive 65 : l'alimentation vient de l'USB ou d'une source externe.*
-
-Les broches d'alimentation fournissent des tensions prêtes à l'emploi :
+La carte peut être alimentée par le **câble USB**, pendant le développement, ou par une **alimentation externe** (jack ou broche VIN) quand elle fonctionne seule. Les broches d'alimentation fournissent aussi des tensions pour les composants :
 
 - **VIN** : entrée pour une alimentation externe, recommandée entre 7 et 12 V ;
 - **5 V** et **3,3 V** : sorties régulées pour alimenter les composants ;
-- **GND** : la masse, à 0 V. Toutes les broches GND sont reliées entre elles.
+- **GND** : la masse, à 0 V. La carte en possède plusieurs, toutes reliées entre elles ;
+- **IOREF** : indique aux shields la tension de fonctionnement de la carte ;
+- **AREF** : définit la tension de référence du convertisseur analogique.
 
-![Diapositive 82 : les broches 5 V, 3,3 V et GND](../../../../assets/parcours/chapitre-1/diapo-82.webp)
-
-*Diapositive 82 : les broches 5 V, 3,3 V et GND.*
-
-La broche **IOREF** indique aux shields la tension de fonctionnement de la carte, et **AREF** définit la tension de référence de la conversion analogique.
-
-![Diapositive 85 : GND, IOREF et AREF](../../../../assets/parcours/chapitre-1/diapo-85.webp)
-
-*Diapositive 85 : GND, IOREF et AREF.*
+:::caution[Important]
+Pour qu'un circuit fonctionne, il doit **toujours** être relié à la **masse (GND)**. Un composant sans retour vers GND n'est pas alimenté.
+:::
 
 ## Les broches numériques (0 à 13)
 
-Une broche numérique ne connaît que deux états : **HAUT** (5 V, niveau logique 1) ou **BAS** (0 V, niveau logique 0). Elle se configure en **entrée** pour lire un bouton, ou en **sortie** pour allumer une LED.
+Une broche numérique ne connaît que deux états : **HAUT** (5 V, niveau logique 1) ou **BAS** (0 V, niveau logique 0). On la configure :
 
-![Diapositive 67 : vue d'ensemble des broches de la carte UNO](../../../../assets/parcours/chapitre-1/diapo-67.webp)
+- en **entrée** (`INPUT`) pour lire un état, par exemple un bouton ;
+- en **sortie** (`OUTPUT`) pour commander quelque chose, par exemple une LED.
 
-*Diapositive 67 : la carte UNO compte 20 broches d'entrées-sorties (14 numériques et 6 analogiques), plus les broches d'alimentation.*
+Quelques broches ont une fonction particulière :
 
-![Diapositive 68 : les broches numériques](../../../../assets/parcours/chapitre-1/diapo-68.webp)
-
-*Diapositive 68 : les broches numériques, configurables en entrée ou en sortie.*
-
-Quelques broches ont des fonctions particulières :
-
-- **D0 et D1** : communication série UART (RX et TX), utilisée aussi par le câble USB. Elles peuvent servir de broches classiques, mais il vaut mieux les réserver à la communication.
-- **D2 et D3** : interruptions externes, pour réagir immédiatement à un événement.
-- **D3, D5, D6, D9, D10 et D11** : sorties PWM, qui permettent de simuler une tension variable (voir la leçon 9).
-- **D10 à D13** : bus SPI.
+- **D0 et D1** : communication série UART (RX et TX), utilisée aussi par le câble USB ;
+- **D2 et D3** : interruptions externes, pour réagir immédiatement à un événement ;
+- **D3, D5, D6, D9, D10, D11** : sorties PWM (voir plus bas) ;
+- **D10 à D13** : bus SPI ;
 - **D13** : LED intégrée à la carte.
 
 ```cpp
@@ -92,70 +83,89 @@ void loop() {
 }
 ```
 
-Une LED se branche toujours avec une **résistance** (par exemple 220 Ω) en série. L'**anode** (patte longue, +) va vers la broche de sortie, et la **cathode** (patte courte, −) vers la masse. Le courant doit circuler de l'anode vers la cathode pour que la LED s'allume.
+### Brancher une LED correctement
 
-![Diapositive 70 : une LED branchée sur la carte Arduino](../../../../assets/parcours/chapitre-1/diapo-70.webp)
+![Une LED branchée avec une résistance sur la carte UNO](../../../../assets/parcours/chapitre-1/img/uno-led.webp)
+![Polarité d'une LED : anode (+) patte longue, cathode (−) patte courte, côté plat](../../../../assets/parcours/chapitre-1/img/polarite-led.webp)
 
-![Diapositive 71 : la polarité d'une LED](../../../../assets/parcours/chapitre-1/diapo-71.webp)
+*À gauche, une LED branchée sur la carte avec sa résistance. À droite, la polarité d'une LED.*
 
-*Diapositives 70 et 71 : une LED branchée sur une broche, et sa polarité. Sans résistance, le courant peut être trop fort et détruire la LED.*
+Une LED a **deux pattes qui ne sont pas interchangeables** : l'**anode** (+, patte longue) va vers la broche de sortie, la **cathode** (−, patte courte, côté plat) va vers la masse. Le courant doit circuler de l'anode vers la cathode.
+
+:::danger[À retenir]
+Une LED se branche **toujours avec une résistance en série** (par exemple 220 Ω). Sans elle, le courant est trop fort et la LED peut être détruite.
+:::
 
 ## Les broches analogiques (A0 à A5)
 
-Une entrée analogique lit une tension qui varie de façon continue. Le convertisseur 10 bits transforme cette tension en un nombre entre 0 et 1023. A4 et A5 servent aussi au bus I²C.
+Une entrée analogique lit une tension qui **varie de façon continue**. Le convertisseur (ADC) de la carte, sur 10 bits, transforme cette tension en un nombre entre **0 et 1023**. A4 et A5 servent aussi au bus I²C.
 
-![Diapositive 72 : les broches analogiques](../../../../assets/parcours/chapitre-1/diapo-72.webp)
+![Du potentiomètre à des valeurs numériques : tension analogique de 0 à 5 V, convertisseur ADC, valeurs de 0 à 1023](../../../../assets/parcours/chapitre-1/img/convertisseur-adc.webp)
 
-*Diapositive 72 : les broches analogiques, qui lisent des tensions continues.*
+*Le potentiomètre produit une tension entre 0 et 5 V. L'ADC la convertit en un nombre entre 0 et 1023 que le programme peut utiliser.*
 
-Le convertisseur fonctionne comme le montre ce schéma : une tension entre 0 et 5 V est transformée en une valeur numérique, qui peut ensuite être traitée par le programme.
+Un **potentiomètre** est la façon la plus simple de tester ce principe : en tournant le curseur, on fait varier la tension lue sur A0.
 
-![Diapositive 74 : le convertisseur analogique-numérique](../../../../assets/parcours/chapitre-1/diapo-74.webp)
+![Un potentiomètre photographié](../../../../assets/parcours/chapitre-1/img/potentiometre-photo.webp)
+![Un potentiomètre relié à la carte UNO](../../../../assets/parcours/chapitre-1/img/potentiometre-montage.webp)
 
-*Diapositive 74 : le convertisseur analogique-numérique (ADC) transforme une tension en valeur numérique.*
-
-Un potentiomètre permet de tester ce principe : en tournant le curseur, on modifie la tension lue sur A0.
-
-![Diapositive 73 : le potentiomètre, entrée analogique](../../../../assets/parcours/chapitre-1/diapo-73.webp)
-
-*Diapositive 73 : le potentiomètre convertit un mouvement en tension, puis en valeur numérique.*
+*Un potentiomètre réel, puis son branchement sur la carte : GND, 5 V et le curseur vers A0.*
 
 ```cpp
 void setup() {
-  Serial.begin(9600);     // communication série à 9600 bits/s
+  Serial.begin(9600);            // communication série à 9600 bits/s
 }
 
 void loop() {
   int valeur = analogRead(A0);   // lit la tension sur A0 : 0 à 1023
-  Serial.println(valeur);
+  Serial.println(valeur);        // affiche la valeur dans le moniteur série
   delay(300);
 }
 ```
 
-La UNO R3 **n'a pas de sortie analogique native** : pour simuler une tension variable, on utilise la PWM, décrite dans la leçon 9.
+![Le moniteur série affichant les valeurs lues, de 0 à 1023, quand on tourne le potentiomètre](../../../../assets/parcours/chapitre-1/img/moniteur-serie.webp)
 
-## La PWM, une sortie qui imite une tension variable
+*Dans le moniteur série, la valeur change de 0 à 1023 quand on tourne le potentiomètre.*
 
-Les broches 3, 5, 6, 9, 10 et 11 savent produire un signal **PWM** (modulation de largeur d'impulsion). Le signal alterne très vite entre HAUT et BAS, et c'est la proportion de temps à l'état HAUT, le **rapport cyclique**, qui détermine la puissance moyenne.
+:::caution[Important]
+La UNO R3 **n'a pas de sortie analogique**. Pour simuler une tension variable en sortie, on utilise la **PWM**.
+:::
 
-![Diapositive 77 : les broches PWM de la carte UNO](../../../../assets/parcours/chapitre-1/diapo-77.webp)
+## La PWM : imiter une tension variable
 
-*Diapositive 77 : les six broches PWM de la carte UNO.*
+Les broches 3, 5, 6, 9, 10 et 11 savent produire un signal **PWM** (modulation de largeur d'impulsion). Le signal alterne **très vite** entre HAUT et BAS. La proportion de temps passée à l'état HAUT s'appelle le **rapport cyclique**. Plus il est grand, plus la puissance moyenne est élevée.
 
-## La broche RESET
+![La carte UNO avec les broches PWM repérées par un symbole tilde](../../../../assets/parcours/chapitre-1/img/uno-pwm-broches.webp)
 
-Le bouton RESET redémarre le microcontrôleur. Il permet aussi de le forcer en mode **bootloader**, un petit programme préinstallé qui reçoit votre nouveau programme depuis l'ordinateur et l'écrit dans la mémoire Flash.
+*Les broches PWM sont repérées par le symbole ~ sur la carte : 3, 5, 6, 9, 10 et 11.*
 
-![Diapositive 80 : le bouton reset](../../../../assets/parcours/chapitre-1/diapo-80.webp)
+![Signal PWM : rapport cyclique de 0 %, 25 %, 50 % et 100 %](../../../../assets/parcours/chapitre-1/img/signal-pwm.webp)
 
-*Diapositive 80 : le bouton RESET de la carte UNO R3.*
+*`analogWrite(0)` donne 0 %, `analogWrite(64)` environ 25 %, `analogWrite(127)` environ 50 % et `analogWrite(255)` 100 %.*
 
-## Pour vérifier ta compréhension
+On utilise la PWM pour régler la luminosité d'une LED ou la vitesse d'un moteur.
 
-- Combien de broches d'entrées-sorties la UNO R3 possède-t-elle ? (Réponse : 20, soit 14 numériques et 6 analogiques, plus les broches d'alimentation.)
-- Quelles broches permettent `analogWrite()` ?
-- Pourquoi place-t-on une résistance en série avec une LED ?
+## Le bouton RESET
 
-:::note
-Quand tu as répondu à ces questions, valide cette leçon en bas de page.
+Le bouton RESET **redémarre** le microcontrôleur. Il permet aussi de le forcer en mode **bootloader**, un petit programme préinstallé sur la puce. Le bootloader reçoit ton programme depuis l'ordinateur et l'écrit dans la mémoire Flash.
+
+## Teste-toi
+
+1. Combien de broches d'entrées-sorties la UNO R3 possède-t-elle ?
+2. Quelles broches permettent d'utiliser `analogWrite()` ?
+3. Pourquoi place-t-on une résistance en série avec une LED ?
+4. Quelle valeur renvoie `analogRead()` quand le potentiomètre est à mi-course ?
+
+<details>
+<summary>Voir les réponses</summary>
+
+1. 20 broches : 14 numériques et 6 analogiques (plus les broches d'alimentation).
+2. Les broches PWM : 3, 5, 6, 9, 10 et 11.
+3. Pour limiter le courant et éviter de détruire la LED.
+4. Environ 512, soit la moitié de la plage de 0 à 1023.
+
+</details>
+
+:::note[Prochaine étape]
+Quand tu as répondu aux questions, valide cette leçon en bas de page.
 :::

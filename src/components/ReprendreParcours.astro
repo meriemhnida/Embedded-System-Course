@@ -1,0 +1,95 @@
+---
+import { leconsDuParcours } from '../scripts/leconsDuParcours';
+
+const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
+const accueilParcours = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}mon-parcours/`;
+---
+
+<section class="reprendre" data-lecons={JSON.stringify(lecons)} data-accueil={accueilParcours}>
+	<div class="texte">
+		<strong class="titre">Ton parcours</strong>
+		<span class="detail"></span>
+		<div class="barre" aria-hidden="true"><span class="remplissage"></span></div>
+	</div>
+	<a class="bouton" href={lecons[0]?.href ?? '#'}>Commencer le parcours →</a>
+</section>
+
+<script>
+	import { lire } from '../scripts/progression';
+
+	document.querySelectorAll<HTMLElement>('.reprendre').forEach((section) => {
+		const lecons: { label: string; href: string }[] = JSON.parse(section.dataset.lecons ?? '[]');
+		const accueil = section.dataset.accueil ?? '/';
+		const detail = section.querySelector<HTMLElement>('.detail')!;
+		const remplissage = section.querySelector<HTMLElement>('.remplissage')!;
+		const bouton = section.querySelector<HTMLAnchorElement>('.bouton')!;
+
+		const p = lire();
+		const faites = lecons.filter((l) => p.valides[l.href]).length;
+		const suivante = lecons.find((l) => !p.valides[l.href]);
+		remplissage.style.width = `${lecons.length ? Math.round((faites / lecons.length) * 100) : 0}%`;
+
+		if (faites === 0) {
+			detail.textContent = `${lecons.length} leçons t'attendent. Valide chaque leçon pour avancer.`;
+		} else if (suivante) {
+			detail.textContent = `${faites} / ${lecons.length} leçons validées. Prochaine étape : ${suivante.label}`;
+			bouton.textContent = 'Reprendre là où j’en étais →';
+			bouton.href = suivante.href;
+		} else {
+			detail.textContent = `Bravo, tu as validé les ${lecons.length} leçons du chapitre.`;
+			bouton.textContent = 'Voir mon parcours →';
+			bouton.href = accueil;
+		}
+	});
+</script>
+
+<style>
+	.reprendre {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1.25rem 1.5rem;
+		margin-block: 1.5rem;
+		border: 2px solid var(--sl-color-accent);
+		border-radius: 0.8rem;
+		background: var(--sl-color-gray-6);
+	}
+	.texte {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		flex: 1 1 18rem;
+	}
+	.titre {
+		font-size: var(--sl-text-lg);
+	}
+	.detail {
+		color: var(--sl-color-gray-2);
+	}
+	.barre {
+		height: 0.5rem;
+		border-radius: 999px;
+		background: var(--sl-color-gray-5);
+		overflow: hidden;
+	}
+	.remplissage {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--sl-color-accent);
+		transition: width 0.3s ease;
+	}
+	.bouton {
+		padding: 0.7rem 1.3rem;
+		border-radius: 0.5rem;
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+		font-weight: 700;
+		text-decoration: none;
+	}
+	.bouton:hover {
+		filter: brightness(1.1);
+	}
+</style>

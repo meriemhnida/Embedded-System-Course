@@ -3,36 +3,55 @@ title: Atelier 1 — première LED
 description: Simuler une LED qui clignote sur une Arduino UNO avec Wokwi.
 ---
 
-**Objectif :** concevoir, simuler et programmer un premier circuit avec une Arduino UNO, puis comprendre chaque ligne du programme.
+:::note[Objectifs de la leçon]
+À la fin de cet atelier, tu seras capable de :
+- créer un projet Arduino sur le simulateur Wokwi ;
+- câbler une LED avec sa résistance ;
+- écrire et comprendre un programme qui fait clignoter la LED.
+:::
 
 ## Pourquoi simuler ?
 
-Avant de brancher un vrai circuit, on peut le simuler. Wokwi est un simulateur en ligne qui exécute le même programme que la vraie carte, instruction par instruction. Une erreur de câblage se corrige en un clic, sans risque de griller un composant.
+Avant de brancher un vrai circuit, on peut le **simuler**. Wokwi est un simulateur en ligne qui exécute le programme comme le ferait la vraie carte. Une erreur de câblage se corrige en un clic, **sans risque de griller un composant**.
 
-![Diapositive 57 : les trois premières étapes de l'atelier](../../../../assets/parcours/chapitre-1/diapo-57.webp)
+## Préparer la simulation
 
-*Diapositive 57 : pour commencer, ouvre wokwi.com, connecte-toi avec ton compte GitHub et crée un projet « Arduino Uno ». Ton travail sera conservé dans ton compte.*
+1. Ouvre **wokwi.com** dans ton navigateur.
+2. Connecte-toi avec ton **compte GitHub** : tes projets seront conservés.
+3. Crée un nouveau projet **« Arduino Uno »**.
 
-![Diapositive 59 : le simulateur Wokwi](../../../../assets/parcours/chapitre-1/diapo-59.webp)
+![Le simulateur Wokwi avec une carte ESP32 et un écran LCD](../../../../assets/parcours/chapitre-1/img/wokwi.webp)
 
-*Diapositive 59 : l'interface de Wokwi, avec la carte, les composants et le moniteur série.*
+*L'interface de Wokwi : la carte et les composants au centre, le programme à côté.*
+
+:::note[Bon à savoir]
+En te connectant avec ton compte GitHub, tu **conserves l'historique de tous tes projets**. Pense à enregistrer chaque montage.
+:::
 
 ## Le montage
-
-Le montage est simple, mais il illustre une règle essentielle : une LED ne se branche jamais seule.
 
 - Relie l'**anode** (patte longue) de la LED à la **broche 13**.
 - Relie la **cathode** (patte courte) à la masse **GND**, à travers une **résistance de 220 Ω**.
 
-![Diapositive 62 : le circuit LED, de la carte à la masse](../../../../assets/parcours/chapitre-1/diapo-62.webp)
+![Une LED et sa résistance branchées sur une carte Arduino UNO avec une plaque d'essai](../../../../assets/parcours/chapitre-1/img/montage-led-breadboard.webp)
+![Le montage de la LED dans Wokwi](../../../../assets/parcours/chapitre-1/img/montage-led-wokwi.webp)
 
-*Diapositive 62 : le courant part de la broche 13, traverse la résistance puis la LED, et rejoint la masse.*
+*À gauche, un montage avec plaque d'essai. À droite, le même circuit dans Wokwi.*
 
-La résistance limite le courant. Selon la loi d'Ohm, I = U / R. Avec 5 V aux bornes de la résistance et une LED qui consomme environ 2 V, le courant est d'environ (5 − 2) / 220 ≈ 14 mA. Sans résistance, la LED recevrait un courant trop fort et pourrait être détruite.
+### Pourquoi la résistance ?
+
+La résistance **limite le courant** qui traverse la LED. D'après la loi d'Ohm, **I = U / R**. Avec 5 V à fournir et une LED qui consomme environ 2 V, la résistance reçoit 3 V. Le courant vaut donc environ 3 / 220 ≈ 14 mA, ce que la LED supporte.
+
+:::danger[À retenir]
+Sans résistance, le courant n'est pas limité : la LED chauffe et peut être détruite. **Toujours une résistance en série avec une LED.**
+:::
 
 ## Le programme
 
-Un programme Arduino a deux parties. La fonction `setup()` s'exécute une seule fois au démarrage. La fonction `loop()` se répète sans fin.
+Un programme Arduino comporte deux fonctions :
+
+- `setup()` s'exécute **une seule fois** au démarrage ;
+- `loop()` **se répète sans fin**.
 
 ```cpp
 const int LEDPin = 13;
@@ -45,28 +64,36 @@ void loop() {
   digitalWrite(LEDPin, HIGH);  // la broche passe à 5 V : LED allumée
   delay(250);                  // on attend 250 ms
   digitalWrite(LEDPin, LOW);   // la broche passe à 0 V : LED éteinte
-  delay(250);                  // on attend encore 250 ms
+  delay(250);                  // on attend 250 ms
 }
 ```
 
-Le programme est le même que celui de la diapositive ci-dessous. Lance la simulation, puis observe la LED.
+Chaque ligne a un rôle précis :
 
-![Diapositive 87 : le programme de la LED clignotante](../../../../assets/parcours/chapitre-1/diapo-87.webp)
+| Instruction | Ce qu'elle fait |
+|---|---|
+| `pinMode(LEDPin, OUTPUT)` | Configure la broche 13 en sortie |
+| `digitalWrite(LEDPin, HIGH)` | Met la broche à 5 V : la LED s'allume |
+| `delay(250)` | Attend 250 millisecondes |
+| `digitalWrite(LEDPin, LOW)` | Met la broche à 0 V : la LED s'éteint |
 
-*Diapositive 87 : le code et la LED qui clignote dans la simulation.*
+Lance la simulation et observe la LED.
 
-La diapositive 86 résume les étapes du câblage :
+:::tip[À toi de jouer]
+1. Quelle est la durée d'un cycle complet (allumée puis éteinte) ?
+2. Que se passe-t-il si tu remplaces `delay(250)` par `delay(50)` ?
+3. Modifie le programme pour que la LED reste allumée 1 seconde et éteinte 250 ms.
+:::
 
-![Diapositive 86 : câblage de la LED, étape par étape](../../../../assets/parcours/chapitre-1/diapo-86.webp)
+<details>
+<summary>Voir les réponses</summary>
 
-*Diapositive 86 : câblage de l'anode sur la broche 13, puis de la cathode vers GND à travers la résistance.*
+1. 250 ms + 250 ms = **500 ms**.
+2. Le clignotement devient beaucoup plus rapide : le cycle dure 100 ms.
+3. Remplace le premier `delay(250)` par `delay(1000)` : la LED reste allumée 1 seconde, puis éteinte 250 ms.
 
-## Questions
+</details>
 
-- Quelle est la durée d'un cycle complet (allumée puis éteinte) ? Réponse : 500 ms.
-- Que se passe-t-il si tu remplaces `delay(250)` par `delay(50)` ? Le clignotement devient beaucoup plus rapide.
-- Pourquoi la résistance de 220 Ω est-elle nécessaire ? (Indice : relis le calcul du courant ci-dessus.)
-
-:::note
-Quand la LED clignote comme prévu et que tu as répondu aux questions, valide cette leçon en bas de page.
+:::note[Prochaine étape]
+Quand la LED clignote comme prévu, valide cette leçon en bas de page.
 :::

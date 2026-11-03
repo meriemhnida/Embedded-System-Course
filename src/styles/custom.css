@@ -1,0 +1,125 @@
+/* ===== Cadres pédagogiques =====
+   Bleu   = information      (:::note)
+   Jaune  = important        (:::caution)
+   Rouge  = à retenir        (:::danger)
+   Vert   = à toi de jouer   (:::tip)
+*/
+:root {
+	--cadre-bleu-fond: #0f2a52;   --cadre-bleu-bord: #4a90ff;   --cadre-bleu-titre: #a9cdff;
+	--cadre-jaune-fond: #3b3205;  --cadre-jaune-bord: #ffc800;  --cadre-jaune-titre: #ffe37a;
+	--cadre-rouge-fond: #4a0b0b;  --cadre-rouge-bord: #ff2a2a;  --cadre-rouge-titre: #ff9d9d;
+	--cadre-vert-fond: #0c3a24;   --cadre-vert-bord: #2fc77a;   --cadre-vert-titre: #9be8c3;
+}
+:root[data-theme='light'] {
+	--cadre-bleu-fond: #e6f0ff;   --cadre-bleu-bord: #1d6fe0;   --cadre-bleu-titre: #0b4aa8;
+	--cadre-jaune-fond: #fff4c2;  --cadre-jaune-bord: #f0b400;  --cadre-jaune-titre: #6b4f00;
+	--cadre-rouge-fond: #ffe3e3;  --cadre-rouge-bord: #e00000;  --cadre-rouge-titre: #b00000;
+	--cadre-vert-fond: #e1f7ec;   --cadre-vert-bord: #14a35f;   --cadre-vert-titre: #0a6b3d;
+}
+
+.starlight-aside {
+	border-radius: 0.5rem;
+	border-inline-start-width: 0.4rem;
+}
+.starlight-aside--note {
+	background-color: var(--cadre-bleu-fond);
+	--sl-color-asides-border: var(--cadre-bleu-bord);
+	--sl-color-asides-text-accent: var(--cadre-bleu-titre);
+}
+.starlight-aside--caution {
+	background-color: var(--cadre-jaune-fond);
+	--sl-color-asides-border: var(--cadre-jaune-bord);
+	--sl-color-asides-text-accent: var(--cadre-jaune-titre);
+}
+.starlight-aside--danger {
+	background-color: var(--cadre-rouge-fond);
+	--sl-color-asides-border: var(--cadre-rouge-bord);
+	--sl-color-asides-text-accent: var(--cadre-rouge-titre);
+	border: 2px solid var(--cadre-rouge-bord);
+	border-inline-start-width: 0.5rem;
+}
+.starlight-aside--danger .starlight-aside__title {
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.starlight-aside--tip {
+	background-color: var(--cadre-vert-fond);
+	--sl-color-asides-border: var(--cadre-vert-bord);
+	--sl-color-asides-text-accent: var(--cadre-vert-titre);
+}
+.starlight-aside__title {
+	font-weight: 700;
+}
+.starlight-aside ul {
+	margin-top: 0.4rem;
+}
+
+/* ===== Images et légendes ===== */
+.sl-markdown-content img {
+	display: block;
+	margin-inline: auto;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 30rem;
+	object-fit: contain;
+	background: #fff;
+	border: 1px solid var(--sl-color-hairline);
+	border-radius: 0.6rem;
+	padding: 0.5rem;
+}
+.sl-markdown-content p:has(> img) {
+	text-align: center;
+}
+/* Plusieurs images dans un même paragraphe : rangée */
+.sl-markdown-content p:has(> img + img) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	justify-content: center;
+	align-items: flex-end;
+}
+.sl-markdown-content p:has(> img + img) img {
+	flex: 0 1 auto;
+	max-width: min(100%, 15rem);
+	max-height: 12rem;
+	margin: 0;
+}
+/* Légende : paragraphe en italique juste sous une image */
+.sl-markdown-content p:has(> img) + p:has(> em:only-child) {
+	text-align: center;
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+	margin-top: 0.4rem;
+}
+
+/* ===== Page d'accueil ===== */
+.objectifs-liste {
+	counter-reset: objectif;
+	list-style: none;
+	padding: 0;
+	display: grid;
+	gap: 0.75rem;
+}
+.objectifs-liste li {
+	counter-increment: objectif;
+	display: flex;
+	gap: 0.9rem;
+	align-items: flex-start;
+	background: var(--cadre-bleu-fond);
+	border: 1px solid var(--cadre-bleu-bord);
+	border-radius: 0.6rem;
+	padding: 0.8rem 1rem;
+}
+.objectifs-liste li::before {
+	content: counter(objectif);
+	flex: none;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: var(--cadre-bleu-bord);
+	color: #fff;
+	font-weight: 700;
+	display: grid;
+	place-items: center;
+}

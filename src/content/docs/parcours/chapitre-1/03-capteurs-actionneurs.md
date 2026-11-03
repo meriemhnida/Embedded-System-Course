@@ -3,42 +3,60 @@ title: Capteurs et actionneurs
 description: Mesurer le monde physique avec un capteur, agir sur lui avec un actionneur.
 ---
 
-**Objectif :** distinguer un capteur d'un actionneur, comprendre la boucle qui les relie, et savoir choisir un composant.
+:::note[Objectifs de la leçon]
+À la fin de cette leçon, tu seras capable de :
+- distinguer un capteur d'un actionneur ;
+- décrire les étapes entre la mesure et l'action ;
+- choisir un capteur ou un actionneur adapté à un besoin.
+:::
 
 ## Mesurer et agir
 
-Un système embarqué n'existe que parce qu'il est en contact avec le monde physique. Pour cela, il dispose de deux types de composants :
+Un système embarqué n'a d'intérêt que parce qu'il est en contact avec le monde physique. Pour cela, il dispose de deux familles de composants.
 
-- **Un capteur** mesure une grandeur physique (température, lumière, distance, mouvement) et la convertit en **signal électrique**. Ce passage d'une grandeur physique à un signal électrique s'appelle la **transduction**.
-- **Un actionneur** fait l'inverse : il reçoit un signal électrique et produit une **action physique** (mouvement, lumière, son, eau qui coule).
+- Un **capteur** mesure une grandeur physique (température, lumière, distance, mouvement) et la transforme en **signal électrique**. Ce passage s'appelle la **transduction**.
+- Un **actionneur** fait l'inverse : il reçoit un signal électrique et produit une **action physique** (mouvement, lumière, son, eau).
 
-Une machine à laver en donne un bon exemple : un capteur mesure le niveau d'eau, un actionneur ouvre la vanne de remplissage.
+![Un capteur : un phénomène physique entre dans le capteur et un signal électrique en sort](../../../../assets/parcours/chapitre-1/img/schema-capteur.webp)
+![Un actionneur : de l'énergie électrique entre dans l'actionneur et une action en sort](../../../../assets/parcours/chapitre-1/img/schema-actionneur.webp)
 
-## La chaîne complète
+*Le capteur transforme un phénomène physique en signal électrique. L'actionneur transforme de l'énergie en action.*
 
-Entre le capteur et l'actionneur, le signal fait un long chemin. La diapositive ci-dessous le résume.
+:::danger[À retenir]
+**Capteur** = il **mesure** (entrée du système). **Actionneur** = il **agit** (sortie du système).
+:::
 
-![Diapositive 18 : du monde physique au monde physique, la chaîne complète](../../../../assets/parcours/chapitre-1/diapo-18.webp)
+## La chaîne complète, du capteur à l'actionneur
 
-*Diapositive 18 : la chaîne complète, du capteur à l'actionneur en passant par le microcontrôleur.*
+Entre la mesure et l'action, le signal traverse plusieurs étapes.
 
-Chaque étape a son rôle :
+![Les six étapes : monde physique, capteur, conditionnement, microcontrôleur, interface de puissance, actionneur, avec une boucle fermée](../../../../assets/parcours/chapitre-1/img/chaine-capteur-actionneur.webp)
 
-1. **Capteur** : transduction de la grandeur physique en signal électrique.
-2. **Conditionnement** : le signal est amplifié, filtré, puis converti en nombre (ADC) ou envoyé sur un bus comme l'I²C.
-3. **Microcontrôleur** : il lit la valeur, décide et envoie une commande.
-4. **Interface de puissance** : une broche de microcontrôleur ne fournit que quelques milliampères. Pour alimenter un moteur, on passe par un transistor, un relais ou un pont en H (L298).
-5. **Actionneur** : moteur, servo, LED, buzzer.
+*La chaîne complète. Le cloud peut recevoir les données du microcontrôleur par MQTT ou HTTP.*
 
-Le schéma forme une **boucle fermée** : l'action modifie la grandeur mesurée, qui est mesurée à nouveau, et ainsi de suite. Un thermostat fonctionne exactement comme cela.
+1. **Monde physique** : température, lumière, distance, gaz, mouvement.
+2. **Capteur** : il transforme la grandeur physique en signal électrique.
+3. **Conditionnement** : le signal est amplifié, filtré, puis converti en nombre (ADC) ou envoyé sur un bus comme l'I²C.
+4. **Microcontrôleur** : il lit la valeur, décide, et envoie une commande.
+5. **Interface de puissance** : une broche de microcontrôleur ne fournit que quelques milliampères. Pour alimenter un moteur, on utilise un transistor, un relais ou un pont en H.
+6. **Actionneur** : moteur, servo, LED, buzzer.
 
-## Les capteurs : une grande famille
+:::note[Boucle fermée]
+L'action modifie la grandeur mesurée, qui est mesurée à nouveau, et ainsi de suite. Un **thermostat** fonctionne ainsi : il mesure la température, chauffe, mesure à nouveau, et s'arrête quand la consigne est atteinte.
+:::
 
-Un capteur se choisit selon trois critères : ce qu'il mesure, la plage et la précision, et l'interface électrique (numérique ou analogique).
+## Les capteurs
 
-![Diapositive 46 : exemples de capteurs de température](../../../../assets/parcours/chapitre-1/diapo-46.webp)
+Un capteur se choisit selon ce qu'il mesure, sa plage, sa précision et son interface électrique (numérique ou analogique). Les capteurs numériques sont en général plus précis et plus simples à utiliser que les analogiques.
 
-*Diapositive 46 : plusieurs capteurs de température. Le choix dépend de la plage et de la précision demandées.*
+**Capteurs de température**
+
+![Capteur DHT22](../../../../assets/parcours/chapitre-1/img/capteur-dht22.webp)
+![Capteur DHT11](../../../../assets/parcours/chapitre-1/img/capteur-dht11.webp)
+![Capteur TMP36](../../../../assets/parcours/chapitre-1/img/capteur-tmp36.webp)
+![Sonde DS18B20](../../../../assets/parcours/chapitre-1/img/capteur-ds18b20.webp)
+
+*DHT22, DHT11, TMP36 et DS18B20 : quatre capteurs de température, avec des plages et des précisions différentes.*
 
 | Capteur | Mesure | Plage et précision |
 |---|---|---|
@@ -46,75 +64,91 @@ Un capteur se choisit selon trois critères : ce qu'il mesure, la plage et la pr
 | DHT22 | Température et humidité | −40 à 80 °C, ±0,5 °C |
 | DHT11 | Température et humidité | 0 à 50 °C, ±2 °C |
 | TMP36 | Température (analogique) | −40 à 125 °C, ±1 °C |
-| Photorésistance (LDR) | Lumière | Sa résistance baisse quand la lumière augmente |
-| BH1750 | Lumière ambiante (I²C) | Réglage de la luminosité des écrans |
-| Capteur ultrason | Distance | Calcul à partir du temps d'écho (son à environ 340 m/s) |
-| Bouton-poussoir | Tout ou rien | Gestion d'événements |
 
-Le bouton-poussoir est le plus simple des capteurs : il ne donne que deux états, appuyé ou relâché. Pourtant il sert à déclencher des événements, comme la demande de traversée d'un piéton à un feu.
+**Capteurs de lumière**
 
-![Diapositive 47 : le bouton-poussoir, un capteur tout ou rien](../../../../assets/parcours/chapitre-1/diapo-47.webp)
+![Capteur de lumière TSL2561](../../../../assets/parcours/chapitre-1/img/capteur-tsl2561.webp)
+![Capteur de lumière BH1750](../../../../assets/parcours/chapitre-1/img/capteur-bh1750.webp)
 
-*Diapositive 47 : le bouton-poussoir, un capteur « tout ou rien ».*
+*Le TSL2561 et le BH1750 mesurent la lumière ambiante et communiquent avec l'Arduino par le bus I²C. On les retrouve dans les smartphones, qui ajustent la luminosité de l'écran.*
 
-Le capteur à ultrasons, lui, mesure une distance. Il émet une onde sonore, puis mesure le temps que met l'écho à revenir. Connaissant la vitesse du son (environ 340 m/s), on en déduit la distance. C'est le principe des robots aspirateurs qui détectent les obstacles.
+La **photorésistance (LDR)** est plus simple : sa résistance diminue quand la lumière augmente.
 
-![Diapositive 50 : le capteur ultrason](../../../../assets/parcours/chapitre-1/diapo-50.webp)
+**Capteur de distance**
 
-*Diapositive 50 : le capteur à ultrasons, qui mesure une distance grâce au temps d'écho.*
+![Capteur ultrason HC-SR04](../../../../assets/parcours/chapitre-1/img/capteur-ultrason.webp)
 
-## Les actionneurs : agir sur le monde
+Le capteur à ultrasons contient un émetteur et un récepteur d'onde. Il émet un son, puis mesure le temps que met l'écho à revenir. Connaissant la vitesse du son (environ 340 m/s), il en déduit la distance. C'est ce qui permet à un robot aspirateur d'éviter les obstacles.
 
-Les actionneurs transforment le signal du programme en action physique. Leur nature dépend de ce qu'on veut produire : du mouvement, du son, de la lumière, de l'eau.
+**Le plus simple des capteurs : le bouton-poussoir**
 
-![Diapositive 52 : le principe d'un actionneur](../../../../assets/parcours/chapitre-1/diapo-52.webp)
+![Boutons-poussoirs de plusieurs couleurs](../../../../assets/parcours/chapitre-1/img/capteur-bouton.webp)
 
-*Diapositive 52 : un actionneur reçoit l'énergie électrique et la transforme en action.*
+Le bouton-poussoir est un capteur **tout ou rien** : il n'a que deux états, appuyé ou relâché. Pourtant, il sert à déclencher des événements : par exemple, un piéton appuie sur le bouton d'un feu pour le faire passer au rouge.
 
-- **La LED** produit un signal lumineux, par exemple un voyant vert ou rouge pour indiquer l'état d'une machine.
+**Autres capteurs rencontrés dans les exemples**
 
-![Diapositive 53 : les LED, actionneurs lumineux](../../../../assets/parcours/chapitre-1/diapo-53.webp)
+![Accéléromètre MPU-6050](../../../../assets/parcours/chapitre-1/img/capteur-mpu6050.webp)
+![Capteur d'humidité du sol](../../../../assets/parcours/chapitre-1/img/capteur-humidite-sol.webp)
 
-*Diapositive 53 : les LED, qui signalent l'état d'un système.*
+*Un accéléromètre (MPU-6050) pour les vibrations et un capteur d'humidité du sol pour l'agriculture.*
 
-- **Le buzzer** produit un son, par exemple l'alarme d'un détecteur de fumée.
+## Les actionneurs
 
-![Diapositive 54 : les buzzers](../../../../assets/parcours/chapitre-1/diapo-54.webp)
+Les actionneurs transforment les informations du programme en action physique. Leur nature dépend de ce que l'on veut produire.
 
-*Diapositive 54 : des buzzers, utilisés pour les alarmes sonores.*
+![LED de plusieurs couleurs](../../../../assets/parcours/chapitre-1/img/actionneur-led.webp)
+![Buzzers](../../../../assets/parcours/chapitre-1/img/actionneur-buzzer.webp)
+![Moteur à courant continu](../../../../assets/parcours/chapitre-1/img/actionneur-moteur.webp)
+![Électrovanne](../../../../assets/parcours/chapitre-1/img/actionneur-electrovanne.webp)
 
-- **Le moteur à courant continu** fait tourner un mécanisme, par exemple les roues d'un robot.
+*LED, buzzer, moteur à courant continu et électrovanne.*
 
-![Diapositive 55 : moteur à courant continu](../../../../assets/parcours/chapitre-1/diapo-55.webp)
+| Actionneur | Ce qu'il produit | Exemple d'usage |
+|---|---|---|
+| **LED** | De la lumière | Voyant vert ou rouge sur une machine |
+| **Buzzer** | Un son | Alarme d'un détecteur de fumée |
+| **Moteur à courant continu** | Une rotation | Roues d'un robot |
+| **Électrovanne** | Le contrôle d'un débit de liquide | Arrosage automatique |
 
-*Diapositive 55 : un moteur à courant continu.*
+**Quand le courant du microcontrôleur ne suffit pas**
 
-- **L'électrovanne** contrôle le débit d'un liquide, par exemple dans un système d'arrosage automatique.
+![Module relais](../../../../assets/parcours/chapitre-1/img/actionneur-relais.webp)
+![Servomoteur](../../../../assets/parcours/chapitre-1/img/actionneur-servo.webp)
+![Pompe à eau](../../../../assets/parcours/chapitre-1/img/actionneur-pompe.webp)
 
-![Diapositive 56 : électrovanne](../../../../assets/parcours/chapitre-1/diapo-56.webp)
+*Un relais, un servomoteur et une pompe : des composants qui ont besoin d'un peu plus que ce qu'une broche peut fournir.*
 
-*Diapositive 56 : une électrovanne, qui ouvre ou ferme le passage d'un liquide.*
+:::caution[Important]
+Une broche de microcontrôleur ne délivre que **quelques milliampères**. Un moteur ou une pompe ne se branche **jamais directement** sur une broche : il faut une **interface de puissance** (transistor, relais ou pont en H).
+:::
 
-## Comment choisir un capteur ?
-
-Le bon capteur dépend de l'application. Il faut regarder la plage de mesure, la précision, la consommation, le coût et l'interface. Les capteurs numériques sont en général plus précis et plus simples à utiliser que les analogiques. Les thermocouples servent pour les températures très élevées.
-
-:::tip[Exercice]
+:::tip[À toi de jouer]
 Tu dois mesurer la température et l'humidité d'une serre, avec une plage de 0 à 50 °C. Quel capteur choisis-tu, et pourquoi ?
 :::
 
 <details>
 <summary>Voir une réponse possible</summary>
 
-Le **DHT22** : il mesure à la fois la température et l'humidité, sur une plage qui couvre 0 à 50 °C, avec une précision de ±0,5 °C. Le DHT11 fonctionne aussi, mais sa précision est moins bonne (±2 °C).
+Le **DHT22** : il mesure à la fois la température et l'humidité, sur une plage qui couvre 0 à 50 °C, avec une précision de ±0,5 °C. Le DHT11 convient aussi, mais sa précision est moins bonne (±2 °C).
 
 </details>
 
-## Pour vérifier ta compréhension
+## Teste-toi
 
-- Donne un exemple de capteur et un exemple d'actionneur dans une machine à laver.
-- Pourquoi place-t-on un transistor ou un relais entre le microcontrôleur et un moteur ?
+1. Donne un exemple de capteur et un exemple d'actionneur dans une machine à laver.
+2. Pourquoi ne branche-t-on pas un moteur directement sur une broche du microcontrôleur ?
+3. Que signifie « boucle fermée » ?
 
-:::note
-Quand tu as répondu à ces questions, valide cette leçon en bas de page.
+<details>
+<summary>Voir les réponses</summary>
+
+1. Capteur : le niveau d'eau ou la température. Actionneur : l'électrovanne de remplissage, le moteur du tambour ou la résistance de chauffe.
+2. Parce qu'une broche fournit trop peu de courant. Il faut un transistor, un relais ou un pont en H.
+3. L'action de l'actionneur modifie la grandeur mesurée par le capteur, qui est mesurée à nouveau : le système corrige en permanence.
+
+</details>
+
+:::note[Prochaine étape]
+Quand tu as répondu aux questions, valide cette leçon en bas de page.
 :::

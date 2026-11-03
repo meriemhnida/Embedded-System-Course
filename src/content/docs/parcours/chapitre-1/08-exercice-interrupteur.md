@@ -3,33 +3,32 @@ title: Exercice — interrupteur coulissant
 description: Allumer et éteindre une LED avec un interrupteur coulissant, à réaliser sur Wokwi.
 ---
 
-**Exercice à faire avant la séance suivante.**
+:::caution[Exercice à terminer avant la séance suivante]
+Enregistre ton montage dans ton compte Wokwi (connexion GitHub) pour garder l'historique de tes projets.
+:::
 
-**Objectif :** utiliser un interrupteur coulissant pour commander une LED, et comprendre la notion de résistance de tirage interne.
+:::note[Objectifs de la leçon]
+À la fin de cet exercice, tu seras capable de :
+- câbler un interrupteur coulissant sur une entrée numérique ;
+- utiliser `INPUT_PULLUP` pour activer la résistance de tirage interne ;
+- expliquer pourquoi la logique est inversée.
+:::
 
 ## L'interrupteur, un capteur à deux positions
 
-Un interrupteur coulissant fonctionne comme un bouton-poussoir, mais il reste dans sa position. Il sert à donner un état stable, comme « lumière allumée » ou « éteinte ».
-
-![Diapositive 90 : le travail à faire avant la séance suivante](../../../../assets/parcours/chapitre-1/diapo-90.webp)
-
-*Diapositive 90 : les exercices 3 et 4 à terminer sur Wokwi. Pense à enregistrer chaque montage dans ton compte.*
+Un interrupteur coulissant fonctionne comme un bouton-poussoir, mais il **reste dans sa position**. Il sert à donner un état stable, comme « allumé » ou « éteint ».
 
 ## Le montage
 
-![Diapositive 91 : câblage de l'interrupteur coulissant](../../../../assets/parcours/chapitre-1/diapo-91.webp)
+![Montage dans Wokwi : un interrupteur coulissant, une LED rouge et une carte UNO](../../../../assets/parcours/chapitre-1/img/montage-interrupteur.webp)
 
-*Diapositive 91 : le câblage de l'interrupteur, de la masse à la broche 5, et de la LED sur la broche 13.*
+*L'interrupteur relie la masse à la broche 5. La LED est sur la broche 13.*
 
 - Une broche de l'**interrupteur** (SW:1.2) est reliée à la **masse GND**.
 - L'autre broche (SW:1.3) est reliée à la **broche 5** de l'Arduino.
-- La **LED** est branchée comme précédemment : anode sur la broche 13, cathode vers GND à travers 220 Ω.
+- La **LED** est branchée comme précédemment : anode sur la broche 13, cathode vers GND à travers une résistance de 220 Ω.
 
 ## Le programme
-
-![Diapositive 92 : le programme de l'interrupteur](../../../../assets/parcours/chapitre-1/diapo-92.webp)
-
-*Diapositive 92 : le code de l'exercice dans la simulation.*
 
 ```cpp
 const int LED = 13, interrupteur = 5;
@@ -47,14 +46,21 @@ void loop() {
 
 ## Comprendre le tirage interne
 
-`INPUT_PULLUP` active une résistance **interne** à la carte, qui maintient la broche à HAUT (1) quand rien ne la relie à la masse. Quand l'interrupteur relie la broche 5 à GND, la broche lit BAS (0).
+Dans l'atelier précédent, tu avais ajouté une **résistance externe** pour fixer le niveau de l'entrée. Ici, `INPUT_PULLUP` active une résistance **interne à la carte**, qui maintient la broche à **HAUT (1)** quand rien ne la relie à la masse.
 
-Cela remplace la résistance externe de l'atelier précédent. C'est une façon plus économe de fixer le niveau d'une entrée.
+- Interrupteur **ouvert** : rien ne relie la broche à GND, elle lit **HAUT (1)**.
+- Interrupteur **fermé** : la broche est reliée à GND, elle lit **BAS (0)**.
 
-:::caution[À observer]
-Avec ce programme, la LED s'allume quand l'interrupteur est **ouvert** et s'éteint quand il est **fermé**. C'est l'inverse de ce qu'on attend souvent : la logique est inversée à cause du tirage haut.
+:::danger[À retenir]
+`INPUT_PULLUP` remplace la résistance externe : la broche lit **HAUT** quand l'interrupteur est ouvert et **BAS** quand il est fermé. La logique est **inversée**.
+:::
 
-Question : comment modifier le programme pour que la LED s'allume quand l'interrupteur est fermé ?
+:::caution[Important]
+Avec ce programme, la LED s'allume quand l'interrupteur est **ouvert** et s'éteint quand il est **fermé**. C'est l'inverse de ce que l'on attend souvent.
+:::
+
+:::tip[À toi de jouer]
+Comment modifier le programme pour que la LED s'allume quand l'interrupteur est **fermé** ?
 :::
 
 <details>
@@ -64,6 +70,14 @@ Il suffit d'inverser la valeur lue : `digitalWrite(LED, !interrupteurState);`. L
 
 </details>
 
-:::note
+## Pour aller plus loin : afficher l'état dans le moniteur série
+
+Tu peux afficher un message selon la position de l'interrupteur :
+
+![Code Arduino qui affiche un message dans le moniteur série selon l'état de l'interrupteur](../../../../assets/parcours/chapitre-1/img/code-moniteur.webp)
+
+*Un exemple de `loop()` qui lit l'interrupteur et affiche « enfoncé » ou « relâché » dans le moniteur série.*
+
+:::note[Prochaine étape]
 Quand la LED réagit à l'interrupteur et que tu as compris la logique inversée, valide cette leçon en bas de page.
 :::

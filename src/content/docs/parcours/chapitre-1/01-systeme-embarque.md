@@ -3,36 +3,43 @@ title: Qu’est-ce qu’un système embarqué ?
 description: Définition, exemples et contraintes d'un système embarqué.
 ---
 
-**Objectif :** comprendre ce qu'est un système embarqué, où on le trouve et pourquoi ses contraintes sont différentes de celles d'un ordinateur.
+:::note[Objectifs de la leçon]
+À la fin de cette leçon, tu seras capable de :
+- définir un système embarqué avec tes propres mots ;
+- citer des exemples dans la vie quotidienne ;
+- expliquer ses cinq contraintes principales, dont le temps réel.
+:::
 
 ## Un ordinateur caché dans un objet
 
-Quand on pense à un ordinateur, on imagine un portable ou un PC : un écran, un clavier, un système qui peut lancer n'importe quel logiciel. Un **système embarqué** est tout autre chose. C'est un ordinateur **intégré à un produit** pour piloter une fonction précise, et souvent invisible pour l'utilisateur.
+Quand on pense à un ordinateur, on imagine un portable ou un PC : un écran, un clavier, et la possibilité de lancer n'importe quel logiciel. Un **système embarqué** est tout autre chose. C'est un petit ordinateur **intégré à un objet** pour piloter une fonction précise. L'utilisateur ne le voit presque jamais.
 
-Les téléphones, les distributeurs de billets, le régulateur de vitesse d'une voiture ou le pilote automatique d'un avion sont tous des systèmes embarqués.
+Fais le tour de ta maison ou de ta voiture : le lave-linge, le thermostat, le distributeur de billets, le régulateur de vitesse, la montre connectée... Tous contiennent un système embarqué.
 
-![Diapositive 29 : objets du quotidien qui sont des systèmes embarqués](../../../../assets/parcours/chapitre-1/diapo-29.webp)
+![Objets du quotidien : imagerie médicale, voiture, engin de chantier, bateau, lave-linge, imprimante](../../../../assets/parcours/chapitre-1/img/objets-systemes-embarques.webp)
 
-*Diapositive 29 : des objets du quotidien, et même une partie de la voiture, contiennent un système embarqué.*
+*Des systèmes très différents, qui ont tous un point commun : un ordinateur intégré qui fait une tâche précise.*
 
 ## Une définition en une phrase
 
-Un système embarqué est un **système électronique et informatique autonome, dédié à une tâche précise et intégré au produit qu'il pilote**.
+:::danger[À retenir]
+Un système embarqué est un système **électronique et informatique autonome, dédié à une tâche précise et intégré au produit qu'il pilote**.
+:::
 
-Trois mots comptent dans cette définition :
-- **Autonome** : il fonctionne sans qu'un utilisateur le pilote en permanence.
-- **Dédié** : il ne fait qu'une chose, mais il la fait bien.
-- **Intégré** : il fait partie du produit, il n'est pas une machine à côté.
+Chaque mot compte :
+- **autonome** : il fonctionne sans qu'une personne le pilote en permanence ;
+- **dédié** : il fait une seule chose, mais il la fait très bien ;
+- **intégré** : il fait partie du produit, il n'est pas une machine à côté.
 
-Un PC n'est donc pas un système embarqué : il sert à tout faire. En revanche, un thermomètre construit autour d'un microprocesseur en est un, car il n'a qu'une fonction.
+Un PC n'est donc pas un système embarqué, car il sert à tout faire. Par contre, un thermomètre construit autour d'un microprocesseur en est un : il n'a qu'une fonction.
 
-![Diapositive 17 : définition, anatomie et contraintes](../../../../assets/parcours/chapitre-1/diapo-17.webp)
+:::note[Information]
+Un système embarqué **associe du matériel et du logiciel conçus ensemble** pour fournir des fonctionnalités données. On ne peut pas concevoir l'un sans penser à l'autre.
+:::
 
-*Diapositive 17 : la définition, l'anatomie d'un système embarqué et ses contraintes, résumées sur une seule page.*
+## Comment fonctionne un système embarqué ?
 
-## Comment il fonctionne : le cours en une image
-
-Un système embarqué est un bloc qui **observe son environnement**, **décide**, puis **agit**. Ses éléments sont toujours les mêmes :
+Tous les systèmes embarqués suivent la même logique : **observer, décider, agir**. Ils sont constitués des mêmes éléments :
 
 1. des **capteurs**, qui mesurent le monde physique (température, lumière, distance) ;
 2. un **microcontrôleur** avec son logiciel, qui traite les mesures et prend les décisions ;
@@ -40,15 +47,27 @@ Un système embarqué est un bloc qui **observe son environnement**, **décide**
 4. un moyen de **communication** (Wi-Fi, Bluetooth, bus I²C ou SPI) ;
 5. une **alimentation** (batterie et régulateur).
 
-![Diapositive 15 : le système embarqué dans son environnement](../../../../assets/parcours/chapitre-1/diapo-15.webp)
+![Schéma d'un système embarqué dans son environnement : capteurs, contrôleur, actionneurs, communication](../../../../assets/parcours/chapitre-1/img/systeme-et-environnement.webp)
 
-*Diapositive 15 : le système embarqué entouré de son environnement physique, avec capteurs, contrôleur et actionneurs.*
+*Le système embarqué reçoit des informations de l'environnement physique par ses capteurs, et agit sur lui par ses actionneurs.*
 
-Si ce système est relié à Internet, on parle d'**objet connecté** ou d'**IoT** (Internet des objets). Nous y reviendrons au chapitre sur la chaîne IoT.
+Si ce système est relié à Internet, on parle d'**objet connecté** ou d'**IoT** (Internet des objets). Tu le verras dans la leçon 4.
+
+## Des systèmes que tu peux construire
+
+Les systèmes embarqués ne sont pas réservés aux industriels. Avec une carte Arduino et quelques composants, on construit des projets très variés. Voici quelques exemples de réalisations :
+
+![Un afficheur LCD relié à une carte Arduino](../../../../assets/parcours/chapitre-1/img/prototype-lcd.webp)
+![Une carte qui surveille l'humidité d'une plante](../../../../assets/parcours/chapitre-1/img/prototype-plante.webp)
+![Des lampes commandées depuis un smartphone](../../../../assets/parcours/chapitre-1/img/prototype-lampes.webp)
+![Un robot à roues mécanum](../../../../assets/parcours/chapitre-1/img/prototype-robot.webp)
+![Un drone](../../../../assets/parcours/chapitre-1/img/prototype-drone.webp)
+
+*Afficheur, surveillance d'une plante, lampes pilotées par smartphone, robot et drone : tous reposent sur un microcontrôleur, des capteurs et des actionneurs.*
 
 ## Les contraintes : ce qui rend le métier difficile
 
-Un ordinateur de bureau dispose de beaucoup de puissance et d'énergie. Un système embarqué, lui, doit composer avec des contraintes fortes :
+Un ordinateur de bureau dispose de beaucoup d'énergie et de puissance. Un système embarqué doit composer avec des limites fortes :
 
 | Contrainte | Ce que ça signifie concrètement |
 |---|---|
@@ -56,30 +75,39 @@ Un ordinateur de bureau dispose de beaucoup de puissance et d'énergie. Un syst�
 | **Énergie** | Il doit fonctionner des mois, voire des années, sur une pile. |
 | **Coût** | Il est fabriqué en très grande série, donc chaque centime compte. |
 | **Ressources** | Quelques kilo-octets de mémoire, peu de place disponible. |
-| **Fiabilité** | Il doit fonctionner sans intervention humaine, parfois pendant des années. |
+| **Fiabilité** | Il doit fonctionner seul, parfois pendant des années. |
 
-Prenons la voiture, qui illustre bien ces contraintes. Une voiture haut de gamme contient une centaine de microprocesseurs, et même les modèles bon marché en utilisent une quarantaine. Certains font des tâches simples, comme détecter le port de la ceinture. D'autres contrôlent des fonctions critiques, comme le freinage ou l'allumage.
+La voiture illustre bien ces contraintes. Une voiture haut de gamme contient une centaine de microprocesseurs, et même les modèles bon marché en comptent environ quarante. Certains font des tâches simples, comme détecter le port de la ceinture. D'autres contrôlent des fonctions critiques, comme le freinage ou l'allumage.
 
-![Diapositive 35 : la voiture, exemple de système embarqué critique](../../../../assets/parcours/chapitre-1/diapo-35.webp)
+![Une camionnette Ford F-150](../../../../assets/parcours/chapitre-1/img/voiture.webp)
 
-*Diapositive 35 : une voiture comme le Ford F-150 contient des millions de lignes de code réparties entre de nombreux systèmes embarqués.*
+*Une voiture moderne comme le Ford F-150 fonctionne avec environ 150 millions de lignes de code, réparties dans de nombreux systèmes embarqués.*
 
 ## Le temps réel, une contrainte à part
 
-Le temps réel mérite un point à part. Dans un système temps réel, le calcul est déclenché par un **événement extérieur**, par exemple une interruption matérielle. Mais surtout, **le résultat n'a de valeur que s'il arrive à temps**.
+Dans un système temps réel, un calcul est **déclenché par un événement extérieur** (par exemple une interruption matérielle). Surtout, **le résultat n'a de valeur que s'il arrive à temps**.
 
-Imaginez un moniteur cardiaque : une bonne mesure délivrée trop tard ne sert à rien. C'est la validité et la pertinence du résultat qui sont en jeu, pas seulement sa justesse.
+Imagine un moniteur cardiaque qui surveille l'activité électrique du cœur d'un patient. Une mesure juste, mais délivrée trop tard, ne sert à rien : c'est le moment de la réponse qui compte, pas seulement sa justesse.
 
-![Diapositive 33 : la question de la différence entre système embarqué et système temps réel](../../../../assets/parcours/chapitre-1/diapo-33.webp)
+:::caution[Important]
+Un système embarqué n'est pas forcément un système temps réel, et inversement. Mais **la plupart des systèmes embarqués fonctionnent en temps réel**, parce qu'ils réagissent à des événements du monde physique.
+:::
 
-*Diapositive 33 : la question posée au cours, avec une carte électronique qui illustre le sujet.*
+## Teste-toi
 
-## Pour vérifier ta compréhension
+1. Pourquoi un PC n'est-il pas un système embarqué, alors qu'un thermomètre à microprocesseur en est un ?
+2. Donne deux contraintes qui s'appliquent à un capteur alimenté par une pile.
+3. Pourquoi un résultat tardif peut-il être inutile dans un moniteur cardiaque ?
 
-- Pourquoi un PC n'est-il pas un système embarqué, alors qu'un thermomètre à microprocesseur en est un ?
-- Donne deux contraintes qui s'appliquent à un capteur alimenté par pile.
-- Quelle est la différence entre un système embarqué et un système temps réel ?
+<details>
+<summary>Voir les réponses</summary>
 
-:::note
-Quand tu as répondu à ces questions, valide cette leçon en bas de page.
+1. Le PC est un ordinateur généraliste : il peut exécuter n'importe quel programme. Le thermomètre n'a qu'une fonction, dédiée et intégrée dans l'objet.
+2. L'énergie (il doit durer longtemps sur pile) et le coût ou les ressources (peu de mémoire, composants bon marché).
+3. Parce que la valeur du résultat dépend du moment où il est délivré : une alerte cardiaque en retard n'a plus d'utilité.
+
+</details>
+
+:::note[Prochaine étape]
+Quand tu as répondu aux questions, valide cette leçon en bas de page.
 :::

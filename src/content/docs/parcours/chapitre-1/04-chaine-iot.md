@@ -3,109 +3,128 @@ title: De l’objet au cloud, la chaîne IoT
 description: Les couches d'un système IoT, des capteurs jusqu'à l'application métier.
 ---
 
-**Objectif :** situer un système embarqué dans une chaîne IoT, du capteur jusqu'au cloud, et comprendre pourquoi on ne fait pas tout dans le même endroit.
+:::note[Objectifs de la leçon]
+À la fin de cette leçon, tu seras capable de :
+- expliquer ce qu'est l'IoT et le distinguer d'un système cyber-physique ;
+- décrire les cinq couches d'une chaîne IoT ;
+- choisir entre traitement local (Edge) et cloud ;
+- choisir un réseau selon la distance et le volume de données.
+:::
 
 ## Quand l'objet se connecte
 
 Un système embarqué isolé ne sert qu'à celui qui le regarde. Dès qu'il envoie ses mesures sur un réseau, il devient un **objet connecté**, et l'ensemble prend le nom d'**IoT**, pour *Internet of Things*.
 
-Il existe deux grandes façons de concevoir ces systèmes :
+![Illustration d'un système IoT : capteurs, microcontrôleurs, réseau, cloud et applications](../../../../assets/parcours/chapitre-1/img/ensemble-iot.webp)
 
-- Un **système IoT** est un ensemble de capteurs, d'actionneurs et de calcul reliés par un réseau, souvent sans fil. Il surveille, analyse, évalue et agit. Il peut regrouper des milliards d'objets.
-- Un **système cyber-physique (CPS)** couple très fortement une partie logicielle et des éléments mécaniques ou électroniques, souvent en temps réel. Il est en général déployé dans un environnement précis, comme une usine.
+*Du capteur au cloud : un système IoT relie des objets, un réseau, des serveurs et des applications.*
 
-![Diapositive 38 : deux styles de conception, IoT et CPS](../../../../assets/parcours/chapitre-1/diapo-38.webp)
+## IoT ou système cyber-physique ?
 
-*Diapositive 38 : les systèmes IoT et les systèmes cyber-physiques, deux façons de faire interagir les ordinateurs avec le monde physique.*
+Deux styles de conception existent pour faire interagir les ordinateurs avec le monde physique :
 
-![Diapositive 39 : IoT et CPS comparés](../../../../assets/parcours/chapitre-1/diapo-39.webp)
+- Un **système IoT** est un ensemble de capteurs, d'actionneurs et de calcul reliés par un réseau, souvent sans fil. Il **surveille, analyse, évalue et agit**. Il peut regrouper des milliards d'objets répartis dans l'espace.
+- Un **système cyber-physique (CPS)** couple très fortement un logiciel et des éléments mécaniques ou électroniques, souvent en temps réel. Il est en général déployé dans un environnement précis, comme une usine.
 
-*Diapositive 39 : la différence de couplage entre IoT et CPS, illustrée par un diagramme.*
+![Diagramme de Venn : CPS, IoT, et au centre CPS-IoT avec les systèmes embarqués](../../../../assets/parcours/chapitre-1/img/iot-cps.webp)
+
+*Les systèmes IoT et CPS se recouvrent. Les systèmes embarqués en sont l'élément commun.*
+
+:::note[Information]
+**IoT** = capteurs + réseaux sans fil + base de données. **CPS** = couplage plus fort entre le logiciel et le monde physique, avec le contrôle en temps réel.
+:::
+
+![Industrie 4.0 : des systèmes cyber-physiques reliés à l'IoT et au cloud](../../../../assets/parcours/chapitre-1/img/industrie-40.webp)
+
+*Dans l'Industrie 4.0 (la digitalisation de l'industrie), des systèmes cyber-physiques sont reliés au cloud par l'IoT.*
 
 ## Les cinq couches d'une chaîne IoT
 
-Une chaîne IoT se découpe en couches. Chacune répond à une question différente : « que mesure-t-on ? », « où décide-t-on ? », « comment transporte-t-on ? », « où stocke-t-on ? », « qu'en fait-on ? ».
+Une chaîne IoT se découpe en couches. Chacune répond à une question différente : que mesure-t-on ? Où décide-t-on ? Comment transporte-t-on ? Où stocke-t-on ? Qu'en fait-on ?
 
-![Diapositive 20 : les cinq couches de l'IoT et des systèmes embarqués](../../../../assets/parcours/chapitre-1/diapo-20.webp)
+![Les cinq couches de l'IoT : perception, edge, réseau, plateforme et données, application et métier, avec la sécurité sur toutes les couches](../../../../assets/parcours/chapitre-1/img/couches-iot.webp)
 
-*Diapositive 20 : les cinq couches, de la perception jusqu'à l'application métier, avec la sécurité transversale.*
+*Les cinq couches, de la perception (en bas) à l'application métier (en haut). La sécurité concerne toutes les couches.*
 
 1. **Perception** : capteurs et actionneurs mesurent le monde physique et agissent sur lui.
-2. **Edge** : le microcontrôleur et une éventuelle passerelle numérisent, filtrent et décident localement.
-3. **Réseau et protocoles** : Wi-Fi, BLE, LoRaWAN ou NB-IoT pour transporter les données, avec les protocoles MQTT, CoAP ou HTTP.
+2. **Edge** : le microcontrôleur ou une passerelle numérisent, filtrent et décident localement.
+3. **Réseau et protocoles** : Wi-Fi, BLE, LoRaWAN ou NB-IoT pour le transport, avec les protocoles MQTT, CoAP ou HTTP.
 4. **Plateforme et données** : stockage, traitement massif (Big Data) et intelligence artificielle.
 5. **Application et métier** : tableaux de bord, alertes, aide à la décision.
 
-La **sécurité** et la **gestion** concernent toutes les couches à la fois. Une donnée non protégée sur le réseau compromet tout le reste.
-
-La diapositive suivante montre un exemple complet, de la carte électronique jusqu'au tableau de bord :
-
-![Diapositive 22 : architecture détaillée d'un système IoT](../../../../assets/parcours/chapitre-1/diapo-22.webp)
-
-*Diapositive 22 : l'architecture complète, avec le capteur de vibrations, la passerelle, MQTT, le stockage et les tableaux de bord.*
+:::caution[Important]
+La **sécurité** concerne **toutes** les couches. Une donnée non protégée sur le réseau, ou un objet mal sécurisé, compromet tout le reste de la chaîne.
+:::
 
 ## Edge ou cloud : où faire le calcul ?
 
-Cette question revient dans presque chaque projet.
+Cette question revient dans presque tous les projets.
 
-- Le **Edge** traite les données près de leur source, sur l'objet ou une passerelle. Il réagit vite, consomme peu de réseau et continue de fonctionner si la connexion coupe.
-- Le **Cloud** centralise le stockage et le traitement dans des centres de données distants. Il offre une grande puissance d'analyse, mais dépend du réseau.
+- Le **Edge computing** traite les données **près de leur source**, sur l'objet ou une passerelle. Il réagit vite, consomme peu de réseau et continue de fonctionner si la connexion coupe.
+- Le **cloud computing** centralise le stockage et les traitements dans des centres de données distants. Il offre une grande puissance d'analyse, mais dépend du réseau.
 
-![Diapositive 41 : Edge computing et cloud computing](../../../../assets/parcours/chapitre-1/diapo-41.webp)
+![Architecture Edge : des appareils, des nœuds Edge, la couche Edge et le cloud](../../../../assets/parcours/chapitre-1/img/edge-cloud.webp)
 
-*Diapositive 41 : l'architecture Edge, où le traitement a lieu près des capteurs, et le cloud, où les données sont stockées et analysées.*
+*L'architecture Edge : des appareils sur le terrain, un traitement local, puis le cloud pour le stockage et l'analyse.*
 
-Un bon système combine les deux : l'objet décide localement, et le cloud analyse l'ensemble pour détecter des tendances.
+:::danger[À retenir]
+**Edge** = décider **vite et localement**. **Cloud** = **stocker et analyser** l'ensemble. Un bon système combine les deux.
+:::
 
 ## Choisir le réseau
 
-Le réseau dépend surtout de deux critères : la distance et le volume de données. Plus un réseau porte loin, moins il transporte de données, et inversement.
+Le réseau se choisit selon deux critères : la **distance** et le **volume de données**. Plus un réseau porte loin, moins il transporte de données.
 
-![Diapositive 23 : portée et débit des réseaux sans fil IoT](../../../../assets/parcours/chapitre-1/diapo-23.webp)
+![Graphique du débit selon la portée pour Wi-Fi, Bluetooth LE, Zigbee, LTE-M, NB-IoT, LoRaWAN et Sigfox, avec trois familles](../../../../assets/parcours/chapitre-1/img/reseaux-iot.webp)
 
-*Diapositive 23 : les réseaux sans fil IoT, du Wi-Fi au NB-IoT, classés par portée et débit.*
+*Portée et débit des réseaux sans fil IoT, regroupés en trois familles.*
 
-| Famille | Exemples | Portée | Usage |
-|---|---|---|---|
-| Courte portée | Wi-Fi, Bluetooth LE, Zigbee | Quelques dizaines de mètres | Maison, bâtiment, débits élevés |
-| LPWAN libre | LoRaWAN, Sigfox | Kilomètres, quelques octets | Capteurs sur pile qui durent des années |
-| LPWAN cellulaire | NB-IoT, LTE-M | Réseau d'opérateur | Couverture intérieure, mobilité |
+| Famille | Exemples | Usage |
+|---|---|---|
+| Courte portée | Wi-Fi, Bluetooth LE, Zigbee | Maison, bâtiment, débits élevés, alimentation fréquente |
+| LPWAN libre | LoRaWAN, Sigfox | Kilomètres de portée, quelques octets, piles qui durent des années |
+| LPWAN cellulaire | NB-IoT, LTE-M | Réseau d'opérateur, couverture intérieure, mobilité |
 
-:::tip[À retenir]
-Plus on va loin, moins on transmet. On choisit le réseau selon le volume de données et la distance.
+:::danger[À retenir]
+**Plus on va loin, moins on transmet.** On choisit le réseau selon le volume de données et la distance.
 :::
 
 ## Des exemples concrets
 
-La chaîne de valeur change selon le secteur. La diapositive suivante en donne plusieurs exemples, de l'agriculture à la santé.
+La chaîne de valeur change d'un secteur à l'autre.
 
-![Diapositive 21 : exemples de chaînes de valeur IoT](../../../../assets/parcours/chapitre-1/diapo-21.webp)
+![Tableau de quatre chaînes de valeur : agriculture, industrie, ville intelligente, santé](../../../../assets/parcours/chapitre-1/img/chaine-de-valeur.webp)
 
-*Diapositive 21 : agriculture de précision, maintenance prédictive, ville intelligente et santé connectée.*
+*Quatre secteurs : agriculture de précision, maintenance prédictive, ville intelligente et santé connectée, avec leurs capteurs, leur connectivité et leur plateforme.*
 
-- **Agriculture de précision** : des capteurs d'humidité du sol envoient leurs mesures en LoRaWAN, et des règles d'irrigation ne déclenchent l'eau que si nécessaire. Résultat : de l'eau économisée.
-- **Industrie 4.0** : des accéléromètres sur un moteur mesurent ses vibrations. Une passerelle Edge et un historien stockent les données, et des modèles d'IA annoncent une panne avant qu'elle n'arrive.
-- **Ville intelligente** : des capteurs de présence au sol indiquent les places libres. Résultat : les conducteurs sont guidés en temps réel.
+- **Agriculture de précision** : des capteurs d'humidité du sol envoient leurs mesures en LoRaWAN, et l'irrigation n'est déclenchée que si nécessaire. Résultat : de l'eau économisée.
+- **Industrie 4.0** : des accéléromètres mesurent les vibrations d'un moteur. Une passerelle Edge et des modèles d'IA permettent d'être alerté avant la panne.
+- **Ville intelligente** : des capteurs de présence au sol détectent les places libres. Les conducteurs sont guidés en temps réel.
 - **Santé connectée** : des capteurs portés mesurent la fréquence cardiaque, puis envoient les données au smartphone en Bluetooth LE. Un soignant est alerté si nécessaire.
-
-![Diapositive 40 : industrie 4.0 et systèmes cyber-physiques](../../../../assets/parcours/chapitre-1/diapo-40.webp)
-
-*Diapositive 40 : l'industrie 4.0, où les systèmes cyber-physiques surveillent les machines en temps réel.*
 
 ## Pour aller plus loin : l'IA sur le microcontrôleur
 
-Le **TinyML** consiste à exécuter un modèle d'intelligence artificielle directement sur un microcontrôleur, avec une consommation très faible. Le modèle est entraîné dans le cloud, puis compressé (par exemple en int8, environ quatre fois plus petit), et enfin déployé sur l'objet.
+Le **TinyML** consiste à exécuter un modèle d'intelligence artificielle **directement sur un microcontrôleur**, avec une consommation très faible. Le modèle est entraîné dans le cloud, compressé (par exemple en int8, environ quatre fois plus petit), puis déployé sur l'objet.
 
-![Diapositive 43 : TinyML, l'IA sur des appareils très contraints](../../../../assets/parcours/chapitre-1/diapo-43.webp)
+![Diagramme de Venn : apprentissage automatique, systèmes embarqués, applications, au centre TinyML](../../../../assets/parcours/chapitre-1/img/tinyml.webp)
 
-*Diapositive 43 : le TinyML relie systèmes embarqués et apprentissage automatique pour des appareils alimentés par batterie.*
+*Le TinyML réunit l'apprentissage automatique et les systèmes embarqués pour des appareils alimentés par batterie.*
 
-## Pour vérifier ta compréhension
+## Teste-toi
 
-- Quelle couche de la chaîne IoT correspond à un tableau de bord ?
-- Pourquoi un capteur de vibrations relié à une passerelle Edge est-il préférable à l'envoi brut de toutes les mesures vers le cloud ?
-- Un capteur fonctionne sur pile pendant plusieurs années, à plusieurs kilomètres de la passerelle. Quelle famille de réseau choisis-tu ?
+1. Quelle couche de la chaîne IoT correspond à un tableau de bord ?
+2. Pourquoi une passerelle Edge est-elle préférable à l'envoi brut de toutes les mesures de vibrations vers le cloud ?
+3. Un capteur fonctionne sur pile pendant plusieurs années, à plusieurs kilomètres de la passerelle. Quelle famille de réseau choisis-tu ?
 
-:::note
-Quand tu as répondu à ces questions, valide cette leçon en bas de page.
+<details>
+<summary>Voir les réponses</summary>
+
+1. La couche 5, **Application et métier**.
+2. Le traitement local réduit le volume de données envoyées, réagit plus vite et fonctionne même si la connexion est coupée.
+3. Un **LPWAN** (LoRaWAN, par exemple) : grande portée et très faible consommation, au prix d'un débit réduit.
+
+</details>
+
+:::note[Prochaine étape]
+Quand tu as répondu aux questions, valide cette leçon en bas de page.
 :::
