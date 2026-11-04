@@ -1,0 +1,447 @@
+---
+title: Concevoir avec le modèle en V
+description: Le modèle en V appliqué aux systèmes embarqués — des spécifications aux tests, illustré avec un exemple automobile réaliste. Chaque phase est cliquable.
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs de la leçon]
+À la fin de cette leçon, vous serez capables de :
+- décrire les deux branches du modèle en V et la correspondance entre chaque phase de conception et sa phase de test ;
+- identifier les **7 phases** du cycle en V dans un projet embarqué réel ;
+- distinguer simulation, prototypage et tests en boucle (SIL, PIL, HIL) ;
+- appliquer cette méthode à votre propre projet.
+:::
+
+## Pourquoi une méthode de conception ?
+
+Écrire du code pour allumer une LED, c'est simple. Concevoir un **système de freinage antiblocage (ABS)** pour une voiture — qui doit détecter un blocage de roue en moins de 10 ms, adapter la pression de freinage individuellement sur chaque roue, fonctionner par −40 °C comme par +85 °C, et ne jamais tomber en panne — c'est une autre histoire.
+
+Dans votre cours, la section **Processus d'Ingénierie des SE** commence par la spécification des capteurs et actionneurs : *que doit mesurer le système ? que doit-il faire ?* C'est exactement la première phase du modèle en V.
+
+Sans méthode structurée, les problèmes arrivent tard. **Corriger un défaut détecté en phase de validation coûte dix à cent fois plus cher** que de le détecter lors de la spécification. Dans l'industrie automobile, un rappel de véhicule peut coûter des centaines de millions d'euros.
+
+Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéronautique, médical) à ce problème. Il organise le développement en deux branches symétriques : **concevoir à gauche, vérifier à droite**. Chaque phase de conception correspond exactement à une phase de test.
+
+---
+
+## Le modèle en V — cliquez sur chaque phase
+
+<div style="margin: 2rem 0;">
+<style>{`
+  .vmodel-container {
+    font-family: inherit;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .vmodel-svg {
+    width: 100%;
+    height: auto;
+  }
+  .vmodel-box {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .vmodel-box:hover rect {
+    filter: brightness(1.15);
+  }
+  .vmodel-box:hover text {
+    font-weight: 700;
+  }
+  .vmodel-panel {
+    display: none;
+    margin-top: 1.2rem;
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    border-left: 5px solid #2563eb;
+    background: var(--sl-color-bg-nav, #f8fafc);
+    animation: fadeIn 0.25s ease;
+  }
+  .vmodel-panel.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .vmodel-panel h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1.1rem;
+    color: #1e3a8a;
+  }
+  :root[data-theme="dark"] .vmodel-panel h3 { color: #93c5fd; }
+  .vmodel-panel .vmodel-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin-bottom: 0.8rem;
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  :root[data-theme="dark"] .vmodel-panel .vmodel-badge {
+    background: #1e3a8a;
+    color: #bfdbfe;
+  }
+  .vmodel-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-top: 0.8rem;
+  }
+  .vmodel-panel th {
+    background: #eff6ff;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #bfdbfe;
+  }
+  :root[data-theme="dark"] .vmodel-panel th { background: #1e3a8a; border-color: #3b82f6; }
+  .vmodel-panel td {
+    padding: 6px 10px;
+    border: 1px solid #dbeafe;
+    vertical-align: top;
+  }
+  :root[data-theme="dark"] .vmodel-panel td { border-color: #1e3a8a; }
+  .vmodel-panel code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+  :root[data-theme="dark"] .vmodel-panel code { background: #1e293b; }
+  .vmodel-panel .example-block {
+    background: #eff6ff;
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+  :root[data-theme="dark"] .vmodel-panel .example-block { background: #0f172a; }
+  .vmodel-panel .example-block strong { color: #1e40af; }
+  :root[data-theme="dark"] .vmodel-panel .example-block strong { color: #93c5fd; }
+  .vmodel-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+  }
+`}</style>
+
+<div class="vmodel-container">
+  <p class="vmodel-hint">👆 Cliquez sur un rectangle pour afficher les détails de la phase</p>
+
+  <svg class="vmodel-svg" viewBox="0 0 880 420" xmlns="http://www.w3.org/2000/svg" aria-label="Modèle en V interactif">
+    <line x1="150" y1="55" x2="440" y2="390" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="440" y1="390" x2="730" y2="55" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,3"/>
+    <line x1="195" y1="58" x2="685" y2="58" stroke="#c7d2fe" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <line x1="195" y1="148" x2="610" y2="148" stroke="#c7d2fe" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <line x1="195" y1="238" x2="535" y2="238" stroke="#c7d2fe" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <g class="vmodel-box" onclick="showPanel('p1')" role="button" aria-label="Phase 1 : Spécification système">
+      <rect x="10" y="30" width="185" height="56" rx="8" fill="#1e40af"/>
+      <text x="102" y="52" text-anchor="middle" fill="white" font-size="12" font-weight="600">① Spécification</text>
+      <text x="102" y="68" text-anchor="middle" fill="#bfdbfe" font-size="11">du système</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p2')" role="button" aria-label="Phase 2 : Conception architecturale">
+      <rect x="10" y="120" width="185" height="56" rx="8" fill="#1d4ed8"/>
+      <text x="102" y="142" text-anchor="middle" fill="white" font-size="12" font-weight="600">② Architecture</text>
+      <text x="102" y="158" text-anchor="middle" fill="#bfdbfe" font-size="11">système</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p3')" role="button" aria-label="Phase 3 : Conception détaillée">
+      <rect x="10" y="210" width="185" height="56" rx="8" fill="#2563eb"/>
+      <text x="102" y="232" text-anchor="middle" fill="white" font-size="12" font-weight="600">③ Conception</text>
+      <text x="102" y="248" text-anchor="middle" fill="#bfdbfe" font-size="11">détaillée</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p4')" role="button" aria-label="Phase 4 : Implémentation et codage">
+      <rect x="345" y="360" width="190" height="52" rx="8" fill="#0f172a"/>
+      <text x="440" y="381" text-anchor="middle" fill="white" font-size="12" font-weight="600">④ Implémentation</text>
+      <text x="440" y="397" text-anchor="middle" fill="#94a3b8" font-size="11">(codage)</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p5')" role="button" aria-label="Phase 5 : Tests unitaires">
+      <rect x="535" y="210" width="185" height="56" rx="8" fill="#166534"/>
+      <text x="627" y="232" text-anchor="middle" fill="white" font-size="12" font-weight="600">⑤ Tests</text>
+      <text x="627" y="248" text-anchor="middle" fill="#bbf7d0" font-size="11">unitaires</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p6')" role="button" aria-label="Phase 6 : Tests d'intégration">
+      <rect x="610" y="120" width="185" height="56" rx="8" fill="#15803d"/>
+      <text x="702" y="142" text-anchor="middle" fill="white" font-size="12" font-weight="600">⑥ Tests</text>
+      <text x="702" y="158" text-anchor="middle" fill="#bbf7d0" font-size="11">d'intégration</text>
+    </g>
+
+    <g class="vmodel-box" onclick="showPanel('p7')" role="button" aria-label="Phase 7 : Tests d'acceptation">
+      <rect x="685" y="30" width="185" height="56" rx="8" fill="#166534"/>
+      <text x="777" y="52" text-anchor="middle" fill="white" font-size="12" font-weight="600">⑦ Validation</text>
+      <text x="777" y="68" text-anchor="middle" fill="#bbf7d0" font-size="11">(recette client)</text>
+    </g>
+
+    <text x="80" y="320" text-anchor="middle" fill="#94a3b8" font-size="11" transform="rotate(-55,80,320)">▼ Concevoir</text>
+    <text x="790" y="310" text-anchor="middle" fill="#94a3b8" font-size="11" transform="rotate(55,790,310)">▲ Vérifier</text>
+
+    <text x="440" y="45" text-anchor="middle" fill="#818cf8" font-size="11">←————————————————————————————→</text>
+    <text x="400" y="135" text-anchor="middle" fill="#818cf8" font-size="11">←——————————————————————————→</text>
+    <text x="362" y="225" text-anchor="middle" fill="#818cf8" font-size="11">←————————————————————→</text>
+  </svg>
+
+  <div id="p1" class="vmodel-panel">
+    <span class="vmodel-badge">① Branche gauche — Spécification du système</span>
+    <h3>Spécification des exigences</h3>
+    <p>On décrit <strong>ce que le système doit faire</strong>, en termes fonctionnels (EF) et non fonctionnels (ENF), sans encore décider comment. C'est la réponse à la question : <em>quels capteurs ? quels actionneurs ? quels comportements ?</em></p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Système ABS :</strong><br/>
+      <table>
+        <thead><tr><th>Exigence</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>EF-01</code></td><td>Détecter le blocage d'une roue en moins de 10 ms.</td></tr>
+          <tr><td><code>EF-02</code></td><td>Réduire la pression de frein sur la roue bloquée de 20 % à 80 % selon l'intensité.</td></tr>
+          <tr><td><code>EF-03</code></td><td>Allumer le voyant tableau de bord si un capteur est défaillant.</td></tr>
+          <tr><td><code>ENF-01</code></td><td>Fonctionner entre −40 °C et +85 °C.</td></tr>
+          <tr><td><code>ENF-02</code></td><td>Répondre à toute interruption en moins de 1 ms.</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ Les exigences doivent être <strong>mesurables et testables</strong> : on doit pouvoir dire si elles sont satisfaites ou non. <em>«&nbsp;Le système doit être rapide&nbsp;»</em> n'est pas une exigence valide. <em>«&nbsp;Le temps de réponse doit être inférieur à 10 ms&nbsp;»</em> l'est.</p>
+    </div>
+  </div>
+
+  <div id="p2" class="vmodel-panel">
+    <span class="vmodel-badge">② Branche gauche — Conception architecturale</span>
+    <h3>Architecture du système</h3>
+    <p>On choisit les <strong>composants matériels</strong>, les <strong>protocoles de communication</strong> et la répartition des responsabilités entre les modules logiciels.</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Architecture ABS :</strong><br/>
+      <table>
+        <thead><tr><th>Composant</th><th>Interface</th><th>Rôle (exigences couvertes)</th></tr></thead>
+        <tbody>
+          <tr><td>Capteur de vitesse de roue (×4)</td><td>Signal magnétique → fréquence</td><td>EF-01 : détection blocage</td></tr>
+          <tr><td>Accéléromètre latéral</td><td>Bus CAN</td><td>EF-02 : calcul glissement</td></tr>
+          <tr><td>Modulateur hydraulique (×4)</td><td>Sortie PWM + relais</td><td>EF-02 : réduction pression</td></tr>
+          <tr><td>ECU ABS (microcontrôleur)</td><td>Bus CAN + LIN</td><td>Traitement central</td></tr>
+          <tr><td>Tableau de bord</td><td>Bus CAN</td><td>EF-03 : voyant défaut</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ Chaque composant est tracé vers une exigence. Un composant sans exigence est superflu ; une exigence sans composant est oubliée.</p>
+    </div>
+  </div>
+
+  <div id="p3" class="vmodel-panel">
+    <span class="vmodel-badge">③ Branche gauche — Conception détaillée</span>
+    <h3>Conception détaillée</h3>
+    <p>On définit <strong>chaque module logiciel</strong> : ses entrées, sorties, algorithmes, cas aux limites, et les règles de réalisation.</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Module de détection de glissement :</strong><br/>
+      <table>
+        <thead><tr><th>Règle</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>P1</code></td><td>Lecture des 4 capteurs de roue toutes les 1 ms (tâche temps réel prioritaire).</td></tr>
+          <tr><td><code>P2</code></td><td>Calcul du taux de glissement : <code>λ = (V_véhicule − V_roue) / V_véhicule</code>. Si λ > 0,20 → blocage détecté.</td></tr>
+          <tr><td><code>P3</code></td><td>Hystérésis sur le seuil : ne déclencher que si blocage détecté sur 3 cycles consécutifs (anti-rebond).</td></tr>
+          <tr><td><code>P4</code></td><td>En cas de capteur hors plage, passer en mode dégradé et activer EF-03.</td></tr>
+          <tr><td><code>P5</code></td><td>Toutes les constantes (seuils, temps) nommées et documentées ; aucune valeur magique dans le code.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="p4" class="vmodel-panel">
+    <span class="vmodel-badge">④ Centre du V — Implémentation</span>
+    <h3>Codage et implémentation</h3>
+    <p>On transforme la conception détaillée en <strong>code source</strong>, en respectant les règles de réalisation définies à l'étape précédente.</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Extrait du module ABS en C embarqué :</strong>
+      <pre style="background:#1e293b;color:#e2e8f0;padding:0.8rem;border-radius:6px;font-size:0.82rem;margin-top:0.5rem;overflow-x:auto"><code>{`/* Seuil de glissement (P2, P5) */
+#define SLIP_THRESHOLD  0.20f
+#define DEBOUNCE_CYCLES 3u
+
+/* Calcul du taux de glissement (P2) */
+float compute_slip(float v_vehicle, float v_wheel) {
+    if (v_vehicle < 0.1f) return 0.0f;  /* véhicule arrêté */
+    return (v_vehicle - v_wheel) / v_vehicle;
+}
+
+/* Détection avec hystérésis (P3) */
+bool detect_lock(float slip, uint8_t *count) {
+    if (slip > SLIP_THRESHOLD) {
+        (*count)++;
+    } else {
+        *count = 0u;
+    }
+    return (*count >= DEBOUNCE_CYCLES);
+}`}</code></pre>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ Chaque fonction implémente une règle de réalisation précise (P2, P3, P5). Le code est <strong>traçable</strong> : on peut retrouver quelle exigence chaque ligne satisfait.</p>
+    </div>
+  </div>
+
+  <div id="p5" class="vmodel-panel">
+    <span class="vmodel-badge">⑤ Branche droite — Tests unitaires</span>
+    <h3>Tests unitaires</h3>
+    <p>On teste <strong>chaque fonction isolément</strong>, avec des entrées connues et des résultats attendus. Cette étape correspond à la conception détaillée (phase ③).</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Tests du module de glissement :</strong>
+      <pre style="background:#1e293b;color:#e2e8f0;padding:0.8rem;border-radius:6px;font-size:0.82rem;margin-top:0.5rem;overflow-x:auto"><code>{`/* Tests unitaires avec Unity (framework C) */
+void test_slip_normal_braking(void) {
+    /* 60 km/h véhicule, 55 km/h roue → glissement 8 % → pas de blocage */
+    TEST_ASSERT_FLOAT_WITHIN(0.001f, 0.083f, compute_slip(60.0f, 55.0f));
+}
+
+void test_slip_locked_wheel(void) {
+    /* Roue bloquée : V_roue = 0 → glissement 100 % */
+    TEST_ASSERT_EQUAL_FLOAT(1.0f, compute_slip(80.0f, 0.0f));
+}
+
+void test_debounce_requires_3_cycles(void) {
+    uint8_t count = 0;
+    TEST_ASSERT_FALSE(detect_lock(0.30f, &count)); /* 1er cycle */
+    TEST_ASSERT_FALSE(detect_lock(0.30f, &count)); /* 2e cycle  */
+    TEST_ASSERT_TRUE( detect_lock(0.30f, &count)); /* 3e cycle  */
+}
+
+void test_debounce_resets_on_ok(void) {
+    uint8_t count = 2;
+    detect_lock(0.05f, &count); /* sous le seuil → reset */
+    TEST_ASSERT_EQUAL_UINT8(0, count);
+}`}</code></pre>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ Les tests aux <strong>valeurs limites</strong> (ici le seuil à 0,20) sont les plus importants : un <code>&gt;</code> ou un <code>≥</code> mal placé passe inaperçu sur les valeurs «&nbsp;normales&nbsp;».</p>
+    </div>
+  </div>
+
+  <div id="p6" class="vmodel-panel">
+    <span class="vmodel-badge">⑥ Branche droite — Tests d'intégration</span>
+    <h3>Tests d'intégration</h3>
+    <p>On assemble plusieurs modules et on vérifie qu'ils <strong>fonctionnent correctement ensemble</strong>. Cette étape correspond à l'architecture (phase ②).</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Scénarios d'intégration ABS :</strong>
+      <table>
+        <thead><tr><th>Scénario</th><th>Modules impliqués</th><th>Résultat attendu</th></tr></thead>
+        <tbody>
+          <tr><td>Freinage normal sur asphalte sec</td><td>Capteurs + ECU</td><td>Pas d'intervention ABS ; aucune réduction de pression.</td></tr>
+          <tr><td>Freinage d'urgence sur verglas</td><td>Capteurs + ECU + modulateur</td><td>ABS déclenché en &lt; 10 ms ; pression réduite cycliquement sur les 4 roues.</td></tr>
+          <tr><td>Capteur avant-gauche défaillant</td><td>Capteurs + ECU + tableau de bord</td><td>Mode dégradé activé ; voyant ABS allumé dans les 100 ms.</td></tr>
+          <tr><td>Redémarrage à chaud après erreur</td><td>ECU + mémoire EEPROM</td><td>Code d'erreur enregistré ; comportement nominal restauré si capteur OK.</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ Si un test d'intégration échoue, l'erreur vient souvent de l'<strong>interface</strong> entre modules (mauvais format de donnée, timing, unité) et non du code interne de chaque module.</p>
+    </div>
+  </div>
+
+  <div id="p7" class="vmodel-panel">
+    <span class="vmodel-badge">⑦ Branche droite — Validation (recette client)</span>
+    <h3>Tests d'acceptation et validation</h3>
+    <p>Le client ou l'homologateur vérifie que le système <strong>répond au besoin initial</strong> exprimé dans la spécification (phase ①). C'est la «&nbsp;recette&nbsp;» : le système peut-il être livré ?</p>
+    <div class="example-block">
+      <strong>🚗 Exemple automobile — Homologation ABS (norme ISO 26262) :</strong>
+      <table>
+        <thead><tr><th>Exigence initiale</th><th>Test d'acceptation</th><th>Critère de succès</th></tr></thead>
+        <tbody>
+          <tr><td>EF-01 : détection &lt; 10 ms</td><td>Banc de mesure à 100 km/h, freinage brutal, 50 répétitions</td><td>100 % des détections en &lt; 8 ms (marge de sécurité)</td></tr>
+          <tr><td>EF-02 : réduction 20 %–80 %</td><td>Piste verglas −20 °C, freinage d'urgence, 20 passages</td><td>Distance d'arrêt ≤ référence ECE R13 + 5 %</td></tr>
+          <tr><td>ENF-01 : −40 °C à +85 °C</td><td>Chambre climatique, 100 cycles chaud/froid</td><td>Aucune défaillance, aucune dérive des seuils</td></tr>
+          <tr><td>EF-03 : voyant défaut</td><td>Déconnexion de chaque capteur, l'un après l'autre</td><td>Voyant allumé dans les 200 ms à chaque déconnexion</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:0.6rem;font-size:0.88rem;color:#475569">ℹ️ La validation ne teste pas le code, elle teste le <strong>comportement du système complet</strong> dans des conditions réelles. Si un test d'acceptation échoue, c'est souvent une exigence mal écrite à la phase ① — et tout le V doit être revu.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>{`
+  function showPanel(id) {
+    // Fermer tous les panneaux
+    document.querySelectorAll('.vmodel-panel').forEach(function(p) {
+      p.classList.remove('active');
+    });
+    // Ouvrir le panneau cible
+    var target = document.getElementById(id);
+    if (target) {
+      target.classList.add('active');
+      target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+`}</script>
+</div>
+
+---
+
+## Les deux branches en résumé
+
+| Phase | Branche | Question posée |
+|---|---|---|
+| ① Spécification système | Gauche ↘ | *Que doit faire le système ?* |
+| ② Architecture système | Gauche ↘ | *Avec quels composants et protocoles ?* |
+| ③ Conception détaillée | Gauche ↘ | *Comment chaque module fonctionne-t-il ?* |
+| ④ Implémentation | Bas ↓ | *Comment traduire le design en code ?* |
+| ⑤ Tests unitaires | Droite ↗ | *Chaque fonction est-elle correcte isolément ?* |
+| ⑥ Tests d'intégration | Droite ↗ | *Les modules fonctionnent-ils ensemble ?* |
+| ⑦ Validation | Droite ↗ | *Le système répond-il au besoin du client ?* |
+
+La règle d'or : **la phase ① et la phase ⑦ sont en miroir**, tout comme ② ↔ ⑥ et ③ ↔ ⑤. Si une exigence de la phase ① n'a pas de test en phase ⑦, elle ne sera jamais vérifiée.
+
+---
+
+## Tests en boucle dans l'industrie (SIL, PIL, HIL)
+
+L'industrie automobile et aérospatiale utilise des environnements de test progressifs pour valider le code **avant** de le tester sur le vrai matériel.
+
+| Sigle | Nom complet | Ce que l'on exécute | Matériel cible | Équivalent dans vos projets |
+|---|---|---|---|---|
+| **SIL** | Software-in-the-Loop | Code source sur PC | Aucun | Tests unitaires (Unity, pytest) sur votre ordinateur |
+| **PIL** | Processor-in-the-Loop | Code compilé pour la cible, sans E/S réelles | MCU cible | Programme sur Arduino, moniteur série uniquement |
+| **HIL** | Hardware-in-the-Loop | Système complet avec E/S simulées en temps réel | MCU + E/S simulées | Wokwi (simulateur de matériel) |
+
+:::note[Wokwi comme HIL simplifié]
+Wokwi exécute le programme compilé instruction par instruction sur une simulation fidèle du microcontrôleur, avec des capteurs, LEDs, écrans et bus simulés. C'est une forme de HIL accessible : vous pouvez simuler un capteur défaillant, une température impossible, ou un appui long sur un bouton, sans risquer d'endommager un composant.
+:::
+
+---
+
+## Processus d'ingénierie des SE : la spécification comme point de départ
+
+Dans votre cours, la section **Processus d'Ingénierie des SE** commence par identifier les capteurs et les actionneurs nécessaires. Cette étape **est** la spécification (phase ①) du modèle en V :
+
+| Étape du cours | Phase du modèle en V | Question |
+|---|---|---|
+| Identifier les grandeurs physiques à mesurer | ① Spécification | Quels capteurs ? |
+| Choisir les actionneurs selon la puissance, la précision | ① Spécification | Quels actionneurs ? |
+| Définir les protocoles (I²C, SPI, UART, CAN) | ② Architecture | Comment les connecter ? |
+| Écrire les algorithmes de traitement (filtrage, hystérésis) | ③ Conception détaillée | Comment traiter les données ? |
+| Coder et téléverser sur la carte | ④ Implémentation | Comment le programmer ? |
+| Vérifier que le capteur renvoie les bonnes valeurs | ⑤ Tests unitaires | La lecture est-elle correcte ? |
+| Vérifier que le système réagit aux capteurs | ⑥ Intégration | Capteur + actionneur fonctionnent-ils ensemble ? |
+| Valider le comportement final | ⑦ Validation | Le système fait-il ce qui était demandé ? |
+
+---
+
+## Teste-toi
+
+<Question id="c2-vmodel-q1" label="Q1">
+Quelle est la différence entre un test unitaire (phase ⑤) et un test d'intégration (phase ⑥) ? Donnez un exemple concret dans le domaine des systèmes embarqués.
+</Question>
+
+<Question id="c2-vmodel-q2" label="Q2">
+Dans le modèle en V, à quelle phase de conception correspond la phase de validation (⑦) ? Que se passe-t-il si un test de validation échoue ?
+</Question>
+
+<Question id="c2-vmodel-q3" label="Q3">
+Pourquoi teste-t-on les valeurs exactement aux seuils (par exemple, λ = 0,20 dans l'ABS) et pas seulement des valeurs «&nbsp;normales&nbsp;» loin des seuils ?
+</Question>
+
+<details>
+<summary>Voir les réponses</summary>
+
+1. **Test unitaire** : vérification d'une seule fonction isolée, avec des entrées contrôlées. Exemple : tester la fonction `compute_slip(60.0, 55.0)` et vérifier qu'elle retourne 0,083. **Test d'intégration** : vérification que plusieurs modules fonctionnent ensemble. Exemple : vérifier que le capteur DHT22 communique avec le microcontrôleur et que la LED RVB change bien de couleur en fonction de la température lue.
+
+2. La validation (⑦) correspond à la spécification système (①). Ce sont les mêmes exigences, vérifiées sur le système complet. Si un test de validation échoue, cela peut signifier : (a) une exigence mal écrite en ①, (b) un défaut non détecté lors des phases précédentes, ou (c) un cas non prévu. Dans tous les cas, il faut remonter au niveau correspondant pour corriger.
+
+3. Les seuils sont les **valeurs de frontière** où le comportement change. Un `>` mal placé (au lieu de `≥`) donne un résultat incorrect exactement au seuil. Ces erreurs passent inaperçues lors des tests avec des valeurs loin des seuils. C'est la règle des **tests aux valeurs limites** : tester juste en dessous, exactement à, et juste au-dessus de chaque seuil.
+
+</details>
+
+:::note[Prochaine étape]
+Vous pouvez maintenant aborder le [TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/) avec ce cadre en tête : chaque exercice construit une pièce du système, et l'exercice 11 les assemble pour le tester au complet — exactement comme la branche droite du modèle en V.
+:::
