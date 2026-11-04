@@ -1,0 +1,74 @@
+---
+title: "Exercice 4 — Interrupteur coulissant et liaison série"
+description: Exercice 4 du TP1 — lire un interrupteur avec la résistance de tirage interne et afficher son état sur le moniteur série.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Utiliser la **résistance de tirage interne** de la carte et la **liaison série** pour suivre le fonctionnement d'un programme. Rappel de cours : leçon [8](/Embedded-System-Course/parcours/chapitre-1/08-exercice-interrupteur/) du chapitre 1.
+:::
+
+L'interrupteur coulissant **garde sa position**. Il sert à choisir un mode de fonctionnement stable.
+
+## Câblage
+
+| Composant | Broche du composant | Relier à |
+|---|---|---|
+| Interrupteur coulissant | broche 2 (commun, au milieu) | **GND** |
+| Interrupteur coulissant | broche 3 | **D5** |
+| LED | anode → **D13** ; cathode → résistance 220 Ω → **GND** | voyant |
+
+![Montage dans Wokwi : interrupteur coulissant, LED et carte UNO](../../../../../assets/parcours/chapitre-1/img/montage-interrupteur.webp)
+
+*Aucune résistance de tirage externe : la carte active sa résistance interne.*
+
+## Programme
+
+```cpp
+const int LED = 13, interrupteur = 5;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+  pinMode(interrupteur, INPUT_PULLUP);  // résistance de tirage interne vers 5 V
+  Serial.begin(9600);                   // démarrage de la communication série
+}
+
+void loop() {
+  int interrupteurState = digitalRead(interrupteur);
+  digitalWrite(LED, interrupteurState);
+  if (interrupteurState == HIGH) {
+    Serial.println("Interrupteur ouvert (HIGH)");
+  } else {
+    Serial.println("Interrupteur ferme (LOW)");
+  }
+}
+```
+
+Ouvrez le **moniteur série** de Wokwi (il s'affiche sous le schéma), puis basculez l'interrupteur.
+
+<Question id="tp1-q4.1" label="Q4.1">
+Quel est le rôle de `INPUT_PULLUP` ? Qu'est-ce qui remplace la résistance de 10 kΩ de l'exercice 3 ?
+</Question>
+
+<Question id="tp1-q4.2" label="Q4.2">
+Dans quelle position de l'interrupteur la LED s'allume-t-elle ? Pourquoi dit-on que la logique est **inversée** ? Quelle modification d'une seule ligne allume la LED quand l'interrupteur relie D5 à GND ?
+</Question>
+
+<Question id="tp1-q4.3" label="Q4.3">
+Déduisez le **rôle de la communication série** sur Arduino. Que signifie « 9600 bauds » ? Sachant qu'un caractère occupe 10 bits sur la ligne (8 bits de données, 1 bit de départ, 1 bit d'arrêt), combien de caractères par seconde peut-on transmettre au maximum ?
+</Question>
+
+<Question id="tp1-q4.4" label="Q4.4" type="code" categorie="ingenieur">
+Le programme affiche l'état **à chaque tour de boucle** et inonde le moniteur série. Modifiez-le pour n'afficher un message **qu'au changement de position** de l'interrupteur. Collez votre programme.
+</Question>
+
+## Critères de validation
+
+- [ ] La LED suit la position de l'interrupteur.
+- [ ] Le moniteur série n'affiche un message qu'au changement de position de l'interrupteur.
+- [ ] Les questions Q4.1 à Q4.4 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[exercice 5 : potentiomètre et PWM](/Embedded-System-Course/parcours/chapitre-2/tp1/ex05-potentiometre-pwm/).
+:::

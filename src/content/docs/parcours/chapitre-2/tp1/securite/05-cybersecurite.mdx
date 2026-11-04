@@ -1,12 +1,12 @@
 ---
-title: TP3 · C. Cybersécurité du nœud
-description: Partie C du TP3 — console de maintenance, validation des entrées, authentification et verrouillage, PIN d'usine, intégrité de la configuration, détection d'ouverture et journal d'audit.
+title: "Partie sécurité · C. Cybersécurité du nœud"
+description: Étape C de la partie sécurité — console de maintenance, validation des entrées, authentification et verrouillage, PIN d'usine, intégrité de la configuration, détection d'ouverture et journal d'audit.
 ---
 
-import Question from '../../../../../components/Question.astro';
+import Question from '../../../../../../components/Question.astro';
 
-:::note[Objectif de la partie]
-Protéger la configuration et la fonction d'alarme contre une **action malveillante** : exigences SEC-1 à SEC-6. Marqueurs du code : `TODO C1` à `TODO C5`.
+:::note[Objectif de l'étape]
+Protéger la configuration et la fonction d'alarme contre une **action malveillante**, comme celles des épreuves 4 et 5 de l'étape 0 : exigences SEC-1 à SEC-6. Marqueurs du code : `TODO C1` à `TODO C5`.
 :::
 
 ## La console de maintenance
@@ -17,7 +17,7 @@ Le technicien règle le nœud depuis le moniteur série. La console distingue le
 |---|---|---|
 | `AIDE` | public | Liste des commandes autorisées |
 | `ETAT` | public | État, mesures, seuil, session, boîtier |
-| `STATS` | public | Indicateurs d'exploitation (partie D) |
+| `STATS` | public | Indicateurs d'exploitation (étape D) |
 | `CONNEXION <pin>` | public | Ouvre une session |
 | `DECONNEXION` | session | Ferme la session |
 | `PIN <ancien> <nouveau>` | session | Change le code PIN |
@@ -32,7 +32,7 @@ Sans session, une commande réservée reçoit **la même réponse** qu'une comma
 
 ## C1. Valider les entrées (SEC-2)
 
-Toute donnée qui entre dans le système est **suspecte** tant qu'elle n'a pas été validée. La fonction `lireConsole()`, fournie, lit les caractères **sans attendre** dans un tampon de taille fixe :
+Toute donnée qui entre dans le système est **suspecte** tant qu'elle n'a pas été validée : c'était la leçon de l'épreuve 4. La fonction `lireConsole()`, fournie, lit les caractères **sans attendre** dans un tampon de taille fixe :
 
 ```cpp
 } else if (c < 0x20 || c > 0x7E) {
@@ -74,7 +74,7 @@ bool pinEgal(const char *saisi, const char *attendu) {
 }
 ```
 
-Complétez `connexion()` (`TODO C2`) : aucune tentative n'est évaluée pendant un verrouillage ; chaque échec incrémente `config.echecs`, **enregistré en EEPROM** ; à partir du 3<sup>e</sup> échec, le nœud se verrouille 30 s, puis 1 min, 2 min, 4 min et 8 min au plus. Dans `setup()`, reprenez le verrouillage si `config.echecs` atteint déjà 3.
+Complétez `connexion()` (`TODO C2`) : aucune tentative n'est évaluée pendant un verrouillage ; chaque échec incrémente `config.echecs`, **enregistré en EEPROM** ; à partir du 3<sup>e</sup> échec, le nœud se verrouille 30 s, puis 1 min, 2 min, 4 min et 8 min au plus. Dans `setup()`, reprenez le verrouillage si `config.echecs` atteint déjà 3 : sur une vraie carte, il suffit d'appuyer sur RESET, ou même de rouvrir le moniteur série, pour redémarrer l'UNO.
 
 <Question id="tp3-qc.4" label="QC.4" categorie="securite">
 Un PIN de 4 chiffres offre 10 000 combinaisons. Un script envoie une tentative toutes les 100 ms. Estimez le temps nécessaire pour toutes les essayer : (a) sans verrouillage ; (b) avec un verrouillage fixe de 30 s toutes les 3 tentatives ; (c) avec la politique de SEC-1. Pourquoi le compteur d'échecs doit-il survivre à un **redémarrage** ?
@@ -130,10 +130,10 @@ En cas de configuration corrompue, le nœud repart avec le seuil par défaut (40
 
 ## C5. Détecter l'ouverture du boîtier (SEC-5)
 
-Le contact d'ouverture relie D4 à la masse quand le boîtier est **fermé**. Écrivez `surveillerBoitier()` (`TODO C5`) en filtrant les rebonds sur 50 ms. À l'ouverture : passez en INTRUSION, journalisez l'événement et fermez la session. La fermeture est journalisée, mais l'intrusion reste active jusqu'à `ACQUITTER`.
+L'épreuve 5 l'a montré : un boîtier ouvert permet de tromper le capteur. Le contact d'ouverture relie D4 à la masse quand le boîtier est **fermé**. Écrivez `surveillerBoitier()` (`TODO C5`) en filtrant les rebonds sur 50 ms. À l'ouverture : passez en INTRUSION, journalisez l'événement et fermez la session. La fermeture est journalisée, mais l'intrusion reste active jusqu'à `ACQUITTER`.
 
 <Question id="tp3-qc.11" label="QC.11" categorie="securite">
-Que lit D4 si un intrus **coupe le fil** du contact ? Pourquoi ce câblage est-il préférable à un contact qui relierait D4 à la masse quand le boîtier est ouvert ? Pourquoi le bouton d'acquittement ne peut-il pas mettre fin à une intrusion ?
+Que lit D4 si un intrus **coupe le fil** du contact ? Pourquoi ce câblage est-il préférable à un contact qui relierait D4 à la masse quand le boîtier est ouvert ? Faites le lien avec l'épreuve 3. Pourquoi le bouton d'acquittement ne peut-il pas mettre fin à une intrusion ?
 </Question>
 
 ## C6. Le journal d'audit (SEC-6)
@@ -151,12 +151,12 @@ Collez vos fonctions `lireDecimal()`, `changerSeuil()`, `connexion()`, `changerP
 ## Critères de validation
 
 - [ ] Aucune commande de configuration n'est possible sans session ni avant le changement du PIN d'usine.
-- [ ] Trois PIN faux verrouillent la console, même après un redémarrage par `TEST BLOCAGE`.
+- [ ] Trois PIN faux verrouillent la console. Le verrouillage reprend après un redémarrage de la carte : à vérifier sur une vraie carte (bouton RESET), car dans Wokwi `TEST BLOCAGE` exige une session, impossible pendant le verrouillage.
 - [ ] Toutes les entrées de QC.3 sont traitées comme attendu, sans plantage.
 - [ ] Une configuration corrompue est détectée au démarrage et remplacée par des valeurs sûres.
 - [ ] L'ouverture du boîtier déclenche INTRUSION ; seul `ACQUITTER`, en session et boîtier fermé, y met fin.
 - [ ] Le journal ne contient aucun PIN.
 
 :::note[Prochaine étape]
-Validez cette page, puis passez à la [partie D : données et recette](/Embedded-System-Course/parcours/chapitre-2/tp3/05-donnees-recette/).
+Validez cette page, puis passez à l'[étape D : données et recette](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/06-donnees-recette/).
 :::

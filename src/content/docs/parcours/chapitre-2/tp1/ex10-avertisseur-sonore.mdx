@@ -1,0 +1,61 @@
+---
+title: "Exercice 10 — Avertisseur sonore"
+description: Exercice 10 du TP1 — faire sonner un buzzer au-delà de 40 °C et organiser le programme pour que la surveillance ne dépende pas du bouton.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Ajouter l'**avertisseur sonore** qui alerte les agents au-delà de 40 °C (exigence EF4), puis organiser `loop()` pour que la surveillance soit **continue**.
+:::
+
+Ajoutez un **buzzer** qui émet un son lorsque la température dépasse **40 °C**.
+
+## Câblage
+
+Partez d'une copie du projet de l'exercice 9 et ajoutez :
+
+| Buzzer | Relier à |
+|---|---|
+| broche 2 (+, fil rouge) | **D8** |
+| broche 1 (−, fil noir) | **GND** |
+
+## Programme
+
+Le buzzer de Wokwi est **passif** : il ne sonne que si on lui envoie un signal périodique. La fonction `tone(broche, fréquence)` produit ce signal ; `tone(broche, fréquence, durée)` s'arrête seule après la durée indiquée ; `noTone(broche)` coupe le son.
+
+```cpp
+const int buzzerPin = 8;
+const float SEUIL_ALARME = 40.0;  // °C
+
+// Dans loop(), après une mesure :
+if (temperature > SEUIL_ALARME) {
+  tone(buzzerPin, 1000);  // 1 kHz
+} else {
+  noTone(buzzerPin);
+}
+```
+
+Portez la température du capteur à 42 °C, puis ramenez-la à 30 °C.
+
+<Question id="tp2-q5.1" label="Q10.1">
+Pourquoi faut-il utiliser `tone()` plutôt que `digitalWrite()` pour faire sonner ce buzzer ?
+</Question>
+
+<Question id="tp2-q5.2" label="Q10.2" categorie="ingenieur">
+Dans l'exercice 9, la mesure n'a lieu **que si l'on appuie sur le bouton**. Que se passe-t-il si la température dépasse 40 °C alors que personne n'appuie ? L'exigence EF4 est-elle respectée ? Proposez une nouvelle organisation de `loop()` qui sépare la **surveillance** (mesure toutes les 2 s, LED, buzzer) de l'**affichage** (écran LCD à la demande).
+</Question>
+
+<Question id="tp2-q5.3" label="Q10.3" categorie="ingenieur">
+Consultez la [documentation de `tone()`](https://docs.arduino.cc/language-reference/en/functions/advanced-io/tone/). Sur l'UNO, quelles broches PWM sont perturbées pendant qu'un son est joué ? Notre LED RVB est-elle concernée ? Pourquoi les couleurs pures (valeurs 0 ou 255) s'affichent-elles quand même correctement ? Proposez un câblage qui supprime le conflit.
+</Question>
+
+## Critères de validation
+
+- [ ] Le buzzer sonne au-dessus de 40 °C et se tait au-dessous.
+- [ ] Après réorganisation de `loop()`, l'alarme se déclenche **sans** appui sur le bouton, et le bouton met toujours l'écran à jour.
+- [ ] Les questions Q10.1 à Q10.3 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[exercice 11 : unités et programme final](/Embedded-System-Course/parcours/chapitre-2/tp1/ex11-unites-programme-final/).
+:::

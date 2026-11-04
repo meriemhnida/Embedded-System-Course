@@ -1,21 +1,19 @@
 ---
-title: TP2 · C. Bouton et écran LCD
-description: Exercice 4 du TP2 — déclencher l'acquisition par un bouton-poussoir et afficher les mesures sur un écran LCD 16×2 relié en I²C.
+title: "Exercice 9 — Bouton et écran LCD"
+description: Exercice 9 du TP1 — déclencher l'acquisition par un bouton-poussoir et afficher les mesures sur un écran LCD 16×2 relié en I²C.
 ---
 
 import Question from '../../../../../components/Question.astro';
 
-:::note[Objectif de la partie]
+:::note[Objectif de l'exercice]
 Construire l'**interface homme-machine** du contrôleur : un bouton déclenche une acquisition et un **écran LCD 16×2** relié par le **bus I²C** affiche les mesures (exigence EF3).
 :::
 
-## Exercice 4 — Acquisition à la demande et affichage LCD
-
 On souhaite que l'acquisition de la température et de l'humidité soit **déclenchée par un bouton-poussoir** : un appui provoque une mesure et son affichage. Sans appui, l'écran **conserve** la dernière mesure jusqu'à l'appui suivant.
 
-### Câblage
+## Câblage
 
-Partez du montage de la partie B et ajoutez :
+Partez d'une copie du projet de l'exercice 8 et ajoutez :
 
 | Composant | Broche du composant | Relier à |
 |---|---|---|
@@ -26,13 +24,13 @@ Partez du montage de la partie B et ajoutez :
 | Écran LCD | SDA | **A4** |
 | Écran LCD | SCL | **A5** |
 
-![Montage avec le bouton-poussoir relié à la broche 6, la LED RVB et le DHT22](../../../../../assets/parcours/chapitre-2/tp2/montage-bouton.webp)
+![Montage avec le bouton-poussoir relié à la broche 6, la LED RVB et le DHT22](../../../../../assets/parcours/chapitre-2/tp1/montage-bouton.webp)
 
 *Le bouton est relié à D6 et à la masse. Ajoutez l'écran LCD : quatre fils suffisent.*
 
 Ajoutez la bibliothèque **LiquidCrystal I2C** au projet.
 
-### Programme
+## Programme
 
 Déclarations, avant `setup()` :
 
@@ -84,23 +82,23 @@ void checkButton() {
 
 Appelez `checkButton()` dans `loop()`, lancez la simulation et appuyez sur le bouton.
 
-<Question id="tp2-q4.1" label="Q4.1">
+<Question id="tp2-q4.1" label="Q9.1">
 Pourquoi le bouton est-il considéré comme appuyé quand la broche lit **LOW** ? Pourquoi n'a-t-on pas besoin de résistance externe ?
 </Question>
 
-<Question id="tp2-q4.2" label="Q4.2">
+<Question id="tp2-q4.2" label="Q9.2">
 L'écran n'utilise que **deux fils de données**. Comment s'appelle ce bus ? Quelles broches de l'UNO portent SDA et SCL ? Que représente le nombre **0x27** ?
 </Question>
 
-<Question id="tp2-q4.3" label="Q4.3" categorie="ingenieur">
+<Question id="tp2-q4.3" label="Q9.3" categorie="ingenieur">
 Comptez les caractères de la ligne `Temperature: 24.00C`. Tient-elle sur l'écran ? Proposez un format d'affichage qui tient sur **16 caractères**, avec une décimale et le symbole degré (`lcd.print((char)223)` affiche « ° » sur cet écran).
 </Question>
 
-<Question id="tp2-q4.4" label="Q4.4" type="code">
-Avec `checkButton()` tel quel, l'écran est effacé et réécrit **tant que** le bouton reste enfoncé, et il clignote. Modifiez la fonction pour qu'**un appui = une seule acquisition** : détectez le **front descendant** du bouton et filtrez les rebonds. L'affichage reste figé jusqu'à l'appui suivant. Collez votre code.
+<Question id="tp2-q4.4" label="Q9.4" type="code">
+Avec `checkButton()` tel quel, l'écran est effacé et réécrit **tant que** le bouton reste enfoncé, et il clignote. Modifiez la fonction pour qu'**un appui = une seule acquisition** : détectez le **front descendant** du bouton et filtrez les rebonds (exercice 3). L'affichage reste figé jusqu'à l'appui suivant. Collez votre code.
 </Question>
 
-<Question id="tp2-q4.5" label="Q4.5" categorie="ingenieur">
+<Question id="tp2-q4.5" label="Q9.5" categorie="ingenieur">
 Si `loop()` contient encore `delay(2000)`, certains appuis courts sont ignorés. Pourquoi ? Comment garantir à la fois une mesure toutes les 2 s **et** une réaction immédiate au bouton ?
 </Question>
 
@@ -109,8 +107,8 @@ Si `loop()` contient encore `delay(2000)`, certains appuis courts sont ignorés.
 - [ ] Un appui sur le bouton affiche la température et l'humidité ; l'affichage reste stable jusqu'à l'appui suivant.
 - [ ] Les deux lignes tiennent sur l'écran, avec une unité lisible.
 - [ ] Un appui bref est toujours pris en compte.
-- [ ] Les questions Q4.1 à Q4.5 ont une réponse justifiée.
+- [ ] Les questions Q9.1 à Q9.5 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis passez à la [partie D : alarme sonore, unités et défi](/Embedded-System-Course/parcours/chapitre-2/tp2/05-alarme-defi/).
+Validez cette page, puis passez à l'[exercice 10 : avertisseur sonore](/Embedded-System-Course/parcours/chapitre-2/tp1/ex10-avertisseur-sonore/).
 :::

@@ -1,18 +1,18 @@
 ---
-title: TP3 · B. Sûreté de fonctionnement
-description: Partie B du TP3 — ordonnancement non bloquant, machine à états avec hystérésis, défaut capteur, acquittement et chien de garde.
+title: "Partie sécurité · B. Sûreté de fonctionnement"
+description: Étape B de la partie sécurité — ordonnancement non bloquant, machine à états avec hystérésis, défaut capteur, acquittement et chien de garde.
 ---
 
-import Question from '../../../../../components/Question.astro';
-import MachineEtats from '../../../../../components/MachineEtats.astro';
+import Question from '../../../../../../components/Question.astro';
+import MachineEtats from '../../../../../../components/MachineEtats.astro';
 
-:::note[Objectif de la partie]
-Garantir que le nœud **surveille en permanence** et que **toute défaillance conduit à un état sûr et signalé** : exigences SÛR-1 à SÛR-4. Marqueurs du code : `TODO B1` à `TODO B4`.
+:::note[Objectif de l'étape]
+Garantir que le nœud **surveille en permanence** et que **toute défaillance conduit à un état sûr et signalé** : exigences SÛR-1 à SÛR-4. Les épreuves 1 et 2 de l'étape 0 ont montré ce qui se passe sans ces exigences. Marqueurs du code : `TODO B1` à `TODO B4`.
 :::
 
 ## L'architecture du programme
 
-Le code de départ ne contient **aucune attente** dans `loop()`. Chaque tâche fait un petit travail puis rend la main : c'est un **ordonnancement coopératif**. Un tour de boucle dure moins d'une milliseconde, sauf quand le capteur est lu.
+Comme votre programme final de l'exercice 11, le code de départ ne contient **aucune attente** dans `loop()`. Chaque tâche fait un petit travail puis rend la main : c'est un **ordonnancement coopératif**. Un tour de boucle dure moins d'une milliseconde, sauf quand le capteur est lu.
 
 ```cpp
 void loop() {
@@ -20,19 +20,19 @@ void loop() {
   const unsigned long maintenant = millis();
 
   lireConsole();                                   // commandes reçues, sans attendre
-  surveillerBoitier(maintenant);                   // contact d'ouverture (partie C)
+  surveillerBoitier(maintenant);                   // contact d'ouverture (étape C)
   if (appuiBouton(maintenant)) acquittementLocal();
 
   if (maintenant - tAcquisition >= PERIODE_ACQ_MS) {   // toutes les 2 s
     tAcquisition += PERIODE_ACQ_MS;
     acquerir(maintenant);
   }
-  gererSession(maintenant);                        // expiration de la session (partie C)
+  gererSession(maintenant);                        // expiration de la session (étape C)
 
   const uint8_t nouvelEtat = calculerEtat();       // état le plus prioritaire
   if (nouvelEtat != etat) {
     etat = nouvelEtat;
-    telemetrieImmediate = true;                    // trame sur changement d'état (partie D)
+    telemetrieImmediate = true;                    // trame sur changement d'état (étape D)
   }
   // ... télémétrie périodique, LED, buzzer, écran
 }
@@ -42,7 +42,7 @@ La fonction `calculerEtat()`, fournie, choisit l'état affiché selon un ordre d
 
 ## B1. Machine à états et hystérésis (SÛR-2)
 
-L'état thermique dépend de la température **et de l'état précédent** : c'est ce qui permet l'hystérésis.
+L'état thermique dépend de la température **et de l'état précédent** : c'est ce qui permet l'**hystérésis** que vous aviez proposée à la question Q8.3.
 
 <MachineEtats />
 
@@ -60,13 +60,13 @@ En cliquant sur le DHT22, appliquez la séquence **24 → 38 → 39,5 → 40 →
 
 ## B2. Défaut capteur (SÛR-1)
 
-Une lecture invalide renvoie `NaN`. Une seule lecture ratée peut être un incident passager ; **trois de suite** signent une panne.
+Vous l'avez constaté à l'épreuve 1 : une lecture invalide renvoie `NaN`, et un programme naïf affiche alors « normal ». Une seule lecture ratée peut être un incident passager ; **trois de suite** signent une panne.
 
 Complétez `acquerir()` (`TODO B2`) : comptez les échecs consécutifs, déclarez le défaut au troisième en journalisant `EVT_DEFAUT_CAPTEUR`, puis levez-le à la première lecture valide en journalisant `EVT_CAPTEUR_RETABLI`.
 
 Deux façons de tester :
 
-- **arrêter** la simulation, **supprimer** le fil de données du DHT22, puis relancer ;
+- **arrêter** la simulation, **supprimer** le fil de données du DHT22, puis relancer, comme à l'épreuve 1 ;
 - en mode test, taper `CONNEXION 0000` puis `TEST CAPTEUR` : les lectures échouent pendant 10 s.
 
 <Question id="tp3-qb.3" label="QB.3" categorie="surete">
@@ -87,7 +87,7 @@ Que doit devenir l'acquittement quand l'alarme **se termine** puis **revient** ?
 
 ## B4. Chien de garde (SÛR-4)
 
-Le **chien de garde** (*watchdog*) est un minuteur matériel, indépendant du programme. S'il n'est pas **réarmé** avant l'échéance (ici 2 s), il **redémarre** le microcontrôleur. Un programme bloqué ne passe plus par l'instruction de réarmement : la carte repart d'elle-même au lieu de rester figée.
+L'épreuve 2 l'a montré : un programme bloqué cesse de surveiller, sans que personne ne le sache. Le **chien de garde** (*watchdog*) est un minuteur matériel, indépendant du programme. S'il n'est pas **réarmé** avant l'échéance (ici 2 s), il **redémarre** le microcontrôleur. Un programme bloqué ne passe plus par l'instruction de réarmement : la carte repart d'elle-même au lieu de rester figée.
 
 Le début de `setup()` est fourni :
 
@@ -112,7 +112,7 @@ Pourquoi faut-il désactiver le chien de garde **au tout début** de `setup()`, 
 </Question>
 
 <Question id="tp3-qb.8" label="QB.8" categorie="ingenieur">
-Évaluez la **durée maximale** d'un tour de `loop()`. La commande `JOURNAL` affiche environ 600 caractères ; or `Serial.print()` attend dès que son tampon de 64 octets est plein. Calculez la durée d'affichage à 9 600 bauds et à 115 200 bauds. Pourquoi le TP3 fonctionne-t-il à 115 200 bauds ?
+Évaluez la **durée maximale** d'un tour de `loop()`. La commande `JOURNAL` affiche environ 600 caractères ; or `Serial.print()` attend dès que son tampon de 64 octets est plein. Calculez la durée d'affichage à 9 600 bauds et à 115 200 bauds. Pourquoi le nœud sécurisé fonctionne-t-il à 115 200 bauds, alors que l'exercice 11 se contentait de 9 600 bauds ?
 </Question>
 
 <Question id="tp3-qb.9" label="QB.9" type="code" lignes={14}>
@@ -127,5 +127,5 @@ Collez vos fonctions `evaluerThermique()`, `acquerir()` et `acquittementLocal()`
 - [ ] `TEST BLOCAGE` provoque un redémarrage en 2 s environ, avec la cause affichée.
 
 :::note[Prochaine étape]
-Validez cette page, puis passez à la [partie C : cybersécurité du nœud](/Embedded-System-Course/parcours/chapitre-2/tp3/04-cybersecurite/).
+Validez cette page, puis passez à l'[étape C : cybersécurité du nœud](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/05-cybersecurite/).
 :::

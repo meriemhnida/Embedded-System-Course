@@ -1,13 +1,13 @@
 ---
-title: TP3 · D. Données, indicateurs et recette
-description: Partie D du TP3 — trames de télémétrie contrôlées par CRC, contrôle de vraisemblance, indicateurs d'exploitation, plan de recette et bilan de sécurité.
+title: "Partie sécurité · D. Données, indicateurs et recette"
+description: Étape D de la partie sécurité — trames de télémétrie contrôlées par CRC, contrôle de vraisemblance, indicateurs d'exploitation, plan de recette, comparaison avant / après et bilan de sécurité.
 ---
 
-import Question from '../../../../../components/Question.astro';
-import VerificateurTrame from '../../../../../components/VerificateurTrame.astro';
+import Question from '../../../../../../components/Question.astro';
+import VerificateurTrame from '../../../../../../components/VerificateurTrame.astro';
 
-:::note[Objectif de la partie]
-Transformer les mesures en **données de confiance** pour la supervision (DATA-1 à DATA-3), puis **prouver** que le nœud respecte tout le cahier des charges par une **recette**. Marqueurs du code : `TODO D1` à `TODO D3`.
+:::note[Objectif de l'étape]
+Transformer les mesures en **données de confiance** pour la supervision (DATA-1 à DATA-3), puis **prouver** que le nœud respecte tout le cahier des charges par une **recette** qui rejoue les épreuves de l'étape 0. Marqueurs du code : `TODO D1` à `TODO D3`.
 :::
 
 ## D1. Des trames de télémétrie contrôlées (DATA-1)
@@ -58,7 +58,7 @@ Collez dans l'outil une trame valide, puis modifiez **un seul chiffre** de la te
 
 ## D2. Contrôle de vraisemblance (DATA-2)
 
-L'air d'une armoire ne gagne pas 5 °C en 2 secondes. Une telle variation trahit un capteur **défaillant** ou **manipulé** (sèche-cheveux, bombe de froid). Complétez `acquerir()` (`TODO D2`) : comptez la mesure suspecte, passez la qualité à `SUSPECT` et journalisez `EVT_MESURE_SUSPECTE` **une seule fois par série**. Testez en faisant passer le DHT22 de 24 à 45 °C d'un coup.
+L'air d'une armoire ne gagne pas 5 °C en 2 secondes. Une telle variation trahit un capteur **défaillant** ou **manipulé** (sèche-cheveux, bombe de froid), comme à l'épreuve 5. Complétez `acquerir()` (`TODO D2`) : comptez la mesure suspecte, passez la qualité à `SUSPECT` et journalisez `EVT_MESURE_SUSPECTE` **une seule fois par série**. Testez en faisant passer le DHT22 de 24 à 45 °C d'un coup.
 
 <Question id="tp3-qd.4" label="QD.4" categorie="surete">
 Pourquoi la mesure suspecte **reste-t-elle prise en compte** pour l'alarme, au lieu d'être rejetée ? Décrivez un scénario réel où la rejeter serait dangereux, puis un scénario où un attaquant tirerait parti d'une règle de rejet.
@@ -100,13 +100,21 @@ Une fois SEC-3 en place, les commandes `TEST …` exigent d'avoir **changé le P
 Collez votre **plan de recette exécuté** : au moins **14 tests**, avec au moins un test par exigence (SÛR-1 à SÛR-4, SEC-1 à SEC-6, DATA-1 à DATA-3) et au moins trois tests de **cas d'erreur**. Indiquez le verdict de chaque test et, pour chaque échec, la correction apportée.
 </Question>
 
-## Bilan de sécurité
+## Avant / après : la manipulation finale refaite
 
-<Question id="tp3-qd.7" label="QD.7" categorie="securite" lignes={8}>
-Reprenez votre analyse de risques (partie A). Quelles **vulnérabilités subsistent** ? Pensez par exemple à la liaison série en clair, aux dates relatives à `millis()`, au PIN stocké en clair, à l'absence de mise à jour sécurisée, à la valeur de `MODE_TEST`. Proposez une **feuille de route** priorisée pour la version suivante.
+Vous avez refait la manipulation finale de l'exercice 11 en y intégrant les aspects de sécurité. Il reste à **montrer** ce qu'ils changent.
+
+<Question id="tp1-qd.avant-apres" label="QD.7" categorie="securite" lignes={8}>
+**Avant / après.** Rejouez les six épreuves de l'étape 0 sur votre nœud sécurisé (au besoin avec `TEST CAPTEUR` et `TEST BLOCAGE`). Présentez un tableau qui donne, pour chaque épreuve, le comportement de votre programme de l'exercice 11 (vos réponses QS.1 à QS.6), celui du nœud sécurisé, et l'exigence et le mécanisme qui expliquent la différence. Signalez les épreuves dont le résultat reste insatisfaisant.
 </Question>
 
-<Question id="tp3-qd.8" label="QD.8" type="code" lignes={16}>
+## Bilan de sécurité
+
+<Question id="tp3-qd.7" label="QD.8" categorie="securite" lignes={8}>
+Reprenez votre analyse de risques (étape A). Quelles **vulnérabilités subsistent** ? Pensez par exemple à la liaison série en clair, aux dates relatives à `millis()`, au PIN stocké en clair, à l'absence de mise à jour sécurisée, à la valeur de `MODE_TEST`. Proposez une **feuille de route** priorisée pour la version suivante.
+</Question>
+
+<Question id="tp3-qd.8" label="QD.9" type="code" lignes={16}>
 Collez vos fonctions `envoyerTelemetrie()` et `afficherStats()`, ainsi que le contrôle de vraisemblance ajouté dans `acquerir()`.
 </Question>
 
@@ -121,9 +129,9 @@ Le même cahier des charges se transpose sur une carte **ESP32**, que Wokwi simu
 - prévoir des **mises à jour à distance signées** ;
 - afficher les indicateurs dans un tableau de bord de supervision.
 
-## Livrables du TP3
+## Livrables de la partie sécurité
 
-1. Le **compte rendu** du TP3, exporté en PDF depuis [Mes réponses](/Embedded-System-Course/mes-reponses/) (sélection « TP3 ») : analyse de risques, réponses, plan de recette exécuté, bilan.
+1. Le **compte rendu** de la partie sécurité, exporté en PDF depuis [Mes réponses](/Embedded-System-Course/mes-reponses/) (sélection « TP1 · Partie sécurité ») : mise à l'épreuve, analyse de risques, réponses, plan de recette exécuté, comparaison avant / après, bilan.
 2. Le **lien Wokwi** du projet final.
 3. Le **programme final** (`sketch.ino`), sans aucun `TODO` restant.
 

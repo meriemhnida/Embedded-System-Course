@@ -1,19 +1,17 @@
 ---
-title: TP1 · C. Analogique et PWM
+title: "Exercice 5 — Régler la luminosité avec un potentiomètre"
 description: Exercice 5 du TP1 — lire un potentiomètre avec le convertisseur analogique-numérique et régler la luminosité d'une LED en PWM.
 ---
 
 import Question from '../../../../../components/Question.astro';
 
-:::note[Objectif de la partie]
+:::note[Objectif de l'exercice]
 Passer du « tout ou rien » à une **grandeur continue** : lire une tension avec le convertisseur analogique-numérique, puis commander une sortie en **PWM**. Rappel de cours : leçon [9](/Embedded-System-Course/parcours/chapitre-1/09-exercice-potentiometre/) du chapitre 1.
 :::
 
-## Exercice 5 — Régler la luminosité d'une LED avec un potentiomètre
-
 Jusqu'ici, les entrées ne prenaient que deux valeurs. Un potentiomètre fournit une tension **réglable entre 0 et 5 V**, qui sert de consigne : luminosité d'une LED, vitesse d'un moteur, seuil d'alarme.
 
-### Câblage
+## Câblage
 
 | Composant | Broche du composant | Relier à |
 |---|---|---|
@@ -27,7 +25,7 @@ Jusqu'ici, les entrées ne prenaient que deux valeurs. Un potentiomètre fournit
 
 *La LED est sur la broche 11 (PWM) et le curseur du potentiomètre sur A0.*
 
-### Programme
+## Programme
 
 ```cpp
 const int LED_pin = 11;
@@ -74,6 +72,14 @@ La PWM de la broche 11 a une fréquence d'environ **490 Hz**. Pour `analogWrite(
 - [ ] Le moniteur série (ajoutez-le) affiche la valeur lue et la valeur envoyée à la LED.
 - [ ] Les questions Q5.1 à Q5.5 ont une réponse justifiée.
 
+## Bilan des exercices 1 à 5
+
+- [ ] Je sais calculer la résistance de protection d'une LED.
+- [ ] Je sais expliquer pourquoi une entrée doit avoir un niveau fixé au repos.
+- [ ] Je sais filtrer les rebonds d'un bouton sans bloquer le programme.
+- [ ] Je sais lire une tension avec `analogRead()` et commander une sortie avec `analogWrite()`.
+- [ ] Je sais utiliser le moniteur série pour suivre le fonctionnement d'un programme.
+
 :::note[Prochaine étape]
-Validez cette page, puis relevez le [défi ingénieur](/Embedded-System-Course/parcours/chapitre-2/tp1/05-defi-rendu/) qui réunit les exercices 3, 4 et 5.
+Validez cette page. Les exercices 6 à 11 réutilisent ces briques pour construire le contrôleur de température : commencez par l'[exercice 6 : le capteur DHT22](/Embedded-System-Course/parcours/chapitre-2/tp1/ex06-capteur-dht22/).
 :::

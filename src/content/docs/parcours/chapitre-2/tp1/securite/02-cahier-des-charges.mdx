@@ -1,0 +1,105 @@
+---
+title: "Partie sécurité — Cahier des charges et montage"
+description: Exigences de sûreté (SÛR), de cybersécurité (SEC) et de données (DATA) du nœud sécurisé ; montage de l'exercice 11 complété par un contact d'ouverture ; code de départ.
+---
+
+import ChaineInformation from '../../../../../../components/ChaineInformation.astro';
+
+:::note[Objectif de la page]
+Traduire les constats de l'audit en **exigences vérifiables**, puis mettre en place le montage et le code de départ.
+:::
+
+## Le système étudié
+
+<ChaineInformation
+	acquerir={['Capteur DHT22 (D2)', 'Bouton d\'acquittement (D6)', 'Contact d\'ouverture du boîtier (D4)', 'Interrupteur °C / °F (D7)', 'Console de maintenance (série)']}
+	traiter={['Ordonnanceur non bloquant', 'Machine à états et contrôle de vraisemblance', 'Authentification et journal d\'audit', 'Configuration protégée en EEPROM', 'Chien de garde']}
+	agir={['LED RVB (D11, D5, D3)', 'Buzzer (D8)', 'Écran LCD I²C (A4, A5)', 'Télémétrie vers la supervision (série)']}
+	legende="Chaîne d'information du nœud de surveillance sécurisé."
+/>
+
+## Cahier des charges
+
+Les exigences EF1 à EF5 de l'exercice 11 restent valables. Les exigences suivantes s'y ajoutent ou les précisent. Chacune porte un identifiant : vos réponses, votre code et votre plan de recette y feront référence.
+
+| Exigence | Description | Étape |
+|---|---|---|
+| **SÛR-1** | **Défaut capteur** : après 3 lectures invalides consécutives, passer en état DÉFAUT CAPTEUR (LED magenta clignotante, bip toutes les 5 s, événement journalisé). Un capteur muet n'est jamais « normal ». | B |
+| **SÛR-2** | **Seuils et hystérésis** : pré-alerte (jaune) dès que T ≥ seuil − 2 °C ; alarme (rouge clignotant et buzzer) dès que T ≥ seuil ; chaque état n'est quitté qu'après un retour de 1 °C. | B |
+| **SÛR-3** | **Acquittement** : le bouton coupe le son d'une alarme ; la LED reste rouge fixe jusqu'à la fin de l'alarme. | B |
+| **SÛR-4** | **Chien de garde** : si `loop()` se bloque plus de 2 s, la carte redémarre et la cause du redémarrage est journalisée. | B |
+| **SEC-1** | **Authentification** : les commandes de configuration exigent une session ouverte par un code PIN. Après 3 échecs, verrouillage de 30 s, doublé à chaque nouvel échec (8 min au plus), **y compris après un redémarrage**. Session fermée après 120 s d'inactivité. | C |
+| **SEC-2** | **Validation des entrées** : lignes de 32 caractères imprimables au plus, commandes en liste blanche, seuil accepté seulement sous la forme `35` ou `35.5` et entre 25 et 60 °C. Tout refus est journalisé. | C |
+| **SEC-3** | **Pas de mot de passe universel** : le PIN d'usine `0000` doit être changé avant toute autre commande de configuration. PIN de 4 à 6 chiffres ; les PIN triviaux (1111, 1234, 4321…) sont refusés. | C |
+| **SEC-4** | **Intégrité de la configuration** : stockée en EEPROM avec signature, version et CRC-8. Si elle est invalide, le nœud repart sur des valeurs par défaut sûres et journalise CONFIG_CORROMPUE. | C |
+| **SEC-5** | **Détection d'ouverture** : ouvrir le boîtier, ou couper le fil du contact, déclenche l'état INTRUSION et ferme la session. Seule la commande `ACQUITTER`, en session et boîtier refermé, y met fin. | C |
+| **SEC-6** | **Journal d'audit** : les 16 derniers événements horodatés, consultables en session. Aucun secret n'y figure. | C |
+| **DATA-1** | **Télémétrie** : une trame toutes les 10 s et à chaque changement d'état, au format `$TEL,séquence,t_ms,T,HR,état,qualité*CRC16`. | D |
+| **DATA-2** | **Vraisemblance** : une variation de plus de 5 °C entre deux mesures donne la qualité `SUSPECT` et un événement ; la mesure reste prise en compte pour l'alarme. | D |
+| **DATA-3** | **Indicateurs** : la commande `STATS` donne le nombre de mesures, d'échecs et leur taux, les mesures suspectes, Tmin, Tmax, la moyenne sur 1 min, le nombre et la durée cumulée des alarmes. | D |
+
+Deux exigences de l'exercice 11 évoluent. EF2 est précisée par SÛR-2 : une **pré-alerte jaune** s'intercale entre le vert et le rouge. EF3 devient un **affichage permanent** de la mesure et de l'état du nœud, car le bouton sert désormais à **acquitter** les alarmes (SÛR-3).
+
+## Montage
+
+Le montage est celui de l'**exercice 11**, complété par un **contact d'ouverture du boîtier** : un second interrupteur coulissant, sur D4. Interrupteur à gauche (position par défaut) : boîtier fermé. À droite : boîtier ouvert.
+
+| Broche UNO | Composant |
+|---|---|
+| D2 | DHT22, données (SDA dans Wokwi) |
+| D3 ~ / D5 ~ / D11 ~ | LED RVB : bleu / vert / rouge, chacun via 220 Ω ; COM au 5 V |
+| D4 | **Nouveau** : contact d'ouverture du boîtier, broche 1 sur D4, broche 2 (commun) sur GND |
+| D6 | Bouton, vers GND : il devient le bouton d'**acquittement** |
+| D7 | Interrupteur °C / °F : broche 1 sur D7, broche 2 sur GND |
+| D8 | Buzzer (+), l'autre broche vers GND |
+| A4 / A5 | Écran LCD I²C : SDA / SCL |
+
+Pour partir d'une base commune, utilisez les **fichiers de départ** :
+
+1. Créez un nouveau projet Wokwi **Arduino Uno**.
+2. Remplacez le contenu de l'onglet `diagram.json` par celui de <a href="/Embedded-System-Course/tp/securite/diagram.json" download>diagram.json</a> : tout le montage apparaît. Comparez-le à votre montage de l'exercice 11.
+3. Remplacez le contenu de `sketch.ino` par celui de <a href="/Embedded-System-Course/tp/securite/sketch.ino" download>sketch.ino</a>, le **code de départ**.
+4. Ajoutez les bibliothèques **DHT sensor library** et **LiquidCrystal I2C** (voir <a href="/Embedded-System-Course/tp/securite/libraries.txt" download>libraries.txt</a>).
+5. Enregistrez le projet sous le nom `TP1-Securite-Nom1-Nom2`.
+
+:::caution[Important]
+Le code de départ reprend les fonctions de votre programme de l'exercice 11 (mesure toutes les 2 s, LED RVB, écran, buzzer, °C / °F), réorganisées pour accueillir les exigences de sécurité. Il **compile et fonctionne** : il mesure, affiche et émet des trames. Mais il ne respecte pas encore le cahier des charges. Les marqueurs `TODO B1` à `TODO D3` indiquent ce que vous devez écrire, étape par étape. Ne modifiez pas l'architecture générale sans le justifier.
+:::
+
+### Premier démarrage
+
+Lancez la simulation. Le moniteur série affiche :
+
+```text
+# Noeud de surveillance securise - tapez AIDE
+# EVT DEMARRAGE 0
+# EVT CONFIG_USINE 0
+$TEL,nan,NORMAL
+```
+
+Tapez `AIDE` dans le champ de saisie du moniteur série, puis `ETAT`. La console suit trois conventions :
+
+| Préfixe | Signification |
+|---|---|
+| `#` | Événement ou message d'information |
+| `$` | Trame de télémétrie, destinée à la supervision |
+| `OK` / `ERR` | Réponse à une commande |
+
+:::note[Le mode test]
+La constante `MODE_TEST` (en tête du programme) active trois commandes d'**injection de fautes** : `TEST CAPTEUR` (lectures en échec pendant 10 s), `TEST BLOCAGE` (boucle infinie) et `TEST CORROMPRE` (un bit modifié dans l'EEPROM). Elles servent à prouver que le nœud réagit bien aux pannes. Dans un firmware livré au client, `MODE_TEST` vaut 0 : ces commandes n'existent plus.
+:::
+
+## Références
+
+- OWASP, [Internet of Things Top 10](https://owasp.org/www-project-internet-of-things/) : les dix vulnérabilités les plus fréquentes des objets connectés.
+- ETSI, norme [EN 303 645](https://www.etsi.org/deliver/etsi_en/303600_303699/303645/) : exigences de cybersécurité de base pour les objets connectés grand public (mots de passe, mises à jour, intégrité, résilience…). Le lien mène aux versions officielles, librement téléchargeables.
+- Pour les installations industrielles, la série de normes **IEC 62443** traite de la sécurité des systèmes d'automatisation.
+
+## Critères de validation
+
+- [ ] Le montage de départ est en place et correspond à celui de l'exercice 11, contact d'ouverture en plus.
+- [ ] Le code de départ démarre : `AIDE` et `ETAT` répondent dans le moniteur série.
+
+:::note[Prochaine étape]
+Validez cette page, puis commencez par l'[analyse des risques](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/03-analyse-risques/) : on ne protège bien que ce qu'on a identifié.
+:::

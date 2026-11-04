@@ -25,11 +25,21 @@ src/content/docs/
     └── chapitre-2/
         ├── 01-mcu-mpu-carte.mdx   leçon : carte, MCU ou MPU
         ├── 02-presentation.mdx    leçon : carte Arduino interactive
+<<<<<<< HEAD
+        ├── 03-guide-tp.mdx        guide des travaux pratiques
+        └── tp1/                   TP1 · De la LED au contrôleur de température
+            ├── 01-presentation.mdx
+            ├── ex01-… à ex11-…    une page par exercice (1 à 5 : prise en main, 6 à 11 : contrôleur)
+            └── securite/          partie sécurité, en dernier : consignes et mise à l'épreuve,
+                                   cahier des charges et montage, étapes A à D
+public/tp/securite/                fichiers de départ de la partie sécurité (sketch.ino, diagram.json, libraries.txt)
+=======
         ├── 03-guide-tp.mdx        guide commun des TP
         ├── tp1/                   TP1 · Entrées et sorties (présentation + parties A à D)
         ├── tp2/                   TP2 · Contrôleur de température
         └── tp3/                   TP3 · Nœud de surveillance sécurisé
 public/tp/tp3/                     fichiers de départ du TP3 (sketch.ino, diagram.json, libraries.txt)
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 ```
 
 Le menu se règle dans `astro.config.mjs` (clé `sidebar`). Toute page placée sous `parcours/` et présente dans le menu devient une leçon du parcours, avec le bouton de validation.
@@ -41,11 +51,34 @@ Dans une page `.mdx` :
 ```mdx
 import Question from '../../../../../components/Question.astro';
 
+<<<<<<< HEAD
+<Question id="tp1-q8.4" label="Q8.4" categorie="ingenieur">
+=======
 <Question id="tp2-q3.5" label="Q3.5" categorie="surete">
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 Énoncé de la question, en **Markdown**.
 </Question>
 ```
 
+<<<<<<< HEAD
+Le chemin d'import dépend de la profondeur de la page : cinq `../` pour une page de `tp1/`, six pour une page de `tp1/securite/`.
+
+- `id` : identifiant **unique sur tout le site** et **définitif** (il sert de clé d'enregistrement : le changer fait « perdre » les réponses déjà saisies). Les questions reprises de l'ancienne organisation en trois TP ont gardé leur identifiant (`tp2-…`, `tp3-…`) même si leur numéro affiché a changé.
+- `label` : numéro affiché.
+- `type="code"` : zone en police à chasse fixe, pour coller du code.
+- `categorie` (facultatif) : `ingenieur`, `surete`, `securite` ou `donnees`, affiché sous forme de badge. Par convention, les trois derniers ne servent que dans la partie sécurité : les exercices 1 à 11 n'abordent pas la sécurité.
+- `lignes` (facultatif) : hauteur minimale de la zone.
+
+La page « Mes réponses » retrouve automatiquement toutes les questions, dans l'ordre du menu.
+
+## Où sont enregistrées les réponses ?
+
+Le site est statique : les réponses sont enregistrées **dans le navigateur de l'étudiant** (`localStorage`) et ne sont envoyées nulle part. L'étudiant les rend en exportant un **PDF** (impression) ou un fichier **Markdown** depuis « Mes réponses », et peut les transférer d'un appareil à l'autre avec une **sauvegarde JSON**. Vider les données du navigateur efface les réponses : les étudiants doivent sauvegarder en fin de séance.
+
+## Anciennes adresses
+
+Les pages des anciennes organisations sont redirigées vers leur nouvelle adresse (clé `redirects` de `astro.config.mjs`) : l'ancien dossier `parcours/atelier-1/` vers `parcours/chapitre-2/`, et les anciens dossiers `tp1/`, `tp2/` et `tp3/` vers les exercices et la partie sécurité du TP1. La progression déjà enregistrée par les étudiants est reportée automatiquement (`src/scripts/progression.ts`).
+=======
 - `id` : identifiant **unique sur tout le site** et **définitif** (il sert de clé d'enregistrement : le changer fait « perdre » les réponses déjà saisies).
 - `label` : numéro affiché.
 - `type="code"` : zone en police à chasse fixe, pour coller du code.
@@ -61,3 +94,4 @@ Le site est statique : les réponses sont enregistrées **dans le navigateur de 
 ## Anciennes adresses
 
 Les pages de l'ancien dossier `parcours/atelier-1/` sont redirigées vers `parcours/chapitre-2/` (clé `redirects` de `astro.config.mjs`), et la progression déjà enregistrée par les étudiants est reportée automatiquement (`src/scripts/progression.ts`).
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f

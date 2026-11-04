@@ -1,12 +1,12 @@
 /*
-  TP3 — Nœud de surveillance sécurisé — CODE DE DÉPART
+  TP1, partie sécurité — Nœud de surveillance sécurisé — CODE DE DÉPART
   Développement d'applications embarquées — Arduino UNO / Wokwi
 
   Ce programme compile et fonctionne déjà : il mesure, affiche et émet des trames.
   Il ne respecte pas encore le cahier des charges. Cherchez les marqueurs TODO :
-    TODO B1 à B4 : partie B, sûreté de fonctionnement
-    TODO C1 à C5 : partie C, cybersécurité
-    TODO D1 à D3 : partie D, données et indicateurs
+    TODO B1 à B4 : étape B, sûreté de fonctionnement
+    TODO C1 à C5 : étape C, cybersécurité
+    TODO D1 à D3 : étape D, données et indicateurs
 
   Câblage (fourni par diagram.json)
     D2   DHT22, broche de données (nommée SDA dans Wokwi)
@@ -779,7 +779,7 @@ void setup() {
   couleur(false, false, false);
 
   Serial.begin(115200);
-  Serial.println(F("# Noeud de surveillance securise (TP3) - tapez AIDE"));
+  Serial.println(F("# Noeud de surveillance securise - tapez AIDE"));
   journaliser(EVT_DEMARRAGE, causeReset);  // bits de MCUSR : 0 PORF, 1 EXTRF, 2 BORF, 3 WDRF
   if (causeReset & _BV(WDRF)) Serial.println(F("# Redemarrage provoque par le chien de garde"));
 

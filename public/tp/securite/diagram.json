@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "author": "TP1 Systèmes embarqués - partie sécurité",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -124.5,
+      "left": 340,
+      "attrs": {
+        "temperature": "24",
+        "humidity": "40"
+      }
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb1",
+      "top": -130,
+      "left": 150,
+      "attrs": {
+        "common": "anode"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -45,
+      "left": 90,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": -25,
+      "left": 150,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": -45,
+      "left": 210,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 0,
+      "left": 330,
+      "attrs": {
+        "pins": "i2c"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": 250,
+      "left": 0,
+      "attrs": {
+        "color": "green",
+        "label": "Acquitter"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "sw1",
+      "top": 250,
+      "left": 130,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "sw2",
+      "top": 250,
+      "left": 220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 230,
+      "left": 330,
+      "attrs": {
+        "volume": "0.1"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "dht1:VCC",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "dht1:GND",
+      "uno:GND.2",
+      "black",
+      []
+    ],
+    [
+      "dht1:SDA",
+      "uno:2",
+      "green",
+      []
+    ],
+    [
+      "uno:11",
+      "r1:1",
+      "red",
+      []
+    ],
+    [
+      "r1:2",
+      "rgb1:R",
+      "red",
+      []
+    ],
+    [
+      "uno:5",
+      "r2:1",
+      "green",
+      []
+    ],
+    [
+      "r2:2",
+      "rgb1:G",
+      "green",
+      []
+    ],
+    [
+      "uno:3",
+      "r3:1",
+      "blue",
+      []
+    ],
+    [
+      "r3:2",
+      "rgb1:B",
+      "blue",
+      []
+    ],
+    [
+      "rgb1:COM",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "lcd1:GND",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "lcd1:VCC",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "lcd1:SDA",
+      "uno:A4",
+      "blue",
+      []
+    ],
+    [
+      "lcd1:SCL",
+      "uno:A5",
+      "purple",
+      []
+    ],
+    [
+      "btn1:1.l",
+      "uno:6",
+      "orange",
+      []
+    ],
+    [
+      "btn1:2.l",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "sw1:1",
+      "uno:7",
+      "violet",
+      []
+    ],
+    [
+      "sw1:2",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "sw2:1",
+      "uno:4",
+      "gold",
+      []
+    ],
+    [
+      "sw2:2",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "bz1:2",
+      "uno:8",
+      "magenta",
+      []
+    ],
+    [
+      "bz1:1",
+      "uno:GND.3",
+      "black",
+      []
+    ]
+  ],
+  "dependencies": {}
+}

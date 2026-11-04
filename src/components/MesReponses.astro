@@ -62,7 +62,12 @@ for (const lecon of lecons) {
 	const titreGroupe = lecon.groupe;
 	let groupe = groupes.find((g) => g.titre === titreGroupe);
 	if (!groupe) {
+<<<<<<< HEAD
+		// clé courte, qui sert aussi au nom des fichiers exportés : « chapitre-2 », « tp1 », « tp1-partie-securite »
+		groupe = { cle: cleDe(lecon.prefixe || titreGroupe.split(' : ')[0]), titre: titreGroupe, pages: [] };
+=======
 		groupe = { cle: cleDe(titreGroupe), titre: titreGroupe, pages: [] };
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 		groupes.push(groupe);
 	}
 	groupe.pages.push({ titre: lecon.label, href: lecon.href, questions });
@@ -337,7 +342,11 @@ const total = groupes.reduce((n, g) => n + g.pages.reduce((m, p) => m + p.questi
 			if (!bouton) return;
 			const { etudiant } = lire();
 			const date = new Date().toISOString().slice(0, 10);
+<<<<<<< HEAD
+			const quoi = selection.value === 'tout' ? 'parcours' : selection.value;
+=======
 			const quoi = selection.value === 'tout' ? 'parcours' : selection.value.split('-')[0];
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 			switch (bouton.dataset.action) {
 				case 'imprimer':
 					preparerImpression();

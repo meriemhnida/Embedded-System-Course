@@ -22,14 +22,60 @@ function vide(): Progression {
 }
 
 // Pages déplacées : la progression déjà enregistrée suit la page à sa nouvelle adresse.
+<<<<<<< HEAD
+// Une ancienne page découpée en plusieurs pages valide chacune d'elles ; une page supprimée
+// sans équivalent (liste vide) est simplement retirée.
+const RENOMMAGES: Record<string, string[]> = {
+	'parcours/atelier-1/01-mcu-mpu-carte/': ['parcours/chapitre-2/01-mcu-mpu-carte/'],
+	'parcours/atelier-1/02-presentation/': ['parcours/chapitre-2/02-presentation/'],
+	// ancienne organisation en trois TP, réunis dans le TP1
+	'parcours/chapitre-2/tp1/02-sorties-numeriques/': [
+		'parcours/chapitre-2/tp1/ex01-led-integree/',
+		'parcours/chapitre-2/tp1/ex02-clignotement/',
+	],
+	'parcours/chapitre-2/tp1/03-entrees-numeriques/': [
+		'parcours/chapitre-2/tp1/ex03-bouton-poussoir/',
+		'parcours/chapitre-2/tp1/ex04-interrupteur-serie/',
+	],
+	'parcours/chapitre-2/tp1/04-analogique-pwm/': ['parcours/chapitre-2/tp1/ex05-potentiometre-pwm/'],
+	'parcours/chapitre-2/tp1/05-defi-rendu/': [],
+	'parcours/chapitre-2/tp2/01-presentation/': [],
+	'parcours/chapitre-2/tp2/02-acquisition/': ['parcours/chapitre-2/tp1/ex06-capteur-dht22/'],
+	'parcours/chapitre-2/tp2/03-signalisation-rvb/': [
+		'parcours/chapitre-2/tp1/ex07-led-rvb/',
+		'parcours/chapitre-2/tp1/ex08-couleur-temperature/',
+	],
+	'parcours/chapitre-2/tp2/04-bouton-lcd/': ['parcours/chapitre-2/tp1/ex09-bouton-lcd/'],
+	'parcours/chapitre-2/tp2/05-alarme-defi/': [
+		'parcours/chapitre-2/tp1/ex10-avertisseur-sonore/',
+		'parcours/chapitre-2/tp1/ex11-unites-programme-final/',
+	],
+	'parcours/chapitre-2/tp3/01-presentation/': ['parcours/chapitre-2/tp1/securite/02-cahier-des-charges/'],
+	'parcours/chapitre-2/tp3/02-analyse-risques/': ['parcours/chapitre-2/tp1/securite/03-analyse-risques/'],
+	'parcours/chapitre-2/tp3/03-surete/': ['parcours/chapitre-2/tp1/securite/04-surete/'],
+	'parcours/chapitre-2/tp3/04-cybersecurite/': ['parcours/chapitre-2/tp1/securite/05-cybersecurite/'],
+	'parcours/chapitre-2/tp3/05-donnees-recette/': ['parcours/chapitre-2/tp1/securite/06-donnees-recette/'],
+=======
 const RENOMMAGES: Record<string, string> = {
 	'parcours/atelier-1/01-mcu-mpu-carte/': 'parcours/chapitre-2/01-mcu-mpu-carte/',
 	'parcours/atelier-1/02-presentation/': 'parcours/chapitre-2/02-presentation/',
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 };
 
 function migrer(p: Progression): boolean {
 	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 	let modifiee = false;
+<<<<<<< HEAD
+	for (const [ancien, nouveaux] of Object.entries(RENOMMAGES)) {
+		const a = base + ancien;
+		if (!p.valides[a]) continue;
+		for (const nouveau of nouveaux) {
+			const n = base + nouveau;
+			if (!p.valides[n]) p.valides[n] = p.valides[a];
+		}
+		delete p.valides[a];
+		modifiee = true;
+=======
 	for (const [ancien, nouveau] of Object.entries(RENOMMAGES)) {
 		const a = base + ancien;
 		const n = base + nouveau;
@@ -38,6 +84,7 @@ function migrer(p: Progression): boolean {
 			delete p.valides[a];
 			modifiee = true;
 		}
+>>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 	}
 	return modifiee;
 }
