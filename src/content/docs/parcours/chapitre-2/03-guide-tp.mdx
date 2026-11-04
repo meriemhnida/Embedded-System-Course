@@ -1,6 +1,5 @@
 ---
 title: Guide des travaux pratiques
-<<<<<<< HEAD
 description: Organisation du TP1 du chapitre 2 (onze exercices puis une partie sécurité), méthode de travail, enregistrement des réponses, livrables et évaluation.
 ---
 
@@ -34,87 +33,36 @@ La [présentation du TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/01-pre
 La partie sécurité commence par une **mise à l'épreuve** de votre programme de l'exercice 11 (étape 0), présente le **cahier des charges** du contrôleur sécurisé, puis se déroule en quatre étapes A à D.
 
 Les questions des exercices sont numérotées par exercice : Q6.3 est la 3<sup>e</sup> question de l'exercice 6. Dans la partie sécurité, les questions QS portent sur la mise à l'épreuve et les questions QA à QD sur les étapes A à D. Certaines questions portent un badge :
-=======
-description: Organisation des trois TP du chapitre 2, méthode de travail, enregistrement des réponses, livrables et évaluation.
----
-
-:::note[À lire avant le TP1]
-Cette page explique comment les TP sont organisés, comment répondre aux questions directement dans le site et ce qu'il faut rendre. Elle vaut pour les trois TP.
-:::
-
-## Un fil rouge : le boîtier de surveillance
-
-Les trois TP construisent pas à pas un même produit : un **boîtier qui surveille la température d'une armoire électrique ou d'un local technique**. Chaque TP s'appuie sur le précédent.
-
-| TP | Thème | Durée | Ce que vous apprenez |
-|---|---|---|---|
-| [**TP1 · Entrées et sorties**](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/) | LED, bouton, interrupteur, potentiomètre, liaison série | 3 h | Piloter des sorties, lire des entrées, filtrer les rebonds, appliquer la sécurité positive |
-| [**TP2 · Contrôleur de température**](/Embedded-System-Course/parcours/chapitre-2/tp2/01-presentation/) | Capteur DHT22, LED RVB, écran LCD I²C, buzzer | 6 h (2 séances) | Acquérir une mesure, construire une interface homme-machine, gérer une alarme sans bloquer le programme |
-| [**TP3 · Nœud de surveillance sécurisé**](/Embedded-System-Course/parcours/chapitre-2/tp3/01-presentation/) | Sûreté de fonctionnement, cybersécurité, données | 6 h (2 séances) | Analyser les risques, concevoir une machine à états, authentifier, contrôler l'intégrité, tracer et recetter |
-
-## Une structure identique pour chaque TP
-
-Chaque TP comporte une page de **présentation** puis quatre **parties A à D**, chacune sur sa propre page.
-
-- **Présentation** : fiche du TP, mise en situation, objectifs, matériel, cahier des charges, préparation.
-- **Parties A, B, C** : un objectif, un tableau de câblage, du code, des questions numérotées et des critères de validation.
-- **Partie D** : la dernière étape technique, le **défi ingénieur** et la liste des livrables.
-
-Les questions sont numérotées par exercice (Q2.3 est la 3<sup>e</sup> question de l'exercice 2). Certaines portent un badge :
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 | Badge | Signification |
 |---|---|
 | **Ingénieur** | Question d'approfondissement : justification, calcul, choix de conception |
-<<<<<<< HEAD
 | **Sûreté** | Partie sécurité : comportement en cas de panne, le système doit rester dans un état sûr |
 | **Cybersécurité** | Partie sécurité : résistance à une action malveillante (authentification, validation, intégrité) |
 | **Données** | Partie sécurité : qualité, format et exploitation des données produites |
-=======
-| **Sûreté** | Comportement en cas de panne : le système doit rester dans un état sûr |
-| **Cybersécurité** | Résistance à une action malveillante : authentification, validation, intégrité |
-| **Données** | Qualité, format et exploitation des données produites |
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 Les cadres colorés gardent leur sens habituel : **bleu** pour l'information, **jaune** pour l'important, **rouge** pour ce qu'il faut retenir, **vert** pour ce que vous devez faire.
 
 ## Méthode de travail
 
-<<<<<<< HEAD
 1. **Lire toute la page** avant de câbler : l'objectif et les critères de validation disent ce qui est attendu.
 2. **Créer un projet Wokwi par exercice** et le nommer clairement, par exemple `TP1-Ex06-Dupont-Martin`. Connectez-vous avec votre compte GitHub pour conserver l'historique. Quand un exercice complète le montage du précédent, partez d'une **copie** du projet précédent.
-=======
-1. **Lire toute la page** avant de câbler : le cahier des charges et les critères de validation disent ce qui est attendu.
-2. **Créer un projet Wokwi par partie** et le nommer clairement, par exemple `TP2-B-Dupont-Martin`. Connectez-vous avec votre compte GitHub pour conserver l'historique.
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 3. **Câbler en suivant le tableau de câblage**, puis lancer la simulation avant d'écrire du code nouveau.
 4. **Tester chaque étape** avant de passer à la suivante. Une étape non testée est une étape non faite.
 5. **Répondre aux questions** dans les cadres prévus, avec vos propres mots. Une réponse se justifie : un calcul, une mesure, une observation.
 6. **Valider la page** en bas quand les critères de validation sont remplis.
 
 :::caution[Important]
-<<<<<<< HEAD
 Un programme qui « marche » ne suffit pas : il doit **fonctionner pour de bonnes raisons**, et vous devez pouvoir le **prouver par des tests**, y compris aux valeurs limites. C'est ce qu'on attend d'un ingénieur.
-=======
-Un programme qui « marche » ne suffit pas : il doit **fonctionner pour de bonnes raisons** et **rester sûr quand quelque chose tourne mal** (capteur débranché, bouton qui rebondit, saisie erronée). C'est ce qu'on attend d'un ingénieur.
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 :::
 
 ## Répondre aux questions et rendre son travail
 
-<<<<<<< HEAD
 Sous chaque question se trouve un cadre de réponse. Ce que vous y écrivez est **enregistré automatiquement dans votre navigateur**, quelques instants après la frappe. Un ✓ vert apparaît quand la réponse est enregistrée. Vous pouvez fermer la page et revenir plus tard : vos réponses seront toujours là, **sur le même appareil et le même navigateur**.
 
 La page [**Mes réponses**](/Embedded-System-Course/mes-reponses/) rassemble toutes vos réponses. Elle permet de :
 
 - **imprimer ou enregistrer en PDF** un compte rendu, avec votre nom et votre groupe ;
-=======
-Sous chaque question se trouve un cadre de réponse. Ce que vous y écrivez est **enregistré automatiquement dans votre navigateur**, quelques instants après la frappe. Un ✔ vert apparaît quand la réponse est enregistrée. Vous pouvez fermer la page et revenir plus tard : vos réponses seront toujours là, **sur le même appareil et le même navigateur**.
-
-La page [**Mes réponses**](/Embedded-System-Course/mes-reponses/) rassemble toutes vos réponses. Elle permet de :
-
-- **imprimer ou enregistrer en PDF** le compte rendu d'un TP, avec votre nom et votre groupe ;
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 - **télécharger** le compte rendu au format Markdown (.md) ;
 - **sauvegarder** vos réponses dans un fichier (.json) et les **importer** sur un autre ordinateur ;
 - **effacer** vos réponses d'un ordinateur partagé.
@@ -125,7 +73,6 @@ Les réponses ne quittent jamais votre navigateur : l'enseignant ne les voit **q
 
 ## Livrables
 
-<<<<<<< HEAD
 Chaque binôme fait deux dépôts, nommés comme indiqué :
 
 | Dépôt | Nom | Contenu |
@@ -136,29 +83,13 @@ Chaque binôme fait deux dépôts, nommés comme indiqué :
 ## Grille d'évaluation (indicative)
 
 La même grille sert pour les deux dépôts. L'enseignant précise la pondération et les dates de rendu.
-=======
-Pour chaque TP, un seul dépôt par binôme, nommé `TPx_Nom1_Nom2` :
-
-1. le **compte rendu** exporté depuis « Mes réponses » (PDF), avec toutes les questions du TP ;
-2. le **lien de partage** de chaque projet Wokwi demandé ;
-3. le **code final** (fichier `sketch.ino`) ;
-4. pour le TP3, le **plan de recette** exécuté (il fait partie du compte rendu).
-
-## Grille d'évaluation (indicative)
-
-La même grille sert pour les trois TP. L'enseignant précise la pondération et les dates de rendu.
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 | Critère | Ce qui est évalué | Poids |
 |---|---|---|
 | Fonctionnement | Le montage et le programme respectent le cahier des charges ; les critères de validation sont remplis | 35 % |
 | Réponses aux questions | Justesse, justification (calcul, mesure, observation), précision du vocabulaire | 30 % |
 | Qualité du code | Constantes nommées, fonctions courtes, commentaires utiles, pas de `delay()` bloquant quand c'est exigé | 15 % |
-<<<<<<< HEAD
 | Démarche d'ingénieur | Tests réalisés et documentés ; dans la partie sécurité, comportement en cas de panne et d'attaque | 20 % |
-=======
-| Démarche d'ingénieur | Tests réalisés et documentés, comportement en cas de panne, prise en compte de la sécurité | 20 % |
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 ## Règles
 

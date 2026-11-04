@@ -5,7 +5,6 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	site: 'https://meriemhnida.github.io',
 	base: '/Embedded-System-Course',
-<<<<<<< HEAD
 	// Anciennes adresses : les liens déjà partagés restent valides.
 	// La destination doit inclure la base du site.
 	redirects: {
@@ -28,14 +27,6 @@ export default defineConfig({
 		'/parcours/chapitre-2/tp3/03-surete': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/04-surete/',
 		'/parcours/chapitre-2/tp3/04-cybersecurite': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/05-cybersecurite/',
 		'/parcours/chapitre-2/tp3/05-donnees-recette': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/06-donnees-recette/',
-=======
-	// Anciennes adresses du chapitre 2 (dossier atelier-1) : les liens déjà partagés restent valides.
-	// La destination doit inclure la base du site.
-	redirects: {
-		'/parcours/atelier-1/01-mcu-mpu-carte': '/Embedded-System-Course/parcours/chapitre-2/01-mcu-mpu-carte/',
-		'/parcours/atelier-1/02-presentation': '/Embedded-System-Course/parcours/chapitre-2/02-presentation/',
-		'/parcours/atelier-1/01-presentation': '/Embedded-System-Course/parcours/chapitre-2/02-presentation/',
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 	},
 	integrations: [
 		starlight({
@@ -71,7 +62,6 @@ export default defineConfig({
 						{ label: '2. Présentation de la carte', slug: 'parcours/chapitre-2/02-presentation' },
 						{ label: '3. Guide des travaux pratiques', slug: 'parcours/chapitre-2/03-guide-tp' },
 						{
-<<<<<<< HEAD
 							// Un seul TP : une page par exercice, puis la partie sécurité, en dernier.
 							label: 'TP1 · De la LED au contrôleur de température',
 							collapsed: true,
@@ -100,38 +90,6 @@ export default defineConfig({
 										{ label: 'D. Données et recette', slug: 'parcours/chapitre-2/tp1/securite/06-donnees-recette' },
 									],
 								},
-=======
-							label: 'TP1 · Entrées et sorties',
-							collapsed: true,
-							items: [
-								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp1/01-presentation' },
-								{ label: 'A. Sorties numériques', slug: 'parcours/chapitre-2/tp1/02-sorties-numeriques' },
-								{ label: 'B. Entrées numériques', slug: 'parcours/chapitre-2/tp1/03-entrees-numeriques' },
-								{ label: 'C. Analogique et PWM', slug: 'parcours/chapitre-2/tp1/04-analogique-pwm' },
-								{ label: 'D. Défi et rendu', slug: 'parcours/chapitre-2/tp1/05-defi-rendu' },
-							],
-						},
-						{
-							label: 'TP2 · Contrôleur de température',
-							collapsed: true,
-							items: [
-								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp2/01-presentation' },
-								{ label: 'A. Acquisition (DHT22)', slug: 'parcours/chapitre-2/tp2/02-acquisition' },
-								{ label: 'B. Signalisation RVB', slug: 'parcours/chapitre-2/tp2/03-signalisation-rvb' },
-								{ label: 'C. Bouton et écran LCD', slug: 'parcours/chapitre-2/tp2/04-bouton-lcd' },
-								{ label: 'D. Alarme et défi', slug: 'parcours/chapitre-2/tp2/05-alarme-defi' },
-							],
-						},
-						{
-							label: 'TP3 · Nœud de surveillance sécurisé',
-							collapsed: true,
-							items: [
-								{ label: 'Présentation', slug: 'parcours/chapitre-2/tp3/01-presentation' },
-								{ label: 'A. Analyse de risques', slug: 'parcours/chapitre-2/tp3/02-analyse-risques' },
-								{ label: 'B. Sûreté de fonctionnement', slug: 'parcours/chapitre-2/tp3/03-surete' },
-								{ label: 'C. Cybersécurité', slug: 'parcours/chapitre-2/tp3/04-cybersecurite' },
-								{ label: 'D. Données et recette', slug: 'parcours/chapitre-2/tp3/05-donnees-recette' },
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 							],
 						},
 					],

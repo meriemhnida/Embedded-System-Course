@@ -1,11 +1,6 @@
 ---
-<<<<<<< HEAD
 title: "TP1 — De la LED au contrôleur de température"
 description: Présentation du TP1 — mise en situation, objectifs, onze exercices puis une partie sécurité, matériel, préparation de Wokwi et découverte de la carte Arduino UNO.
-=======
-title: "TP1 — Mise en route : entrées et sorties"
-description: Présentation du TP1, préparation de l'environnement Wokwi et découverte de la carte Arduino UNO.
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 ---
 
 import FicheTP from '../../../../../components/FicheTP.astro';
@@ -13,24 +8,15 @@ import ChaineInformation from '../../../../../components/ChaineInformation.astro
 import Question from '../../../../../components/Question.astro';
 
 <FicheTP
-<<<<<<< HEAD
 	duree="15 h : exercices 1 à 5 (3 h), exercices 6 à 11 (6 h), partie sécurité (6 h)"
 	modalite="Binôme"
 	plateforme="Simulateur Wokwi, carte Arduino UNO"
 	prerequis="Chapitre 1 (leçons 5 à 9) et leçons 1 et 2 du chapitre 2"
 	livrables="Deux comptes rendus exportés (exercices 1 à 11, puis partie sécurité), liens Wokwi, programmes finaux"
-=======
-	duree="3 h (1 séance)"
-	modalite="Binôme"
-	plateforme="Simulateur Wokwi, carte Arduino UNO"
-	prerequis="Chapitre 1 (leçons 5 à 9) et leçons 1 et 2 du chapitre 2"
-	livrables="Compte rendu exporté, liens Wokwi des exercices 2 à 5 et du défi"
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 />
 
 ## Mise en situation
 
-<<<<<<< HEAD
 Vous rejoignez le bureau d'études d'une PME qui conçoit des **boîtiers de surveillance pour armoires électriques**. Les appareillages de ces armoires sont généralement prévus pour une température ambiante d'**au plus 40 °C**, et de 35 °C en moyenne sur 24 heures. Au-delà, ils vieillissent vite ou se déclenchent intempestivement.
 
 Aujourd'hui, un agent relève un thermomètre à la main lors de ses rondes. Le client veut un **contrôleur de température automatique** qui :
@@ -49,12 +35,6 @@ Le TP suit la démarche du bureau d'études, en trois temps. Chaque exercice a s
 2. **Exercices 6 à 11 · Le contrôleur de température** : vous ajoutez une fonction à chaque exercice (capteur, voyant de couleur, écran, avertisseur sonore, choix de l'unité). L'exercice 11 aboutit au **programme final** du contrôleur.
 3. **Partie sécurité**, en dernier : vous **refaites la manipulation finale** de l'exercice 11 en y intégrant les aspects de sécurité importants.
 
-=======
-Vous rejoignez le bureau d'études d'une PME qui conçoit des **boîtiers de surveillance pour armoires électriques**. Avant de développer le produit (TP2) puis de le sécuriser (TP3), l'équipe vous confie la prise en main des briques de base de son interface homme-machine : **voyants, boutons, interrupteurs, réglage analogique** et **liaison série de diagnostic**.
-
-Arduino est la plateforme de prototypage retenue. Une carte Arduino associe un **microcontrôleur** et un **circuit imprimé** qui l'alimente, donne accès à ses entrées-sorties et le relie à l'ordinateur par USB. Vous la programmerez en langage C/C++ et la simulerez avec **Wokwi**.
-
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 ## Objectifs
 
 À l'issue de ce TP, vous serez capables de :
@@ -64,21 +44,15 @@ Arduino est la plateforme de prototypage retenue. Une carte Arduino associe un *
 	<li><span><strong>Piloter</strong> une sortie numérique et <strong>dimensionner</strong> la résistance de protection d'une LED.</span></li>
 	<li><span><strong>Lire</strong> une entrée numérique avec une résistance de tirage et <strong>filtrer</strong> les rebonds d'un bouton.</span></li>
 	<li><span><strong>Convertir</strong> une tension analogique et <strong>commander</strong> une sortie PWM.</span></li>
-<<<<<<< HEAD
 	<li><span><strong>Acquérir</strong> une température et une humidité avec un capteur numérique et une bibliothèque.</span></li>
 	<li><span><strong>Construire</strong> une interface homme-machine : LED RVB, écran LCD sur bus I²C, buzzer.</span></li>
 	<li><span><strong>Structurer</strong> un programme non bloquant et le <strong>tester</strong> aux valeurs limites.</span></li>
 	<li><span><strong>Sécuriser</strong> le contrôleur (partie sécurité) : analyser les risques, puis le rendre robuste face aux pannes et aux attaques.</span></li>
-=======
-	<li><span><strong>Diagnostiquer</strong> un programme grâce à la liaison série.</span></li>
-	<li><span><strong>Appliquer</strong> le principe de sécurité positive à une entrée et à une commande.</span></li>
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 </ol>
 
 ## Le système étudié
 
 <ChaineInformation
-<<<<<<< HEAD
 	acquerir={['Capteur DHT22 : température et humidité (D2)', 'Bouton-poussoir (D6)', 'Interrupteur °C / °F (D7)']}
 	traiter={['Microcontrôleur ATmega328P', 'Mesure toutes les 2 s', 'Comparaison aux seuils']}
 	agir={['LED RVB (D11, D5, D3)', 'Écran LCD 16×2 I²C (A4, A5)', 'Buzzer (D8)', 'Moniteur série (USB)']}
@@ -132,58 +106,19 @@ Arduino est la plateforme de prototypage retenue. Une carte Arduino associe un *
 | Écran LCD 16×2 avec interface I²C | 1 | `wokwi-lcd1602`, attribut `pins` réglé sur `i2c` | 9 à 11 |
 | Buzzer | 1 | `wokwi-buzzer` | 10, 11 |
 | Fils de connexion | — | — | tous |
-=======
-	acquerir={['Bouton-poussoir (D2)', 'Interrupteur coulissant (D5)', 'Potentiomètre (A0)']}
-	traiter={['Microcontrôleur ATmega328P', 'Programme : setup() puis loop()']}
-	agir={['LED intégrée « L » (D13)', 'LED externe (D13 puis D11 en PWM)', 'Moniteur série (USB)']}
-	legende="Chaîne d'information du TP1 : chaque exercice ajoute un maillon."
-/>
-
-## Matériel
-
-| Composant | Quantité | Référence dans Wokwi | Rôle |
-|---|---|---|---|
-| Carte Arduino UNO | 1 | `wokwi-arduino-uno` | Unité de traitement |
-| LED rouge | 1 | `wokwi-led` | Voyant (actionneur) |
-| Résistance 220 Ω | 1 | `wokwi-resistor` | Limite le courant de la LED |
-| Résistance 10 kΩ | 1 | `wokwi-resistor` | Tirage (*pull-down*) du bouton |
-| Bouton-poussoir | 1 | `wokwi-pushbutton` | Commande momentanée (capteur) |
-| Interrupteur coulissant | 1 | `wokwi-slide-switch` | Commande à deux positions stables |
-| Potentiomètre | 1 | `wokwi-potentiometer` ou `wokwi-slide-potentiometer` | Consigne analogique |
-
-## Organisation du TP
-
-| Partie | Contenu | Durée indicative |
-|---|---|---|
-| Présentation | Préparation de Wokwi, découverte de la carte | 30 min |
-| [A. Sorties numériques](/Embedded-System-Course/parcours/chapitre-2/tp1/02-sorties-numeriques/) | Exercice 1 : LED intégrée ; exercice 2 : clignotement | 40 min |
-| [B. Entrées numériques](/Embedded-System-Course/parcours/chapitre-2/tp1/03-entrees-numeriques/) | Exercice 3 : bouton-poussoir ; exercice 4 : interrupteur et liaison série | 50 min |
-| [C. Analogique et PWM](/Embedded-System-Course/parcours/chapitre-2/tp1/04-analogique-pwm/) | Exercice 5 : luminosité réglée par un potentiomètre | 30 min |
-| [D. Défi et rendu](/Embedded-System-Course/parcours/chapitre-2/tp1/05-defi-rendu/) | Variateur avec consignation de sécurité, livrables | 30 min |
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 ## Préparation : simulation dans le cloud avec Wokwi
 
 1. Ouvrez [wokwi.com](https://wokwi.com/) et connectez-vous avec votre **compte GitHub**.
 2. Créez un nouveau projet en choisissant la carte **Arduino Uno**.
-<<<<<<< HEAD
 3. Enregistrez-le aussitôt sous un nom explicite, par exemple `TP1-Ex01-Dupont-Martin`.
 
 ![Écran de démarrage de Wokwi : choix de la carte Arduino Uno, Mega ou Nano](../../../../../assets/parcours/chapitre-2/tp1/wokwi-nouveau-projet.webp)
-=======
-3. Enregistrez-le aussitôt sous un nom explicite, par exemple `TP1-Ex1-Dupont-Martin`.
-
-![Écran de démarrage de Wokwi : choix de la carte Arduino Uno, Mega ou Nano](../../../../../assets/parcours/chapitre-2/tp2/wokwi-nouveau-projet.webp)
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 
 *Dans Wokwi, un nouveau projet commence par le choix de la carte.*
 
 :::caution[Important]
-<<<<<<< HEAD
 Créez **un projet par exercice** : vous pourrez ainsi rendre un lien par exercice et revenir à une version qui fonctionnait. À partir de l'exercice 8, chaque montage complète le précédent : enregistrez une **copie** du projet précédent (« Save a copy » dans Wokwi) avant de le modifier.
-=======
-Créez **un projet par exercice** : vous pourrez ainsi rendre un lien par exercice et revenir à une version qui fonctionnait.
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 :::
 
 ## Découvrir la carte Arduino UNO
@@ -219,9 +154,5 @@ Les broches D0 et D1 sont aussi notées RX et TX. Pourquoi est-il déconseillé 
 </Question>
 
 :::note[Prochaine étape]
-<<<<<<< HEAD
 Quand Wokwi est prêt et que vous avez répondu aux questions de découverte, validez cette page et passez à l'[exercice 1](/Embedded-System-Course/parcours/chapitre-2/tp1/ex01-led-integree/).
-=======
-Quand Wokwi est prêt et que vous avez répondu aux questions de découverte, validez cette page et passez à la [partie A](/Embedded-System-Course/parcours/chapitre-2/tp1/02-sorties-numeriques/).
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 :::

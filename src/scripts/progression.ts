@@ -22,7 +22,6 @@ function vide(): Progression {
 }
 
 // Pages déplacées : la progression déjà enregistrée suit la page à sa nouvelle adresse.
-<<<<<<< HEAD
 // Une ancienne page découpée en plusieurs pages valide chacune d'elles ; une page supprimée
 // sans équivalent (liste vide) est simplement retirée.
 const RENOMMAGES: Record<string, string[]> = {
@@ -55,17 +54,11 @@ const RENOMMAGES: Record<string, string[]> = {
 	'parcours/chapitre-2/tp3/03-surete/': ['parcours/chapitre-2/tp1/securite/04-surete/'],
 	'parcours/chapitre-2/tp3/04-cybersecurite/': ['parcours/chapitre-2/tp1/securite/05-cybersecurite/'],
 	'parcours/chapitre-2/tp3/05-donnees-recette/': ['parcours/chapitre-2/tp1/securite/06-donnees-recette/'],
-=======
-const RENOMMAGES: Record<string, string> = {
-	'parcours/atelier-1/01-mcu-mpu-carte/': 'parcours/chapitre-2/01-mcu-mpu-carte/',
-	'parcours/atelier-1/02-presentation/': 'parcours/chapitre-2/02-presentation/',
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 };
 
 function migrer(p: Progression): boolean {
 	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 	let modifiee = false;
-<<<<<<< HEAD
 	for (const [ancien, nouveaux] of Object.entries(RENOMMAGES)) {
 		const a = base + ancien;
 		if (!p.valides[a]) continue;
@@ -75,16 +68,6 @@ function migrer(p: Progression): boolean {
 		}
 		delete p.valides[a];
 		modifiee = true;
-=======
-	for (const [ancien, nouveau] of Object.entries(RENOMMAGES)) {
-		const a = base + ancien;
-		const n = base + nouveau;
-		if (p.valides[a]) {
-			if (!p.valides[n]) p.valides[n] = p.valides[a];
-			delete p.valides[a];
-			modifiee = true;
-		}
->>>>>>> 0bb7b8852d3da41e642573f946f09ed4ef5ee63f
 	}
 	return modifiee;
 }
