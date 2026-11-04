@@ -417,6 +417,112 @@ Dans votre cours, la section **Processus d'Ingénierie des SE** commence par ide
 
 ---
 
+## Diagrammes UML dans le modèle en V
+
+L'UML (*Unified Modeling Language*) n'est pas un seul outil monolithique : chaque type de diagramme sert une phase précise du modèle en V. La règle est simple — **le diagramme suit la question posée à cette phase**.
+
+| Phase | Diagramme UML | Rôle |
+|---|---|---|
+| ① Spécification | **Diagramme de cas d'utilisation** (*Use Case*) | Recense les acteurs (utilisateur, capteur, système externe) et les fonctions attendues. Répond à : *qui interagit avec quoi ?* |
+| ② Architecture | **Diagramme de composants** (*Component*) | Montre les modules et leurs interfaces (capteurs, ECU, bus). Répond à : *quels blocs et comment sont-ils reliés ?* |
+| ② Architecture | **Diagramme de déploiement** (*Deployment*) | Représente les nœuds matériels et leurs connexions (MCU, capteur, cloud). Adapté aux systèmes IoT multi-MCU. |
+| ③ Conception détaillée | **Diagramme de classes** (*Class*) | Décrit la structure interne des modules (structs, types, relations). |
+| ③ Conception détaillée | **Diagramme d'états** (*State Machine*) | Modélise les états d'un composant temps réel (ex. : ABS actif / inactif / mode dégradé). Très utilisé en embarqué. |
+| ③ Conception détaillée | **Diagramme de séquence** (*Sequence*) | Montre l'ordre des échanges entre modules dans un scénario précis (ex. : séquence d'initialisation du bus CAN). |
+| ⑤–⑦ Tests | **Diagramme de séquence** (*Sequence*) | Utilisé aussi pour décrire les scénarios de test (entrées, sorties attendues, chronologie). |
+
+:::tip[Conseil pratique]
+En embarqué, le **diagramme d'états** est le plus stratégique : il force à lister tous les états possibles du système — y compris les états d'erreur et les transitions inattendues. John D. Carmack l'a résumé en une phrase devenue une règle de l'industrie : *«&nbsp;A large fraction of the flaws in software development are due to programmers not fully understanding all the possible states their code may execute in.&nbsp;»*
+:::
+
+---
+
+## Architectures logicielles pour systèmes embarqués
+
+En génie logiciel classique, on parle de MVC, microservices, ou architecture en couches. Dans le monde embarqué, les contraintes sont différentes : **pas de système d'exploitation complet, RAM limitée, temps réel, absence d'allocation dynamique**. Les patterns ont donc évolué en conséquence.
+
+### Panorama des architectures
+
+<div style="overflow-x:auto">
+
+| Architecture | Analogie web/SI | Description | Avantages | Limites | Cas d'usage typique |
+|---|---|---|---|---|---|
+| **Super-loop** (boucle principale) | Script procédural | `while(1)` : lecture capteurs → traitement → actionneurs | Extrêmement simple, prévisible | Pas de priorité, latence non garantie | Arduino débutant, prototypage rapide |
+| **Event-driven** (événementiel) | MVC | Interruptions + file d'événements ; le loop traite la file | Réactif, latence faible | Complexité de la file d'événements | Interfaces utilisateur, boutons, UART |
+| **HAL + couches** (layered) | Microservices | Séparation HAL / BSP / middleware / application | Portabilité, testabilité | Overhead de couches | STM32 HAL, ESP-IDF, tout code portable |
+| **RTOS** | Système multi-threadé | Tâches concurrentes ordonnancées (FreeRTOS, Zephyr) | Temps réel garanti, priorités | Complexité, risque de deadlock | Systèmes critiques, IoT industriel |
+| **Publish-Subscribe** | Événements/messaging (Kafka, Redis) | Modules indépendants communiquent via topics ; couplage faible | Découplage total, testabilité | Gestion de l'état global | IoT multi-MCU, systèmes distribués |
+
+</div>
+
+### Le pattern Publish-Subscribe en embarqué
+
+Le pattern **Publish-Subscribe** (PubSub) est l'équivalent embarqué des architectures orientées événements du monde web. Il répond à un problème fondamental identifié dans les firmwares complexes : la **prolifération des variables globales mutables**.
+
+**Le problème des variables globales partagées** (inspiré de Matt Liberty, Jetperch LLC) :
+
+Quand plusieurs modules d'un firmware lisent et écrivent la même variable globale — vitesse du véhicule, état du mode, température mesurée — plusieurs problèmes apparaissent simultanément :
+
+- **Fragilité** : un changement de nom ou de type casse tous les modules qui y accèdent directement.
+- **Couplage implicite** : les modules dépendent les uns des autres sans que ça apparaisse dans les signatures de fonctions.
+- **Complications de test** : il faut mettre l'état global dans la bonne configuration avant chaque test.
+- **Violations de concurrence** : dans un RTOS ou avec des interruptions, deux modules peuvent lire/écrire simultanément sans protection.
+
+**La solution PubSub** :
+
+Au lieu que les modules partagent directement une variable, ils communiquent via un **bus de messages avec topics** :
+
+```
+       Module A                    Module B
+     (Publisher)                 (Subscriber)
+         │                           │
+         │ publish("abs/slip", 0.3)  │
+         ▼                           │
+    ┌──────────┐                     │
+    │  PubSub  │ ──────────────────► │ callback(slip=0.3)
+    │  (bus)   │                     │
+    └──────────┘
+         ▲
+         │ subscribe("abs/slip", cb)
+         │
+     Module C
+  (Publisher + Subscriber)
+```
+
+Les propriétés clés du PubSub embarqué (d'après Fitterbap, bibliothèque open-source C de Jetperch LLC) :
+
+- **Loose coupling** : les publishers ne connaissent pas les subscribers, et vice versa.
+- **Retained messages** : le bus mémorise la dernière valeur publiée. Un nouveau subscriber reçoit immédiatement l'état courant à l'abonnement — plus de problème d'initialisation.
+- **Topics hiérarchiques** : nommage style `abs/roue/avant_gauche/vitesse` — court (≤ 30 car. pour limiter la RAM), organisé, interrogeable.
+- **Thread-safe** : les publications passent par un ring buffer pour garantir l'ordre et la réentrance dans un RTOS.
+- **Pas de `free()`** : allocation dynamique à l'init, pas de libération — compatible avec les systèmes sans allocateur dynamique.
+
+**Exemple concret : ABS multi-ECU**
+
+Dans un véhicule moderne, l'ABS ne tourne pas sur un seul MCU. Les capteurs de roue sont sur un premier MCU, le calcul de glissement sur un second, l'affichage tableau de bord sur un troisième. Avec PubSub distribué :
+
+```c
+/* MCU 1 : capteur roue avant-gauche */
+fbp_pubsub_publish(pubsub, "abs/fl/speed",
+    &FBP_UNION_F32(wheel_speed), FBP_PUBSUB_SFLAG_RETAIN);
+
+/* MCU 2 : module de calcul — reçoit automatiquement */
+fbp_pubsub_subscribe(pubsub, "abs/fl/speed",
+    FBP_PUBSUB_SFLAG_PUB, on_fl_speed, NULL);
+
+/* MCU 3 : tableau de bord — s'abonne à tout l'ABS */
+fbp_pubsub_subscribe(pubsub, "abs/",
+    FBP_PUBSUB_SFLAG_PUB, on_abs_update, NULL);
+```
+
+Chaque MCU publie dans son propre namespace (`abs/fl/`, `abs/fr/`...). Le PubSub distribué route automatiquement les messages entre MCUs via UART ou bus CAN.
+
+:::note[Lien avec le modèle en V]
+Le choix de l'architecture logicielle se fait à la **phase ② (Architecture système)**. Il doit être justifié par les exigences de la phase ① : un système temps réel critique avec plusieurs MCUs justifie un RTOS ou un PubSub distribué ; un capteur simple sur un seul MCU peut se contenter d'une Super-loop.
+:::
+
+---
+
 ## Teste-toi
 
 <Question id="c2-vmodel-q1" label="Q1">
@@ -445,3 +551,15 @@ Pourquoi teste-t-on les valeurs exactement aux seuils (par exemple, λ = 0,20 da
 :::note[Prochaine étape]
 Vous pouvez maintenant aborder le [TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/) avec ce cadre en tête : chaque exercice construit une pièce du système, et l'exercice 11 les assemble pour le tester au complet — exactement comme la branche droite du modèle en V.
 :::
+
+---
+
+## Références
+
+1. **MathWorks** — *V-Model for Systems Engineering*, documentation MATLAB/Simulink, [https://fr.mathworks.com/discovery/v-model.html](https://fr.mathworks.com/discovery/v-model.html)
+
+2. **Liberty, M.** (Jetperch LLC) — *Distributed PubSub for Microcontrollers*, Embedded Online Conference. GitHub : [https://github.com/jetperch/fitterbap](https://github.com/jetperch/fitterbap) — Présente le pattern Publish-Subscribe adapté aux microcontrôleurs, les problèmes des variables globales partagées, et l'implémentation open-source **Fitterbap** (*Firmware Toolkit to Enable Reliable Best Architecture Practices*).
+
+3. **ISO 26262** — *Road vehicles — Functional safety*, norme internationale pour les systèmes électroniques automobiles, 2018.
+
+4. **Carmack, J.** — Citation sur les états du code, Twitter/X, 2012 : *«&nbsp;A large fraction of the flaws in software development are due to programmers not fully understanding all the possible states their code may execute in.&nbsp;»*
