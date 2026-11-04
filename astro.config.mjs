@@ -61,6 +61,7 @@ export default defineConfig({
 						{ label: '1. Carte, MCU ou MPU ?', slug: 'parcours/chapitre-2/01-mcu-mpu-carte' },
 						{ label: '2. Présentation de la carte', slug: 'parcours/chapitre-2/02-presentation' },
 						{ label: '3. Guide des travaux pratiques', slug: 'parcours/chapitre-2/03-guide-tp' },
+						{ label: '4. Concevoir avec le modèle en V', slug: 'parcours/chapitre-2/04-modele-en-v' },
 						{
 							// Un seul TP : une page par exercice, puis la partie sécurité, en dernier.
 							label: 'TP1 · De la LED au contrôleur de température',
