@@ -7,54 +7,16 @@ description: Organisation du TP1 du chapitre 2 (onze exercices puis une partie s
 Cette page explique comment le TP est organisé, comment répondre aux questions directement dans le site et ce qu'il faut rendre.
 :::
 
-## Un fil rouge : le contrôleur de température
-
-Le TP1 construit pas à pas un même produit : un **boîtier qui surveille la température d'une armoire électrique**. Il se déroule en trois temps ; chaque exercice s'appuie sur les précédents.
-
-| Temps | Contenu | Durée | Ce que vous apprenez |
-|---|---|---|---|
-| [**Exercices 1 à 5 · Prise en main**](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/) | LED, bouton, interrupteur, potentiomètre, liaison série | 3 h | Piloter des sorties, lire des entrées, filtrer les rebonds, mesurer le temps sans bloquer |
-| [**Exercices 6 à 11 · Contrôleur de température**](/Embedded-System-Course/parcours/chapitre-2/tp1/ex06-capteur-dht22/) | Capteur DHT22, LED RVB, écran LCD I²C, buzzer, °C ou °F | 6 h (2 séances) | Acquérir une mesure, construire une interface homme-machine, écrire et tester un programme non bloquant |
-| [**Partie sécurité**](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/01-consignes/) | La manipulation finale de l'exercice 11, refaite en y intégrant les aspects de sécurité | 6 h (2 séances) | Analyser les risques, rendre le contrôleur sûr face aux pannes et sécurisé face aux attaques, produire des données de confiance, recetter |
-
-:::caution[Important]
-Les exercices 1 à 11 se concentrent sur le **fonctionnement** du contrôleur. La sécurité n'est abordée qu'**à la fin**, dans la partie sécurité : vous y referez la manipulation finale de l'exercice 11 en y intégrant les aspects de sécurité importants. Conservez donc le projet Wokwi de l'exercice 11.
-:::
-
-## Une page par exercice
-
-La [présentation du TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/) donne la mise en situation, les objectifs, le matériel et la préparation de Wokwi. Chaque exercice a ensuite **sa propre page**, construite sur le même modèle :
-
-- un **objectif** et un rappel de cours ;
-- un **tableau de câblage** et du **code** ;
-- des **questions numérotées** ;
-- des **critères de validation**.
-
-La partie sécurité commence par une **mise à l'épreuve** de votre programme de l'exercice 11 (étape 0), présente le **cahier des charges** du contrôleur sécurisé, puis se déroule en quatre étapes A à D.
-
-Les questions des exercices sont numérotées par exercice : Q6.3 est la 3<sup>e</sup> question de l'exercice 6. Dans la partie sécurité, les questions QS portent sur la mise à l'épreuve et les questions QA à QD sur les étapes A à D. Certaines questions portent un badge :
-
-| Badge | Signification |
-|---|---|
-| **Ingénieur** | Question d'approfondissement : justification, calcul, choix de conception |
-| **Sûreté** | Partie sécurité : comportement en cas de panne, le système doit rester dans un état sûr |
-| **Cybersécurité** | Partie sécurité : résistance à une action malveillante (authentification, validation, intégrité) |
-| **Données** | Partie sécurité : qualité, format et exploitation des données produites |
-
-Les cadres colorés gardent leur sens habituel : **bleu** pour l'information, **jaune** pour l'important, **rouge** pour ce qu'il faut retenir, **vert** pour ce que vous devez faire.
 
 ## Méthode de travail
 
 1. **Lire toute la page** avant de câbler : l'objectif et les critères de validation disent ce qui est attendu.
-2. **Créer un projet Wokwi par exercice** et le nommer clairement, par exemple `TP1-Ex06-Dupont-Martin`. Connectez-vous avec votre compte GitHub pour conserver l'historique. Quand un exercice complète le montage du précédent, partez d'une **copie** du projet précédent.
+2. **Créer un projet Wokwi par exercice** et le nommer clairement, par exemple `TP1-Ex06-Nom-Prenom`. Connectez-vous avec votre compte GitHub pour conserver l'historique. Quand un exercice complète le montage du précédent, partez d'une **copie** du projet précédent.
 3. **Câbler en suivant le tableau de câblage**, puis lancer la simulation avant d'écrire du code nouveau.
 4. **Tester chaque étape** avant de passer à la suivante. Une étape non testée est une étape non faite.
-5. **Répondre aux questions** dans les cadres prévus, avec vos propres mots. Une réponse se justifie : un calcul, une mesure, une observation.
-6. **Valider la page** en bas quand les critères de validation sont remplis.
+5. **Répondre aux questions** dans les cadres prévus.
 
-:::caution[Important]
-Un programme qui « marche » ne suffit pas : il doit **fonctionner pour de bonnes raisons**, et vous devez pouvoir le **prouver par des tests**, y compris aux valeurs limites. C'est ce qu'on attend d'un ingénieur.
-:::
+
 
 ## Répondre aux questions et rendre son travail
 
@@ -63,40 +25,6 @@ Sous chaque question se trouve un cadre de réponse. Ce que vous y écrivez est 
 La page [**Mes réponses**](/Embedded-System-Course/mes-reponses/) rassemble toutes vos réponses. Elle permet de :
 
 - **imprimer ou enregistrer en PDF** un compte rendu, avec votre nom et votre groupe ;
-- **télécharger** le compte rendu au format Markdown (.md) ;
 - **sauvegarder** vos réponses dans un fichier (.json) et les **importer** sur un autre ordinateur ;
-- **effacer** vos réponses d'un ordinateur partagé.
 
-:::danger[À retenir]
-Les réponses ne quittent jamais votre navigateur : l'enseignant ne les voit **que si vous les exportez** et les déposez à l'endroit indiqué. Sur un ordinateur de la salle de TP, **sauvegardez en fin de séance** puis effacez vos réponses de l'appareil.
-:::
 
-## Livrables
-
-Chaque binôme fait deux dépôts, nommés comme indiqué :
-
-| Dépôt | Nom | Contenu |
-|---|---|---|
-| Après l'exercice 11 | `TP1-exercices_Nom1_Nom2` | Compte rendu des exercices 1 à 11 (sélection « TP1 · De la LED au contrôleur de température » dans Mes réponses), liens Wokwi des exercices 2 à 11, programme final de l'exercice 11 (`sketch.ino`) |
-| Après la partie sécurité | `TP1-securite_Nom1_Nom2` | Compte rendu de la partie sécurité (sélection « TP1 · Partie sécurité »), avec le plan de recette exécuté ; lien Wokwi et programme final |
-
-## Grille d'évaluation (indicative)
-
-La même grille sert pour les deux dépôts. L'enseignant précise la pondération et les dates de rendu.
-
-| Critère | Ce qui est évalué | Poids |
-|---|---|---|
-| Fonctionnement | Le montage et le programme respectent le cahier des charges ; les critères de validation sont remplis | 35 % |
-| Réponses aux questions | Justesse, justification (calcul, mesure, observation), précision du vocabulaire | 30 % |
-| Qualité du code | Constantes nommées, fonctions courtes, commentaires utiles, pas de `delay()` bloquant quand c'est exigé | 15 % |
-| Démarche d'ingénieur | Tests réalisés et documentés ; dans la partie sécurité, comportement en cas de panne et d'attaque | 20 % |
-
-## Règles
-
-- Le travail se fait en **binôme** ; chaque membre doit pouvoir expliquer tout le code rendu.
-- Les réponses sont **rédigées par vous**. Si vous vous appuyez sur une documentation ou un site, **citez-le**.
-- Sur une **vraie carte**, ne branchez jamais un moteur ou un relais directement sur une broche, et vérifiez la polarité des composants avant de mettre sous tension.
-
-:::note[Prochaine étape]
-Validez cette page, puis commencez le [TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/01-presentation/).
-:::
