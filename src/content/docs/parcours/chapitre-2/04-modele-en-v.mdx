@@ -500,44 +500,11 @@ void test_debounce_resets_on_ok(void) {
 `}</script>
 </div>
 
----
-
-## Les deux branches en résumé
-
-| Phase | Branche | Question posée |
-|---|---|---|
-| ① Spécification système | Gauche ↘ | *Que doit faire le système ?* |
-| ② Architecture système | Gauche ↘ | *Avec quels composants et protocoles ?* |
-| ③ Conception détaillée | Gauche ↘ | *Comment chaque module fonctionne-t-il ?* |
-| ④ Implémentation | Pointe du V | *Comment traduire la conception en code ?* |
-| ⑤ Tests unitaires | Droite ↗ | *Chaque fonction est-elle correcte isolément ?* |
-| ⑥ Tests d'intégration | Droite ↗ | *Les modules fonctionnent-ils ensemble ?* |
-| ⑦ Validation | Droite ↗ | *Le système répond-il au besoin du client ?* |
-
-La règle d'or : **la phase ① et la phase ⑦ sont en miroir**, tout comme ② ↔ ⑥ et ③ ↔ ⑤. Si une exigence de la phase ① n'a pas de test en phase ⑦, elle ne sera jamais vérifiée.
-
 :::tip[Vérification ou validation ?]
 **Vérifier** (⑤ et ⑥), c'est s'assurer que le produit est conforme à sa conception : *a-t-on bien construit le produit ?*
 
 **Valider** (⑦), c'est s'assurer qu'il répond au besoin exprimé : *a-t-on construit le bon produit ?*
 :::
-
----
-
-## Processus d'ingénierie des SE : la spécification comme point de départ
-
-Dans votre cours, la section **Processus d'Ingénierie des SE** commence par identifier les capteurs et les actionneurs nécessaires. Cette étape **est** la spécification (phase ①) du modèle en V :
-
-| Étape du cours | Phase du modèle en V | Question |
-|---|---|---|
-| Identifier les grandeurs physiques à mesurer | ① Spécification | Quels capteurs ? |
-| Choisir les actionneurs selon la puissance, la précision | ① Spécification | Quels actionneurs ? |
-| Définir les protocoles (I²C, SPI, UART, CAN) | ② Architecture | Comment les connecter ? |
-| Écrire les algorithmes de traitement (filtrage, hystérésis) | ③ Conception détaillée | Comment traiter les données ? |
-| Coder et téléverser sur la carte | ④ Implémentation | Comment le programmer ? |
-| Vérifier que le capteur renvoie les bonnes valeurs | ⑤ Tests unitaires | La lecture est-elle correcte ? |
-| Vérifier que le système réagit aux capteurs | ⑥ Intégration | Capteur + actionneur fonctionnent-ils ensemble ? |
-| Valider le comportement final | ⑦ Validation | Le système fait-il ce qui était demandé ? |
 
 ---
 

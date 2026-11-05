@@ -1,0 +1,117 @@
+---
+title: Carte, microcontrôleur ou microprocesseur ?
+description: "Trois mots que l'on confond souvent : la puce MCU, le microprocesseur MPU et la carte de développement."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs de l'atelier]
+À la fin de cette page, vous serez capables de :
+- expliquer en une phrase ce qu'est un microcontrôleur (MCU) et un microprocesseur (MPU) ;
+- dire ce que contient une carte de développement en plus de la puce ;
+- savoir pourquoi on utilise une carte Arduino pour apprendre.
+:::
+
+## Trois mots, trois choses différentes
+
+On confond souvent ces trois termes. Pourtant, ils désignent des objets différents :
+
+| Terme | C'est… | Exemple |
+|---|---|---|
+| **Microcontrôleur (MCU)** | une **puce** qui contient processeur, mémoires et entrées-sorties | ATmega328P |
+| **Microprocesseur (MPU)** | une puce de **calcul puissante**, qui a besoin de composants autour | processeur d'un PC ou d'un Raspberry Pi |
+| **Carte de développement** | une **carte** qui entoure la puce de tout le nécessaire pour l'utiliser | Arduino UNO |
+
+## Le microcontrôleur (MCU) : tout dans une puce
+
+Un MCU est un **mini-ordinateur sur une seule puce**. Il réunit un processeur, de la mémoire (Flash, SRAM, EEPROM) et des périphériques (broches, convertisseur analogique, liaisons série).
+
+![Le microcontrôleur ATmega328, une puce noire à 28 pattes](../../../../assets/parcours/chapitre-1/img/atmega328.webp)
+
+*Un microcontrôleur ATmega328 : une puce de quelques centimètres, c'est le « cerveau » de l'Arduino UNO.*
+
+Il est peu coûteux, consomme très peu et pilote directement des capteurs et des actionneurs.
+
+## Le microprocesseur (MPU) : la puissance de calcul
+
+Un MPU est **beaucoup plus puissant**, mais il ne contient ni mémoire ni périphériques : il faut les ajouter autour. Il sert aux applications lourdes : système d'exploitation comme Linux, écran, vidéo, plusieurs programmes en même temps.
+
+![Schéma comparant un microcontrôleur (CPU, ROM, RAM, ports, timers) et un microprocesseur (CPU, mémoire, périphériques externes)](../../../../assets/parcours/chapitre-1/img/micro-vs-microprocesseur.webp)
+
+*À gauche, le MCU réunit tout dans une puce. À droite, le MPU a besoin de mémoire et de périphériques extérieurs.*
+
+:::danger[À retenir]
+**MCU** : tout est dans la puce, simple et économe, pour une tâche précise.
+**MPU** : très puissant, mais il faut ajouter mémoire et périphériques autour.
+:::
+
+## La carte de développement : la puce prête à l'emploi
+
+Un MCU seul est difficile à utiliser : il faut l'alimenter, le programmer, lui connecter des fils. La **carte de développement** règle tous ces problèmes. Elle contient :
+
+- le **microcontrôleur** ;
+- une **alimentation** qui fournit les bonnes tensions (5 V, 3,3 V) ;
+- un **port USB** et une puce qui permettent de téléverser le programme ;
+- des **connecteurs** (broches) pour brancher LED, boutons et capteurs ;
+- un bouton **RESET** et des LED témoins.
+
+![Carte Arduino UNO R3 vue de dessus](../../../../assets/parcours/chapitre-1/img/carte-uno.webp)
+
+*Une carte Arduino UNO : le grand circuit noir au centre est le microcontrôleur. Tout le reste est là pour l'alimenter, le programmer et le connecter.*
+
+![Carte ESP32 avec ses blocs annotés : module, bouton EN, port USB, pont USB-UART, bouton BOOT](../../../../assets/parcours/chapitre-1/img/esp32-blocs.webp)
+
+*Une autre carte de développement, l'ESP32 : on retrouve les mêmes blocs, le microcontrôleur, le port USB et ses boutons.*
+
+:::caution[Important]
+Ne confondez pas **la puce et la carte**. L'ATmega328P est le **microcontrôleur**. L'Arduino UNO est la **carte** qui le contient. Un Raspberry Pi 5 est une carte avec un **microprocesseur** : il fait tourner Linux, ce n'est pas un microcontrôleur.
+:::
+
+## Pourquoi commencer avec une Arduino UNO ?
+
+:::note[Information]
+L'Arduino UNO est une carte à **microcontrôleur**, simple et peu chère. Elle se programme en quelques lignes, se branche en USB et fonctionne seule une fois programmée. Elle est idéale pour comprendre ce qu'est un système embarqué, avant de passer à des cartes plus puissantes.
+:::
+
+## Tableau récapitulatif
+
+| Image | Ce que c'est | Type |
+|---|---|---|
+| ![Une carte Arduino UNO à gauche et, à droite, un microcontrôleur seul](../../../../assets/parcours/chapitre-1/img/arduino-carte-et-mcu.webp) | **Arduino UNO** : une carte de développement, avec à droite le microcontrôleur qu'elle contient. | Carte + **MCU** |
+| ![Carte Raspberry Pi Pico](../../../../assets/parcours/chapitre-1/img/pico-carte.webp) | **Raspberry Pi Pico** : une carte de développement basée sur le microcontrôleur RP2040. | Carte + **MCU** |
+| ![Puce RP2040 vue de dessus et de dessous](../../../../assets/parcours/chapitre-1/img/rp2040-puce.webp) | **RP2040** : le microcontrôleur de la carte Pico, vendu seul sous forme de puce. | **MCU** (la puce) |
+| ![Carte Raspberry Pi 4 Model B avec ses ports USB, HDMI et Ethernet](../../../../assets/parcours/chapitre-1/img/raspberry-pi-4.webp) | **Raspberry Pi 4** : une carte qui contient un microprocesseur, de la mémoire, des ports USB, HDMI et Ethernet. | Carte + **MPU** |
+| ![Raspberry Pi 4 dans son boîtier](../../../../assets/parcours/chapitre-1/img/raspberry-pi-boitier.webp) | **Raspberry Pi 4 dans son boîtier** : il se présente comme un mini-ordinateur, on y branche écran, clavier et souris. | **Mini-ordinateur** |
+
+:::danger[À retenir]
+Une **puce** (RP2040) n'est pas une **carte** (Pico). Une carte à **microcontrôleur** (Arduino, Pico) exécute un programme dédié. Une carte à **microprocesseur** (Raspberry Pi 4) se comporte comme un **mini-ordinateur** avec un système d'exploitation.
+:::
+
+## Testez-vous
+
+Répondez dans les cadres : votre réponse est enregistrée dans ce navigateur. Comparez ensuite avec la correction.
+
+<Question id="c2-mcu-q1" label="Q1">
+Que contient un microcontrôleur que ne contient pas un microprocesseur ?
+</Question>
+
+<Question id="c2-mcu-q2" label="Q2">
+L'Arduino UNO est-elle un microcontrôleur ?
+</Question>
+
+<Question id="c2-mcu-q3" label="Q3">
+Citez trois éléments qu'on trouve sur une carte de développement en plus de la puce.
+</Question>
+
+<details>
+<summary>Voir les réponses</summary>
+
+1. Il intègre dans la même puce de la **mémoire** (Flash, SRAM) et des **périphériques** (entrées-sorties, convertisseur analogique, liaisons série).
+2. Non. C'est une **carte de développement** qui contient un microcontrôleur, l'ATmega328P.
+3. Par exemple : l'alimentation, le port USB, les broches, le bouton RESET.
+
+</details>
+
+:::note[Prochaine étape]
+Validez cette page en bas, puis découvrez la carte Arduino UNO broche par broche.
+:::

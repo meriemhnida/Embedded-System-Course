@@ -1,0 +1,95 @@
+---
+title: "Exercice 2 — Faire clignoter une LED externe"
+description: Exercice 2 du TP1 — câbler une LED et sa résistance, dimensionner la résistance, faire clignoter la LED avec delay() puis avec millis().
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Câbler une LED externe, **dimensionner** sa résistance de protection, puis maîtriser le temps : d'abord avec `delay()`, ensuite avec `millis()`. Rappel de cours : leçon [6](/Embedded-System-Course/parcours/chapitre-1/06-atelier-led/) du chapitre 1.
+:::
+
+Une LED externe est reliée à la carte à travers une **résistance**, qui limite le courant et évite de détruire la LED.
+
+## Câblage
+
+| Composant | Broche du composant | Relier à |
+|---|---|---|
+| LED | anode (patte longue) | broche **D13** de l'UNO |
+| LED | cathode (patte courte) | une extrémité de la résistance 220 Ω |
+| Résistance 220 Ω | autre extrémité | **GND** |
+
+![Le montage de la LED et de sa résistance dans Wokwi](../../../../../assets/parcours/chapitre-1/img/montage-led-wokwi.webp)
+
+*La LED est reliée à la broche 13 et à la masse à travers sa résistance.*
+
+## Programme
+
+```cpp
+const int LEDPin = 13;
+
+void setup() {
+  pinMode(LEDPin, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LEDPin, HIGH);  // LED allumée
+  delay(250);                  // attente de 250 ms
+  digitalWrite(LEDPin, LOW);   // LED éteinte
+  delay(250);
+}
+```
+
+<Question id="tp1-q2.1" label="Q2.1">
+Pourquoi les deux pattes de la LED ont-elles des longueurs différentes ? Quel est le rôle de l'**anode** et de la **cathode** ? Que se passe-t-il si l'on branche la LED à l'envers ?
+</Question>
+
+<Question id="tp1-q2.2" label="Q2.2">
+**Dimensionnement.** La sortie fournit 5 V, la LED fait chuter environ 2 V et l'on vise un courant de 15 mA. Calculez la résistance nécessaire. Pourquoi choisit-on 220 Ω, une valeur de la série normalisée E12 ? Quel courant circule alors ?
+</Question>
+
+<Question id="tp1-q2.3" label="Q2.3">
+Calculez la **période**, la **fréquence** et le **rapport cyclique** du clignotement.
+</Question>
+
+<Question id="tp1-q2.4" label="Q2.4">
+Que remarquez-vous sur la LED **L** de la carte pendant cet exercice ? Expliquez.
+</Question>
+
+## Clignoter sans bloquer le programme
+
+:::caution[Important]
+`delay()` **bloque** le microcontrôleur : pendant 250 ms, il ne lit aucun bouton et ne répond à rien. Dans un produit, on mesure le temps écoulé avec `millis()`, le nombre de millisecondes depuis le démarrage, sans jamais attendre.
+:::
+
+<Question id="tp1-q2.5" label="Q2.5" type="code">
+Réécrivez le clignotement **sans `delay()`**, à l'aide de `millis()`. Collez votre programme, puis expliquez en commentaire pourquoi on écrit `millis() - instant >= PERIODE` plutôt que `millis() >= instant + PERIODE` (indice : que devient `millis()` au bout de 49,7 jours ?).
+</Question>
+
+<details>
+<summary>Voir une piste pour Q2.5</summary>
+
+```cpp
+const unsigned long PERIODE = 250;  // ms
+unsigned long instant = 0;          // date du dernier changement
+
+void loop() {
+  if (millis() - instant >= PERIODE) {
+    instant += PERIODE;
+    // à compléter : inverser l'état de la LED
+  }
+  // ici, le programme reste libre de faire autre chose
+}
+```
+
+</details>
+
+## Critères de validation
+
+- [ ] La LED externe clignote à 2 Hz ; le projet Wokwi est enregistré.
+- [ ] La version sans `delay()` clignote au même rythme.
+- [ ] Les questions Q2.1 à Q2.5 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[exercice 3 : commander une LED avec un bouton-poussoir](/Embedded-System-Course/parcours/chapitre-2/tp1/ex03-bouton-poussoir/).
+:::

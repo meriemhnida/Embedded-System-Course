@@ -1,0 +1,117 @@
+---
+title: "Exercice 7 — Plaque de prototypage et LED RVB"
+description: Exercice 7 du TP1 — utiliser une plaque de prototypage, câbler une LED RVB à anode commune et commander ses trois couleurs en PWM.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Câbler une **LED RVB** sur une plaque de prototypage et comprendre la logique d'une **anode commune** : c'est le voyant de couleur du contrôleur (exigence EF2).
+:::
+
+## La plaque de prototypage
+
+Commencez un **nouveau projet** Arduino Uno et ajoutez une plaque de prototypage (*breadboard*). Avant de placer les composants, reliez ses **rails d'alimentation** à la carte : rail **+** au **5V**, rail **−** au **GND**.
+
+![Carte UNO et plaque de prototypage dont les rails + et − sont reliés au 5 V et à la masse](../../../../../assets/parcours/chapitre-2/tp1/plaque-alimentation.webp)
+
+*Les rails d'alimentation de la plaque reliés au 5 V et à la masse.*
+
+La plaque permet des **connexions temporaires sans soudure** : on ajoute, déplace et retire les composants en quelques secondes. C'est l'outil du prototypage rapide, avant de réaliser un circuit définitif.
+
+## La LED RVB à anode commune
+
+Une LED RVB réunit trois LED, **rouge**, **verte** et **bleue**, dans un même boîtier. Dans le modèle de Wokwi, leurs **anodes sont reliées entre elles** (broche COM) : on dit qu'elle est à **anode commune**. La broche COM va au **5 V**, et chaque couleur s'allume quand sa broche est tirée **vers 0 V**.
+
+## Câblage
+
+| LED RVB | Relier à |
+|---|---|
+| R (rouge) | résistance 220 Ω → **D11** |
+| COM (commune) | rail **+** (5 V) |
+| G (vert) | résistance 220 Ω → **D5** |
+| B (bleu) | résistance 220 Ω → **D3** |
+
+![Montage de la LED RVB et de ses trois résistances sur la plaque](../../../../../assets/parcours/chapitre-2/tp1/montage-led-rvb.webp)
+
+*Chaque couleur a sa propre résistance de 220 Ω ; la broche commune est reliée au rail + de la plaque.*
+
+## Programme
+
+1. Associez chaque couleur à une broche :
+
+```cpp
+int red_led = 11;
+int green_led = 5;
+int blue_led = 3;
+```
+
+2. Configurez ces broches en **sorties** dans `setup()`. Ce sont des broches **PWM** (marquées ~) : on peut régler l'intensité de chaque couleur.
+
+```cpp
+void setup() {
+  pinMode(red_led, OUTPUT);
+  pinMode(green_led, OUTPUT);
+  pinMode(blue_led, OUTPUT);
+}
+```
+
+3. Écrivez une fonction qui règle les trois intensités en PWM :
+
+```cpp
+void led_color(int red_value, int green_value, int blue_value) {
+  analogWrite(red_led, red_value);
+  analogWrite(green_led, green_value);
+  analogWrite(blue_led, blue_value);
+}
+```
+
+4. Faites défiler trois couleurs dans `loop()` :
+
+```cpp
+void loop() {
+  led_color(0, 255, 255);
+  delay(2000);
+  led_color(255, 0, 255);
+  delay(2000);
+  led_color(255, 255, 0);
+  delay(2000);
+}
+```
+
+Testez avant de continuer : vous devez obtenir successivement du **rouge**, du **vert** et du **bleu**.
+
+![La LED RVB allumée en bleu](../../../../../assets/parcours/chapitre-2/tp1/resultat-bleu.webp)
+![La LED RVB allumée en rouge](../../../../../assets/parcours/chapitre-2/tp1/resultat-rouge.webp)
+![La LED RVB allumée en vert](../../../../../assets/parcours/chapitre-2/tp1/resultat-vert.webp)
+
+*Les trois couleurs obtenues.*
+
+<Question id="tp2-q2.1" label="Q7.1">
+Sur une plaque de prototypage, quels trous sont reliés électriquement entre eux ? Distinguez les **rangées de la zone centrale** et les **rails d'alimentation**.
+</Question>
+
+<Question id="tp2-q2.2" label="Q7.2">
+Pourquoi les trois couleurs sont-elles branchées sur les broches 3, 5 et 11 ?
+</Question>
+
+<Question id="tp2-q2.3" label="Q7.3">
+Expliquez pourquoi `led_color(0, 255, 255)` donne du **rouge** alors que la valeur 0 signifie habituellement « éteint ».
+</Question>
+
+<Question id="tp2-q2.4" label="Q7.4">
+Quelles valeurs faut-il passer à `led_color()` pour obtenir du **jaune**, du **magenta**, du **blanc**, puis pour **éteindre** la LED ?
+</Question>
+
+<Question id="tp2-q2.5" label="Q7.5" type="code">
+Écrivez une fonction `couleur(int r, int v, int b)` qui reçoit des intensités en **logique directe** (255 = allumé à fond) et fonctionne avec une LED à anode **ou** à cathode commune selon une constante `ANODE_COMMUNE`. Quel est l'intérêt de cette couche d'abstraction si le fournisseur change de LED ?
+</Question>
+
+## Critères de validation
+
+- [ ] La LED affiche successivement rouge, vert et bleu.
+- [ ] Les questions Q7.1 à Q7.5 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[exercice 8 : couleur selon la température](/Embedded-System-Course/parcours/chapitre-2/tp1/ex08-couleur-temperature/).
+:::

@@ -1,0 +1,85 @@
+---
+title: "Exercice 5 — Régler la luminosité avec un potentiomètre"
+description: Exercice 5 du TP1 — lire un potentiomètre avec le convertisseur analogique-numérique et régler la luminosité d'une LED en PWM.
+---
+
+import Question from '../../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Passer du « tout ou rien » à une **grandeur continue** : lire une tension avec le convertisseur analogique-numérique, puis commander une sortie en **PWM**. Rappel de cours : leçon [9](/Embedded-System-Course/parcours/chapitre-1/09-exercice-potentiometre/) du chapitre 1.
+:::
+
+Jusqu'ici, les entrées ne prenaient que deux valeurs. Un potentiomètre fournit une tension **réglable entre 0 et 5 V**, qui sert de consigne : luminosité d'une LED, vitesse d'un moteur, seuil d'alarme.
+
+## Câblage
+
+| Composant | Broche du composant | Relier à |
+|---|---|---|
+| LED | anode (patte longue) | **D11** (sortie PWM) |
+| LED | cathode | résistance 220 Ω → **GND** |
+| Potentiomètre | curseur (SIG, broche centrale) | **A0** |
+| Potentiomètre | une extrémité | **GND** |
+| Potentiomètre | autre extrémité | **5V** |
+
+![Montage dans Wokwi : LED, résistance, potentiomètre à glissière et carte UNO](../../../../../assets/parcours/chapitre-1/img/montage-potentiometre.webp)
+
+*La LED est sur la broche 11 (PWM) et le curseur du potentiomètre sur A0.*
+
+## Programme
+
+```cpp
+const int LED_pin = 11;
+
+void setup() {
+  // analogWrite() configure elle-même la broche en sortie
+}
+
+void loop() {
+  int value = analogRead(A0);                     // 0 à 1023
+  int brightness = map(value, 0, 1023, 0, 255);   // mise à l'échelle 0 à 255
+  analogWrite(LED_pin, brightness);               // rapport cyclique de la PWM
+  delay(20);
+}
+```
+
+- `analogRead(A0)` mesure la tension du curseur et la **convertit** en un nombre entier entre 0 et 1023.
+- `map()` transforme **linéairement** la plage 0 à 1023 en plage 0 à 255.
+- `analogWrite()` attend justement une valeur entre 0 (toujours éteint) et 255 (toujours allumé) : elle règle le **rapport cyclique** d'un signal PWM sur les broches marquées **~**.
+
+<Question id="tp1-q5.1" label="Q5.1">
+Pourquoi utilise-t-on la broche **A0** pour le potentiomètre plutôt qu'une broche numérique ?
+</Question>
+
+<Question id="tp1-q5.2" label="Q5.2">
+Le convertisseur de l'UNO a une résolution de **10 bits** et une tension de référence de 5 V. Combien de valeurs différentes peut-il produire ? Quelle variation de tension correspond à une unité (le **quantum**) ? Quelle valeur lit-on pour une tension de 2,5 V ?
+</Question>
+
+<Question id="tp1-q5.3" label="Q5.3">
+Calculez à la main `map(512, 0, 1023, 0, 255)`. Le calcul exact donne 127,6 : pourquoi la fonction renvoie-t-elle **127** ? Montrez que, sur cette plage, `map()` équivaut presque à une division par 4.
+</Question>
+
+<Question id="tp1-q5.4" label="Q5.4">
+Pourquoi la LED est-elle branchée sur la broche **11** ? Que se passerait-il si on la branchait sur la broche 12 en gardant `analogWrite()` ?
+</Question>
+
+<Question id="tp1-q5.5" label="Q5.5">
+La PWM de la broche 11 a une fréquence d'environ **490 Hz**. Pour `analogWrite(11, 64)`, donnez le rapport cyclique et la tension moyenne en sortie. Pourquoi l'œil ne voit-il pas la LED clignoter ?
+</Question>
+
+## Critères de validation
+
+- [ ] La luminosité de la LED varie continûment avec le potentiomètre, de éteinte à pleine puissance.
+- [ ] Le moniteur série (ajoutez-le) affiche la valeur lue et la valeur envoyée à la LED.
+- [ ] Les questions Q5.1 à Q5.5 ont une réponse justifiée.
+
+## Bilan des exercices 1 à 5
+
+- [ ] Je sais calculer la résistance de protection d'une LED.
+- [ ] Je sais expliquer pourquoi une entrée doit avoir un niveau fixé au repos.
+- [ ] Je sais filtrer les rebonds d'un bouton sans bloquer le programme.
+- [ ] Je sais lire une tension avec `analogRead()` et commander une sortie avec `analogWrite()`.
+- [ ] Je sais utiliser le moniteur série pour suivre le fonctionnement d'un programme.
+
+:::note[Prochaine étape]
+Validez cette page. Les exercices 6 à 11 réutilisent ces briques pour construire le contrôleur de température : commencez par l'[exercice 6 : le capteur DHT22](/Embedded-System-Course/parcours/chapitre-2/tp1/ex06-capteur-dht22/).
+:::
