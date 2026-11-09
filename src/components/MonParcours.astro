@@ -1,0 +1,162 @@
+---
+import { leconsDuParcours } from '../scripts/leconsDuParcours';
+
+const lecons = leconsDuParcours(Astro.locals.starlightRoute.sidebar);
+const chapitres: { titre: string; lecons: typeof lecons }[] = [];
+for (const lecon of lecons) {
+	const dernier = chapitres[chapitres.length - 1];
+	if (dernier && dernier.titre === lecon.chapitre) dernier.lecons.push(lecon);
+	else chapitres.push({ titre: lecon.chapitre, lecons: [lecon] });
+}
+---
+
+<section class="mon-parcours" data-lecons={JSON.stringify(lecons)}>
+	<div class="resume">
+		<p class="chiffres"></p>
+		<div class="barre" aria-hidden="true"><span class="remplissage"></span></div>
+	</div>
+
+	<h2>Mes leçons</h2>
+	{
+		chapitres.map((chapitre) => (
+			<>
+				<h3 class="chapitre">{chapitre.titre}</h3>
+				<ol class="liste">
+					{chapitre.lecons.map((lecon) => (
+						<li data-href={lecon.href}>
+							<a href={lecon.href}>{lecon.label}</a>
+							<span class="statut">À faire</span>
+						</li>
+					))}
+				</ol>
+			</>
+		))
+	}
+
+	<h2>Historique de mes actions</h2>
+	<ul class="journal"></ul>
+
+	<button type="button" class="reinitialiser">Réinitialiser ma progression</button>
+</section>
+
+<script>
+	import { lire, reinitialiser } from '../scripts/progression';
+	import type { Entree } from '../scripts/progression';
+
+	const libelles: Record<Entree['action'], string> = {
+		valide: 'Leçon validée',
+		annule: 'Validation annulée',
+		reinitialise: 'Parcours réinitialisé',
+	};
+
+	function formater(iso: string): string {
+		return new Date(iso).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+	}
+
+	function initialiser(section: HTMLElement) {
+		const lecons: { label: string; href: string }[] = JSON.parse(section.dataset.lecons ?? '[]');
+		const chiffres = section.querySelector<HTMLElement>('.chiffres')!;
+		const remplissage = section.querySelector<HTMLElement>('.remplissage')!;
+		const journal = section.querySelector<HTMLElement>('.journal')!;
+		const bouton = section.querySelector<HTMLButtonElement>('.reinitialiser')!;
+
+		function rafraichir() {
+			const p = lire();
+
+			let nbValidees = 0;
+			section.querySelectorAll<HTMLLIElement>('.liste li').forEach((li) => {
+				const href = li.dataset.href ?? '';
+				const statut = li.querySelector<HTMLElement>('.statut')!;
+				const validee = Boolean(p.valides[href]);
+				if (validee) nbValidees++;
+				statut.textContent = validee ? '✔ Validée' : 'À faire';
+				statut.classList.toggle('valide', validee);
+			});
+
+			const pourcent = lecons.length ? Math.round((nbValidees / lecons.length) * 100) : 0;
+			chiffres.textContent = `${nbValidees} / ${lecons.length} leçons validées (${pourcent} %)`;
+			remplissage.style.width = `${pourcent}%`;
+
+			const entrees = [...p.journal].reverse();
+			journal.replaceChildren();
+			if (entrees.length === 0) {
+				const vide = document.createElement('li');
+				vide.textContent = 'Aucune action pour le moment.';
+				journal.append(vide);
+			}
+			for (const e of entrees) {
+				const li = document.createElement('li');
+				const nom = e.label || '';
+				li.textContent = `${formater(e.date)} : ${libelles[e.action]}${nom && e.action !== 'reinitialise' ? ` — ${nom}` : ''}`;
+				journal.append(li);
+			}
+		}
+
+		bouton.addEventListener('click', () => {
+			if (confirm('Remettre toutes les leçons à « À faire » ? L’historique des actions est conservé.')) {
+				reinitialiser();
+				rafraichir();
+			}
+		});
+
+		rafraichir();
+	}
+
+	document.querySelectorAll<HTMLElement>('.mon-parcours').forEach(initialiser);
+</script>
+
+<style>
+	.resume {
+		margin-bottom: 1.5rem;
+	}
+	.chiffres {
+		margin: 0 0 0.5rem;
+		font-weight: 600;
+	}
+	.barre {
+		height: 0.6rem;
+		border-radius: 999px;
+		background: var(--sl-color-gray-5);
+		overflow: hidden;
+	}
+	.remplissage {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--sl-color-accent);
+		transition: width 0.3s ease;
+	}
+	.chapitre {
+		font-size: var(--sl-text-lg);
+		margin-top: 1.25rem;
+	}
+	.liste {
+		padding-left: 1.25rem;
+	}
+	.liste li {
+		margin-bottom: 0.5rem;
+	}
+	.statut {
+		margin-left: 0.75rem;
+		font-size: 0.85rem;
+		color: var(--sl-color-gray-2);
+	}
+	.statut.valide {
+		color: var(--sl-color-green-high, #4ade80);
+		font-weight: 600;
+	}
+	.journal {
+		padding-left: 1.25rem;
+		font-size: 0.95rem;
+	}
+	.reinitialiser {
+		margin-top: 1.5rem;
+		font: inherit;
+		padding: 0.5rem 1rem;
+		border-radius: 0.5rem;
+		border: 1px solid var(--sl-color-hairline);
+		background: transparent;
+		color: var(--sl-color-white);
+		cursor: pointer;
+	}
+</style>

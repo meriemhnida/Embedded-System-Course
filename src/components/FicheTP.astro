@@ -1,0 +1,58 @@
+---
+// Fiche d'identité d'un TP : mêmes rubriques pour tous les TP.
+interface Props {
+	duree: string;
+	modalite: string;
+	plateforme: string;
+	prerequis: string;
+	livrables: string;
+}
+const { duree, modalite, plateforme, prerequis, livrables } = Astro.props;
+const lignes = [
+	['Durée', duree],
+	['Modalité', modalite],
+	['Plateforme', plateforme],
+	['Prérequis', prerequis],
+	['Livrables', livrables],
+];
+---
+
+<dl class="fiche-tp">
+	{
+		lignes.map(([cle, valeur]) => (
+			<div class="fiche-tp__ligne">
+				<dt>{cle}</dt>
+				<dd>{valeur}</dd>
+			</div>
+		))
+	}
+</dl>
+
+<style>
+	.fiche-tp {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+		gap: 0.6rem;
+		margin: 1.25rem 0;
+		padding: 0;
+	}
+	.fiche-tp .fiche-tp__ligne {
+		margin: 0;
+		padding: 0.6rem 0.85rem;
+		border-radius: 0.55rem;
+		border: 1px solid var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+	}
+	dt {
+		font-size: var(--sl-text-xs);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--cadre-bleu-titre);
+	}
+	.fiche-tp dd {
+		margin: 0.15rem 0 0;
+		padding: 0;
+		font-size: var(--sl-text-sm);
+	}
+</style>

@@ -1,0 +1,246 @@
+---
+// Question de TP avec une zone de réponse enregistrée automatiquement dans le navigateur.
+// Utilisation dans une page .mdx :
+//   <Question id="tp1-q8.4" label="Q8.4" categorie="ingenieur">
+//   Énoncé de la question, en Markdown.
+//   </Question>
+// L'identifiant doit être unique sur tout le site et ne plus changer : il sert de clé d'enregistrement.
+interface Props {
+	id: string;
+	label: string;
+	type?: 'texte' | 'code';
+	lignes?: number;
+	categorie?: 'ingenieur' | 'securite' | 'surete' | 'donnees';
+}
+
+const { id, label, type = 'texte', lignes, categorie } = Astro.props;
+const libelles = {
+	ingenieur: 'Ingénieur',
+	securite: 'Cybersécurité',
+	surete: 'Sûreté',
+	donnees: 'Données',
+} as const;
+const lignesMin = lignes ?? (type === 'code' ? 8 : 4);
+const ancre = `q-${id}`;
+---
+
+<section class="question" id={ancre} data-id={id} data-label={label}>
+	<header class="question__entete">
+		<span class="question__label">{label}</span>
+		{categorie && <span class={`question__badge question__badge--${categorie}`}>{libelles[categorie]}</span>}
+		<span class="question__coche" aria-hidden="true">✓</span>
+	</header>
+	<div class="question__enonce" id={`${ancre}-enonce`}><slot /></div>
+	<textarea
+		class:list={['question__reponse', { 'question__reponse--code': type === 'code' }]}
+		rows={lignesMin}
+		data-lignes={lignesMin}
+		placeholder={type === 'code' ? 'Coller ou écrire le code ici…' : 'Saisir la réponse ici…'}
+		spellcheck={type === 'code' ? 'false' : 'true'}
+		autocomplete="off"
+		aria-label={`Réponse à la question ${label}`}
+		aria-describedby={`${ancre}-enonce`}></textarea>
+	<div class="question__pied">
+		<span class="question__statut" aria-live="polite">Pas encore de réponse</span>
+		<span class="question__compteur"></span>
+	</div>
+</section>
+
+<script>
+	import { enregistrerReponse, lire } from '../scripts/reponses';
+
+	const DELAI_MS = 600;
+
+	function heure(iso: string): string {
+		return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+	}
+	function dateHeure(iso: string): string {
+		return new Date(iso).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+	}
+	function ajuster(zone: HTMLTextAreaElement) {
+		zone.style.height = 'auto';
+		zone.style.height = `${zone.scrollHeight + 2}px`;
+	}
+
+	function initialiser(question: HTMLElement, reponses: ReturnType<typeof lire>['reponses']) {
+		const id = question.dataset.id ?? '';
+		const label = question.dataset.label ?? '';
+		const zone = question.querySelector<HTMLTextAreaElement>('textarea')!;
+		const statut = question.querySelector<HTMLElement>('.question__statut')!;
+		const compteur = question.querySelector<HTMLElement>('.question__compteur')!;
+		let minuteur: number | undefined;
+
+		function compter() {
+			const n = zone.value.length;
+			compteur.textContent = n ? `${n} caractère${n > 1 ? 's' : ''}` : '';
+		}
+
+		function sauver() {
+			window.clearTimeout(minuteur);
+			minuteur = undefined;
+			const maj = enregistrerReponse(id, zone.value, { page: window.location.pathname, label });
+			if (maj === null) {
+				question.classList.add('question--erreur');
+				statut.textContent =
+					'⚠ Enregistrement impossible : le stockage de ce navigateur est indisponible. Copiez votre réponse ailleurs.';
+				return;
+			}
+			const vide = zone.value.trim() === '';
+			question.classList.remove('question--erreur');
+			question.classList.toggle('question--repondue', !vide);
+			statut.textContent = vide ? 'Pas encore de réponse' : `Enregistrée à ${heure(maj)} sur cet appareil`;
+			document.dispatchEvent(new CustomEvent('reponses:maj'));
+		}
+
+		const existante = reponses[id];
+		if (existante) {
+			zone.value = existante.texte;
+			question.classList.add('question--repondue');
+			statut.textContent = `Enregistrée le ${dateHeure(existante.maj)}`;
+		}
+		compter();
+		requestAnimationFrame(() => ajuster(zone));
+
+		zone.addEventListener('input', () => {
+			statut.textContent = 'Modification en cours…';
+			ajuster(zone);
+			compter();
+			window.clearTimeout(minuteur);
+			minuteur = window.setTimeout(sauver, DELAI_MS);
+		});
+		zone.addEventListener('blur', () => {
+			if (minuteur !== undefined) sauver();
+		});
+		window.addEventListener('pagehide', () => {
+			if (minuteur !== undefined) sauver();
+		});
+	}
+
+	const reponses = lire().reponses;
+	document.querySelectorAll<HTMLElement>('.question').forEach((q) => initialiser(q, reponses));
+</script>
+
+<style>
+	.question {
+		margin-block: 1.25rem;
+		padding: 0.9rem 1rem 0.7rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-inline-start: 0.35rem solid var(--sl-color-gray-4);
+		border-radius: 0.6rem;
+		background: var(--sl-color-gray-6);
+	}
+	.question--repondue {
+		border-inline-start-color: var(--cadre-vert-bord);
+	}
+	.question--erreur {
+		border-inline-start-color: var(--cadre-rouge-bord);
+	}
+	.question__entete {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.3rem;
+	}
+	.question__label {
+		font-weight: 700;
+		font-size: var(--sl-text-sm);
+		padding: 0.05rem 0.55rem;
+		border-radius: 999px;
+		background: var(--sl-color-accent);
+		color: var(--sl-color-black);
+	}
+	.question__badge {
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		padding: 0.05rem 0.5rem;
+		border-radius: 999px;
+		border: 1px solid currentColor;
+	}
+	.question__badge--ingenieur {
+		color: var(--sl-color-accent-high);
+	}
+	.question__badge--securite {
+		color: var(--cadre-rouge-titre);
+		background: var(--cadre-rouge-fond);
+	}
+	.question__badge--surete {
+		color: var(--cadre-jaune-titre);
+		background: var(--cadre-jaune-fond);
+	}
+	.question__badge--donnees {
+		color: var(--cadre-bleu-titre);
+		background: var(--cadre-bleu-fond);
+	}
+	.question__coche {
+		margin-inline-start: auto;
+		color: var(--cadre-vert-bord);
+		font-weight: 700;
+		visibility: hidden;
+	}
+	.question--repondue .question__coche {
+		visibility: visible;
+	}
+	.question__enonce > :global(:first-child) {
+		margin-top: 0;
+	}
+	.question__enonce > :global(:last-child) {
+		margin-bottom: 0.6rem;
+	}
+	.question__reponse {
+		display: block;
+		width: 100%;
+		min-height: 5rem;
+		resize: vertical;
+		font: inherit;
+		line-height: 1.5;
+		padding: 0.6rem 0.7rem;
+		border: 1px solid var(--sl-color-gray-4);
+		border-radius: 0.45rem;
+		background: var(--sl-color-black);
+		color: var(--sl-color-white);
+	}
+	.question__reponse--code {
+		font-family: var(--__sl-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+		font-size: var(--sl-text-sm);
+		white-space: pre;
+		overflow-x: auto;
+		tab-size: 2;
+	}
+	.question__reponse:focus-visible {
+		outline: 2px solid var(--sl-color-accent);
+		outline-offset: 1px;
+	}
+	.question__pied {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 0.35rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+	.question--erreur .question__statut {
+		color: var(--cadre-rouge-titre);
+		font-weight: 600;
+	}
+	@media print {
+		.question {
+			break-inside: avoid;
+			background: none;
+		}
+		.question__pied,
+		.question__coche {
+			display: none;
+		}
+		.question__reponse {
+			border-color: #999;
+			resize: none;
+			overflow: visible;
+		}
+		.question__label {
+			color: #000;
+			background: none;
+			border: 1px solid #000;
+		}
+	}
+</style>

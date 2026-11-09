@@ -1,0 +1,141 @@
+---
+title: "Partie sécurité — Consignes et mise à l’épreuve"
+description: Dernière partie du TP1 — refaire la manipulation finale de l'exercice 11 en y intégrant les aspects de sécurité importants. Mise à l'épreuve du contrôleur et constats de l'audit.
+---
+
+import FicheTP from '../../../../../../components/FicheTP.astro';
+import Question from '../../../../../../components/Question.astro';
+
+<FicheTP
+	duree="6 h (2 séances) et finalisation"
+	modalite="Binôme"
+	plateforme="Wokwi, Arduino UNO, moniteur série à 115 200 bauds"
+	prerequis="Exercices 1 à 11 terminés et projet Wokwi de l'exercice 11 ; notions de cybersécurité (authentification, intégrité)"
+	livrables="Compte rendu (mise à l'épreuve, analyse de risques, plan de recette, bilan), lien Wokwi, programme final"
+/>
+
+## La consigne
+
+Votre contrôleur de température fonctionne : il respecte les exigences EF1 à EF5 de l'exercice 11. Le client veut maintenant en équiper **200 armoires**, réparties sur plusieurs sites, et raccorder les boîtiers à son **système de supervision** : c'est le cœur de sa transformation numérique. Les relevés papier disparaissent, les données alimentent des tableaux de bord et la maintenance devient préventive. Chaque contrôleur devient un **nœud** d'un réseau de surveillance.
+
+Un contrôleur qui fonctionne n'est pas pour autant un contrôleur **sûr**, qui reste dans un état maîtrisé quand une panne survient, ni un contrôleur **sécurisé**, qui résiste à une action malveillante.
+
+:::tip[À vous de jouer]
+**Refaites la manipulation finale de l'exercice 11** en y intégrant les aspects de sécurité importants :
+
+1. mettez d'abord votre propre programme **à l'épreuve** (étape 0, sur cette page) ;
+2. **analysez les risques** (étape A) ;
+3. à partir du code de départ fourni, rendez le nœud **sûr de fonctionnement** (étape B) et **sécurisé** (étape C), et faites-lui produire des **données de confiance** (étape D) ;
+4. **prouvez** par une recette qu'il respecte le cahier des charges.
+:::
+
+## Objectifs
+
+À l'issue de cette partie, vous serez capables de :
+
+<ol class="objectifs-liste">
+	<li><span><strong>Analyser</strong> les risques d'un objet connecté avec la méthode STRIDE et une matrice de criticité.</span></li>
+	<li><span><strong>Concevoir</strong> une machine à états non bloquante, avec hystérésis, acquittement et chien de garde.</span></li>
+	<li><span><strong>Appliquer</strong> le principe de sécurité positive : toute panne conduit à un état sûr et signalé.</span></li>
+	<li><span><strong>Implémenter</strong> une authentification, une validation stricte des entrées et un contrôle d'intégrité.</span></li>
+	<li><span><strong>Produire</strong> des données de confiance : trames contrôlées, indicateurs, contrôle de vraisemblance.</span></li>
+	<li><span><strong>Rédiger et exécuter</strong> un plan de recette relié aux exigences.</span></li>
+</ol>
+
+## Organisation de la partie
+
+| Étape | Contenu | Durée indicative |
+|---|---|---|
+| 0. Mise à l'épreuve (cette page) | Six épreuves sur votre programme de l'exercice 11 ; constats de l'audit | 30 min |
+| [Cahier des charges et montage](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/02-cahier-des-charges/) | Exigences de sûreté, de cybersécurité et de données ; montage et code de départ | 15 min |
+| [A. Analyse des risques](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/03-analyse-risques/) | Biens à protéger, menaces STRIDE, criticité, lien avec les référentiels | 1 h |
+| [B. Sûreté de fonctionnement](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/04-surete/) | Machine à états, hystérésis, défaut capteur, acquittement, chien de garde | 1 h 15 |
+| [C. Cybersécurité](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/05-cybersecurite/) | Validation des entrées, authentification, PIN d'usine, intégrité, intrusion, journal | 2 h |
+| [D. Données et recette](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/06-donnees-recette/) | Trames contrôlées, vraisemblance, indicateurs, plan de recette, bilan | 1 h |
+
+## Étape 0 — Mettre votre contrôleur à l'épreuve
+
+Ouvrez le projet Wokwi de votre **exercice 11** et enregistrez-en une copie nommée `TP1-Securite-0-Nom1-Nom2`. Chaque épreuve simule un incident réel. Notez ce que vous **observez**, puis expliquez-le à partir de votre code.
+
+:::caution[Important]
+Ne corrigez pas encore votre programme : il s'agit de **constater**. Les corrections viendront aux étapes B à D, à partir d'un code de départ commun.
+:::
+
+### Épreuve 1 — Le capteur tombe en panne
+
+Arrêtez la simulation, supprimez le fil de données du DHT22 (broche SDA), puis relancez.
+
+<Question id="tp1-qs.1" label="QS.1" categorie="surete">
+Quelle couleur affiche la LED ? Le buzzer peut-il encore sonner ? Qu'affichent l'écran (après un appui) et le moniteur série ? Expliquez ce comportement à partir de votre code (indice : que vaut une comparaison avec `NaN` ?). Pourquoi est-ce grave pour l'exploitant de l'armoire ?
+</Question>
+
+### Épreuve 2 — Le programme se bloque
+
+Un bogue peut figer le programme : une boucle qui ne se termine jamais, un composant qui ne répond plus. Rebranchez le capteur, puis simulez un blocage en ajoutant temporairement cette ligne au **début** de `loop()` :
+
+```cpp
+if (millis() > 20000) while (true) { }  // blocage simulé à 20 s
+```
+
+Lancez la simulation, attendez 20 s, puis portez la température à 45 °C.
+
+<Question id="tp1-qs.2" label="QS.2" categorie="surete">
+Que deviennent la LED, le buzzer et l'écran ? Comment l'exploitant pourrait-il s'apercevoir que le contrôleur ne surveille plus rien ? Le microcontrôleur possède un minuteur matériel, indépendant du programme, capable de le redémarrer : comment s'appelle-t-il ?
+</Question>
+
+### Épreuve 3 — Un fil est coupé
+
+Retirez la ligne ajoutée à l'épreuve 2. Supprimez le fil qui relie l'interrupteur °C / °F à D7, puis celui qui relie le bouton à D6.
+
+<Question id="tp1-qs.3" label="QS.3" categorie="surete">
+Que lisent D7 et D6 quand leur fil est coupé, et comment réagit votre contrôleur ? Avec `INPUT_PULLUP`, un fil coupé donne toujours le même niveau. Or, dans un équipement industriel, un arrêt d'urgence doit provoquer l'arrêt **même si son câble est sectionné** : quel niveau, HIGH ou LOW, faut-il donc associer à l'état sûr ? On parle de **sécurité positive** (*fail-safe*).
+</Question>
+
+### Épreuve 4 — Une commande de réglage sans protection
+
+Le client veut régler le seuil d'alarme **sans reprogrammer** la carte. Un collègue propose d'ajouter au programme une commande série : taper `SEUIL 45` dans le moniteur série changerait le seuil.
+
+<Question id="tp1-qs.4" label="QS.4" categorie="securite">
+Qui pourrait utiliser cette commande ? Que se passerait-il si quelqu'un tapait `SEUIL 99`, `SEUIL -5` ou `SEUIL abc` ? Citez au moins trois protections à prévoir avant d'accepter une telle commande.
+</Question>
+
+### Épreuve 5 — Le capteur est manipulé
+
+Un individu malveillant ouvre le boîtier et refroidit le capteur avec une bombe de froid pendant que l'armoire surchauffe. Simulez-le : réglez le DHT22 à 45 °C, attendez l'alarme, puis ramenez-le **d'un coup** à 20 °C.
+
+<Question id="tp1-qs.5" label="QS.5" categorie="securite">
+Votre contrôleur peut-il distinguer cette manipulation d'un vrai refroidissement ? Quelles informations lui permettraient de la détecter ? Proposez une solution matérielle et une solution logicielle.
+</Question>
+
+### Épreuve 6 — Après un incident
+
+Une nuit, l'armoire a surchauffé. Le lendemain, le client vous demande à quel moment l'alarme s'est déclenchée, combien de temps elle a duré et si quelqu'un a touché au boîtier.
+
+<Question id="tp1-qs.6" label="QS.6" categorie="donnees">
+Votre contrôleur permet-il de répondre ? Que faudrait-il enregistrer ou transmettre, et sous quelle forme, pour que ces informations soient exploitables et dignes de confiance ?
+</Question>
+
+## Les constats de l'audit
+
+Avant le déploiement, le responsable de la sécurité des systèmes d'information (RSSI) du client a fait auditer le prototype. Son rapport confirme vos épreuves et relève six constats.
+
+| N° | Constat de l'audit | Conséquence possible | Épreuve |
+|---|---|---|---|
+| 1 | Le réglage du seuil par le port série, demandé par le client, n'est protégé par **aucune authentification** ni **aucun contrôle** des valeurs. | Un seuil porté à 99 °C : l'alarme ne sonnera plus jamais. | 4 |
+| 2 | Un **capteur débranché** peut laisser le voyant au vert. | Une surchauffe passe inaperçue. | 1 |
+| 3 | **Aucune trace** des alarmes, des connexions et des modifications. | Impossible de reconstituer un incident ou de prouver une manipulation. | 6 |
+| 4 | Un **blocage du programme** arrête la surveillance sans que personne ne le sache. | Perte silencieuse de la fonction d'alarme. | 2 |
+| 5 | Le boîtier peut être **ouvert** et le capteur manipulé sans détection. | Un capteur refroidi volontairement masque une surchauffe. | 3 et 5 |
+| 6 | Les **données transmises** ne sont ni structurées ni contrôlées. | Des données corrompues ou perdues faussent les tableaux de bord. | 6 |
+
+Votre mission : **durcir** le nœud de surveillance en appliquant les principes de **sécurité dès la conception** (*security by design*), puis **prouver** par des tests qu'il respecte le cahier des charges.
+
+## Critères de validation
+
+- [ ] Les six épreuves ont été réalisées sur le programme de l'exercice 11 et leurs observations notées.
+- [ ] Chaque observation est expliquée à partir du code.
+- [ ] Les questions QS.1 à QS.6 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis découvrez le [cahier des charges et le montage](/Embedded-System-Course/parcours/chapitre-2/tp1/securite/02-cahier-des-charges/) du nœud sécurisé.
+:::

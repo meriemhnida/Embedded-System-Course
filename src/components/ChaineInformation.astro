@@ -1,0 +1,108 @@
+---
+// Chaîne d'information d'un système embarqué : acquérir -> traiter -> agir et communiquer.
+interface Props {
+	acquerir: string[];
+	traiter: string[];
+	agir: string[];
+	legende?: string;
+}
+const { acquerir, traiter, agir, legende } = Astro.props;
+const colonnes = [
+	{ titre: 'Acquérir', sousTitre: 'capteurs et entrées', items: acquerir, classe: 'acquerir' },
+	{ titre: 'Traiter', sousTitre: 'programme du microcontrôleur', items: traiter, classe: 'traiter' },
+	{ titre: 'Agir et communiquer', sousTitre: 'actionneurs et sorties', items: agir, classe: 'agir' },
+];
+---
+
+<figure class="chaine">
+	<div class="chaine__colonnes">
+		{
+			colonnes.map((c, i) => (
+				<>
+					<div class={`chaine__bloc chaine__bloc--${c.classe}`}>
+						<p class="chaine__titre">{c.titre}</p>
+						<p class="chaine__sous-titre">{c.sousTitre}</p>
+						<ul>
+							{c.items.map((item) => (
+								<li>{item}</li>
+							))}
+						</ul>
+					</div>
+					{i < colonnes.length - 1 && (
+						<div class="chaine__fleche" aria-hidden="true">
+							→
+						</div>
+					)}
+				</>
+			))
+		}
+	</div>
+	{legende && <figcaption>{legende}</figcaption>}
+</figure>
+
+<style>
+	.chaine {
+		margin: 1.5rem 0;
+	}
+	.chaine__colonnes {
+		display: flex;
+		align-items: stretch;
+		gap: 0.5rem;
+	}
+	.chaine__bloc {
+		flex: 1 1 0;
+		min-width: 0;
+		padding: 0.75rem 0.9rem;
+		border-radius: 0.6rem;
+		border: 2px solid;
+	}
+	.chaine__bloc--acquerir {
+		border-color: var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+	}
+	.chaine__bloc--traiter {
+		border-color: var(--cadre-jaune-bord);
+		background: var(--cadre-jaune-fond);
+	}
+	.chaine__bloc--agir {
+		border-color: var(--cadre-vert-bord);
+		background: var(--cadre-vert-fond);
+	}
+	.chaine__titre {
+		margin: 0;
+		font-weight: 700;
+	}
+	.chaine__sous-titre {
+		margin: 0 0 0.4rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.chaine ul {
+		margin: 0;
+		padding-left: 1.1rem;
+		font-size: var(--sl-text-sm);
+	}
+	.chaine li + li {
+		margin-top: 0.15rem;
+	}
+	.chaine__fleche {
+		align-self: center;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--sl-color-gray-3);
+	}
+	figcaption {
+		margin-top: 0.5rem;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	@media (max-width: 40rem) {
+		.chaine__colonnes {
+			flex-direction: column;
+		}
+		.chaine__fleche {
+			transform: rotate(90deg);
+		}
+	}
+</style>
