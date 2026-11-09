@@ -1,0 +1,55 @@
+---
+title: "Images et empreintes : caméra et capteurs biométriques"
+description: "Chapitre 3 — tromper un réseau de neurones de vision, cloner une empreinte digitale : cible, principe, effet, défenses et exemples publiés."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Comprendre que deux capteurs peuvent fonctionner **parfaitement** et fournir pourtant une mauvaise information : la caméra, dont l'image est mal interprétée, et le capteur d'empreintes, qui mesure un motif sans savoir s'il appartient à un doigt vivant.
+:::
+
+## Caméra : tromper la vision
+
+- **Cible.** Les caméras de vision embarquée (aide à la conduite, robots, drones) et leurs réseaux de neurones.
+- **Principe.** Deux voies : des autocollants calculés pour tromper le classifieur (on modifie l'objet réel), ou une lumière projetée qui fait apparaître un faux objet dans l'image (on ajoute un objet fantôme).
+- **Effet.** Un panneau STOP lu comme une limitation de vitesse ; un freinage déclenché par un obstacle projeté qui n'existe pas.
+- **Défense.** Entraînement adversarial, fusion avec le radar et le LiDAR, cohérence entre images successives, vérification du contexte (carte, position).
+- **Exemple publié.** Eykholt et al., « Robust Physical-World Attacks on Deep Learning Visual Classification », CVPR, 2018. Nassi et al., « Phantom of the ADAS », ACM CCS, 2020.
+
+:::tip[À noter]
+Le capteur fonctionne parfaitement : c'est l'**interprétation** par le réseau de neurones qui est trompée. D'où l'intérêt de la fusion de capteurs : un second capteur, d'une autre nature, ne se laisse pas tromper de la même façon.
+:::
+
+<Question id="ch3-q3.7" label="Q3.7" lignes={6}>
+Un véhicule lit un panneau STOP sur lequel on a collé des autocollants, et le classe comme une limitation de vitesse. Quelles informations d'un autre capteur ou d'une autre source (carte, position, radar, images précédentes) permettraient de remettre en cause cette lecture ? Quel comportement de repli adopter en cas de doute ?
+</Question>
+
+## Empreintes digitales : un doigt cloné
+
+- **Cible.** Les capteurs d'empreintes (capacitifs, optiques, ultrasoniques) des smartphones, des ordinateurs, des cadenas et des clés USB.
+- **Principe.** Obtenir l'empreinte (moulage du doigt, fuite de données ou trace laissée sur du verre), puis fabriquer une réplique qui trompe le capteur.
+- **Effet.** Un appareil déverrouillé à l'insu de son propriétaire. Dans l'étude citée ci-dessous, la réussite atteint environ 80 % en moyenne sur les téléphones testés, les capteurs ultrasoniques étant les plus faciles à tromper.
+- **Défense.** Détection du vivant, limite du nombre d'essais, comparaison au niveau du système (Windows Hello a résisté), second facteur pour les cibles à risque.
+- **Exemple publié.** Rascagneres et Ventura, « Fingerprint cloning: Myth or reality? », Cisco Talos, 8 avril 2020, relayé par Kaspersky le 17 avril 2020. Matsumoto et al., SPIE, 2002.
+
+:::tip[À nuancer]
+Ces essais, à raison de vingt tentatives par appareil, montrent qu'un tel capteur protège la vie privée en cas de perte d'un téléphone, mais qu'il ne suffit pas face à un attaquant motivé. Les appareils qui ont résisté ne sont pas pour autant sûrs par nature. Un appareil a même accepté plus de soixante-dix essais sans se bloquer : d'où la défense « limiter le nombre d'essais ».
+:::
+
+Le capteur mesure un motif physique, sans savoir s'il est vivant : cela rejoint le message de tout le chapitre. Et contrairement à un mot de passe, **une empreinte ne se révoque pas**.
+
+<Question id="ch3-q3.8" label="Q3.8" lignes={7}>
+Un mot de passe compromis se change ; une empreinte digitale compromise ne se change pas. Quelles conséquences en tirez-vous pour la conception d'un système d'authentification qui utilise une empreinte ? Citez trois mesures à prévoir (par exemple la détection du vivant, la limitation des essais, un second facteur).
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais expliquer la différence entre modifier un objet réel et projeter un objet fantôme devant une caméra.
+- [ ] Je sais dire pourquoi un capteur « qui fonctionne » peut quand même fournir une information fausse.
+- [ ] Je sais citer trois défenses pour un capteur d'empreintes.
+- [ ] Les questions Q3.7 et Q3.8 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis voyez comment la sécurité se répartit sur [plusieurs couches](/Embedded-System-Course/parcours/chapitre-3/05-couches/) d'un système embarqué.
+:::

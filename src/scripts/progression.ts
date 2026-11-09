@@ -49,18 +49,25 @@ const RENOMMAGES: Record<string, string[]> = {
 		'parcours/chapitre-2/tp1/ex10-avertisseur-sonore/',
 		'parcours/chapitre-2/tp1/ex11-unites-programme-final/',
 	],
-	'parcours/chapitre-2/tp3/01-presentation/': ['parcours/chapitre-3/02-cahier-des-charges/'],
-	'parcours/chapitre-2/tp3/02-analyse-risques/': ['parcours/chapitre-3/03-analyse-risques/'],
-	'parcours/chapitre-2/tp3/03-surete/': ['parcours/chapitre-3/04-surete/'],
-	'parcours/chapitre-2/tp3/04-cybersecurite/': ['parcours/chapitre-3/05-cybersecurite/'],
-	'parcours/chapitre-2/tp3/05-donnees-recette/': ['parcours/chapitre-3/06-donnees-recette/'],
-	// la partie sécurité du TP1 est devenue le chapitre 3
-	'parcours/chapitre-2/tp1/securite/01-consignes/': ['parcours/chapitre-3/01-consignes/'],
-	'parcours/chapitre-2/tp1/securite/02-cahier-des-charges/': ['parcours/chapitre-3/02-cahier-des-charges/'],
-	'parcours/chapitre-2/tp1/securite/03-analyse-risques/': ['parcours/chapitre-3/03-analyse-risques/'],
-	'parcours/chapitre-2/tp1/securite/04-surete/': ['parcours/chapitre-3/04-surete/'],
-	'parcours/chapitre-2/tp1/securite/05-cybersecurite/': ['parcours/chapitre-3/05-cybersecurite/'],
-	'parcours/chapitre-2/tp1/securite/06-donnees-recette/': ['parcours/chapitre-3/06-donnees-recette/'],
+	// l'ancienne partie sécurité a laissé place aux attaques sur les capteurs : seule la page d'analyse de risques
+	// (méthode STRIDE) subsiste ; les autres pages sont retirées de la progression
+	'parcours/chapitre-2/tp3/01-presentation/': [],
+	'parcours/chapitre-2/tp3/02-analyse-risques/': ['parcours/chapitre-3/07-methode-stride/'],
+	'parcours/chapitre-2/tp3/03-surete/': [],
+	'parcours/chapitre-2/tp3/04-cybersecurite/': [],
+	'parcours/chapitre-2/tp3/05-donnees-recette/': [],
+	'parcours/chapitre-2/tp1/securite/01-consignes/': [],
+	'parcours/chapitre-2/tp1/securite/02-cahier-des-charges/': [],
+	'parcours/chapitre-2/tp1/securite/03-analyse-risques/': ['parcours/chapitre-3/07-methode-stride/'],
+	'parcours/chapitre-2/tp1/securite/04-surete/': [],
+	'parcours/chapitre-2/tp1/securite/05-cybersecurite/': [],
+	'parcours/chapitre-2/tp1/securite/06-donnees-recette/': [],
+	'parcours/chapitre-3/01-consignes/': [],
+	'parcours/chapitre-3/02-cahier-des-charges/': [],
+	'parcours/chapitre-3/03-analyse-risques/': ['parcours/chapitre-3/07-methode-stride/'],
+	'parcours/chapitre-3/04-surete/': [],
+	'parcours/chapitre-3/05-cybersecurite/': [],
+	'parcours/chapitre-3/06-donnees-recette/': [],
 };
 
 function migrer(p: Progression): boolean {

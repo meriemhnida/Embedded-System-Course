@@ -1,0 +1,138 @@
+---
+// Chaîne de mesure d'un capteur, du phénomène physique à la décision, avec la frontière
+// entre le domaine analogique (là où l'attaque agit) et le domaine numérique (là où le chiffrement s'applique).
+const etapes = [
+	{ titre: 'Phénomène', detail: 'position, son, lumière, distance', domaine: 'analogique' },
+	{ titre: 'Capteur', detail: 'convertit la grandeur en signal électrique', domaine: 'analogique' },
+	{ titre: 'Électronique', detail: 'amplificateur, filtre, CAN', domaine: 'analogique' },
+	{ titre: 'Micro\u00adcontrôleur', detail: 'interprète les mesures', domaine: 'numerique' },
+	{ titre: 'Décision', detail: 'actionneur, alerte, commande', domaine: 'numerique' },
+] as const;
+---
+
+<figure class="mesure">
+	<p class="mesure__attaque"><span aria-hidden="true">⚡</span> Attaquant : signal physique falsifié, injecté avant la numérisation</p>
+	<ol class="mesure__etapes">
+		{
+			etapes.map((e) => (
+				<li class={`mesure__etape mesure__etape--${e.domaine}`}>
+					<strong>{e.titre}</strong>
+					<span>{e.detail}</span>
+				</li>
+			))
+		}
+	</ol>
+	<div class="mesure__zones">
+		<p class="mesure__zone mesure__zone--analogique">Domaine analogique : la grandeur physique est falsifiée ici</p>
+		<p class="mesure__zone mesure__zone--numerique">Domaine numérique : le chiffrement et l'authentification des messages s'appliquent ici</p>
+	</div>
+	<figcaption>Le chiffrement protège les données une fois numérisées. Il ne dit rien de la vérité de la grandeur mesurée.</figcaption>
+</figure>
+
+<style>
+	.mesure {
+		margin: 1.5rem 0;
+	}
+	.mesure__attaque {
+		margin: 0 0 0.6rem;
+		padding: 0.4rem 0.8rem;
+		border-radius: 0.5rem;
+		border: 2px dashed var(--cadre-rouge-bord);
+		background: var(--cadre-rouge-fond);
+		color: var(--cadre-rouge-titre);
+		font-weight: 600;
+		font-size: var(--sl-text-sm);
+		width: fit-content;
+		max-width: 100%;
+	}
+	.mesure__etapes {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.mesure__etape {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 0.6rem 0.55rem;
+		border: 2px solid;
+		border-radius: 0.6rem;
+		margin: 0;
+	}
+	.mesure__etape strong {
+		font-size: var(--sl-text-sm);
+		hyphens: manual;
+		overflow-wrap: normal;
+	}
+	.mesure__etape span {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.mesure__etape--analogique {
+		border-color: var(--cadre-rouge-bord);
+		background: var(--cadre-rouge-fond);
+	}
+	.mesure__etape--numerique {
+		border-color: var(--cadre-vert-bord);
+		background: var(--cadre-vert-fond);
+	}
+	.mesure__etape:not(:last-child)::after {
+		content: '→';
+		position: absolute;
+		inset-inline-end: -0.95rem;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 0.9rem;
+		text-align: center;
+		font-weight: 700;
+		color: var(--sl-color-gray-3);
+	}
+	.mesure__zones {
+		display: grid;
+		grid-template-columns: 3fr 2fr;
+		gap: 1.1rem;
+		margin-top: 0.5rem;
+	}
+	.mesure__zone {
+		margin: 0;
+		padding: 0.35rem 0.6rem;
+		text-align: center;
+		font-size: var(--sl-text-xs);
+		font-weight: 600;
+		border-top: 4px solid;
+	}
+	.mesure__zone--analogique {
+		border-color: var(--cadre-rouge-bord);
+		color: var(--cadre-rouge-titre);
+	}
+	.mesure__zone--numerique {
+		border-color: var(--cadre-vert-bord);
+		color: var(--cadre-vert-titre);
+	}
+	figcaption {
+		margin-top: 0.6rem;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	@media (max-width: 50rem) {
+		.mesure__etapes {
+			grid-template-columns: 1fr;
+			gap: 1.3rem;
+		}
+		.mesure__etape:not(:last-child)::after {
+			inset-inline-end: auto;
+			inset-inline-start: 50%;
+			top: auto;
+			bottom: -1.2rem;
+			transform: translateX(-50%) rotate(90deg);
+		}
+		.mesure__zones {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

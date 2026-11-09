@@ -1,0 +1,166 @@
+---
+// Les couches d'un système embarqué, de la sûreté physique (en haut) aux capteurs (en bas),
+// avec pour chacune la menace principale et la défense associée. Les libellés entre deux couches
+// sont les informations qui montent, des mesures brutes jusqu'aux commandes sûres.
+const couches = [
+	{
+		nom: 'Sûreté physique',
+		contenu: 'arrêt d’urgence, automate de sûreté',
+		menace: 'Aucune menace logicielle : indépendante du programme, elle protège même si toutes les couches du dessous sont trompées',
+		defense: 'Arrêt d’urgence câblé, isolation matérielle',
+		flux: 'Commandes sûres',
+	},
+	{
+		nom: 'Commande et actionneurs',
+		contenu: 'contrôleur, pilotes, moteurs',
+		menace: 'Ordres falsifiés vers les actionneurs',
+		defense: 'Moniteur d’exécution, limites de commande',
+		flux: 'Consignes',
+	},
+	{
+		nom: 'Décision et logiciel',
+		contenu: 'microcontrôleur, algorithmes, communications',
+		menace: 'Logiciel et communications vulnérables',
+		defense: 'Chiffrement, mises à jour signées, démarrage sécurisé',
+		flux: 'Mesures vérifiées',
+	},
+	{
+		nom: 'Perception',
+		contenu: 'CAN, filtrage, fusion de capteurs',
+		menace: 'Mesures fausses mais plausibles',
+		defense: 'Redondance, fusion, contrôles de plausibilité',
+		flux: 'Mesures brutes',
+	},
+	{
+		nom: 'Monde physique et capteurs',
+		contenu: 'GPS, LiDAR, micro, caméra, IMU, ultrasons, radar…',
+		menace: 'Usurpation et brouillage du signal physique',
+		defense: 'Blindage, filtrage analogique avant le CAN',
+		flux: null,
+	},
+];
+---
+
+<figure class="couches">
+	<div class="couches__entete" aria-hidden="true">
+		<span class="couches__titre couches__titre--menace">Menaces</span>
+		<span class="couches__titre couches__titre--couche">Couches du système</span>
+		<span class="couches__titre couches__titre--defense">Défenses</span>
+	</div>
+	{
+		couches.map((c, i) => (
+			<>
+				<div class="couches__ligne">
+					<p class="couches__case couches__case--menace">
+						<span class="couches__etiquette">Menace</span>
+						{c.menace}
+					</p>
+					<p class="couches__case couches__case--couche">
+						<strong>{c.nom}</strong>
+						<span>{c.contenu}</span>
+					</p>
+					<p class="couches__case couches__case--defense">
+						<span class="couches__etiquette">Défense</span>
+						{c.defense}
+					</p>
+				</div>
+				{i < couches.length - 1 && (
+					<p class="couches__flux">
+						<span aria-hidden="true">↑</span> {c.flux}
+					</p>
+				)}
+			</>
+		))
+	}
+	<figcaption>Les informations montent d'une couche à l'autre : chaque couche doit vérifier ce qu'elle reçoit de celle du dessous.</figcaption>
+</figure>
+
+<style>
+	.couches {
+		margin: 1.5rem 0;
+	}
+	.couches__entete,
+	.couches__ligne {
+		display: grid;
+		grid-template-columns: 1fr 1.2fr 1fr;
+		gap: 0.6rem;
+	}
+	.couches__titre {
+		text-align: center;
+		font-size: var(--sl-text-xs);
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		padding-bottom: 0.3rem;
+	}
+	.couches__titre--menace {
+		color: var(--cadre-rouge-titre);
+	}
+	.couches__titre--couche {
+		color: var(--cadre-bleu-titre);
+	}
+	.couches__titre--defense {
+		color: var(--cadre-vert-titre);
+	}
+	.couches__case {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.15rem;
+		padding: 0.55rem 0.75rem;
+		border: 2px solid;
+		border-radius: 0.6rem;
+		font-size: var(--sl-text-sm);
+	}
+	.couches__case--menace {
+		border-color: var(--cadre-rouge-bord);
+		background: var(--cadre-rouge-fond);
+	}
+	.couches__case--couche {
+		border-color: var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+		text-align: center;
+	}
+	.couches__case--couche span {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.couches__case--defense {
+		border-color: var(--cadre-vert-bord);
+		background: var(--cadre-vert-fond);
+	}
+	.couches__etiquette {
+		display: none;
+		font-size: var(--sl-text-xs);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--sl-color-gray-2);
+	}
+	.couches__flux {
+		margin: 0.15rem 0;
+		text-align: center;
+		font-size: var(--sl-text-xs);
+		font-style: italic;
+		color: var(--sl-color-gray-3);
+	}
+	figcaption {
+		margin-top: 0.6rem;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	@media (max-width: 50rem) {
+		.couches__entete {
+			display: none;
+		}
+		.couches__ligne {
+			grid-template-columns: 1fr;
+			gap: 0.3rem;
+		}
+		.couches__etiquette {
+			display: block;
+		}
+	}
+</style>

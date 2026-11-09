@@ -1,0 +1,61 @@
+---
+title: "Position et distance : GPS, LiDAR et radar"
+description: "Chapitre 3 — usurpation GPS, obstacles fantômes sur un LiDAR et faux véhicule sur un radar millimétrique : cible, principe, effet, défenses et exemples publiés."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Comprendre comment trois capteurs qui mesurent une **position** ou une **distance** peuvent être trompés, et quelles défenses leur opposer. Les trois reposent sur un signal reçu à un instant précis : celui qui contrôle l'instant contrôle la mesure.
+:::
+
+## Usurpation GPS : une position falsifiée
+
+- **Cible.** Les récepteurs GNSS des drones, des véhicules, des objets connectés et des horloges de synchronisation.
+- **Principe.** Un simulateur ou une radio logicielle (SDR) émet de faux signaux de satellites, un peu plus puissants que les vrais. Le récepteur s'y accroche.
+- **Effet.** Une position ou une heure fausses, mais « valides » : la trajectoire dérive en douceur, ou l'horloge se décale et désynchronise un réseau.
+- **Défense.** Authentification des signaux (OSNMA de Galileo), utilisation de plusieurs constellations, recoupement avec la centrale inertiale (IMU), alerte sur un saut de position ou d'heure.
+- **Exemple publié.** Psiaki et Humphreys, « GNSS Spoofing and Detection », *Proceedings of the IEEE*, vol. 104, p. 1258-1270, 2016. Humphreys et al., ION GNSS, 2008.
+
+:::tip[À noter]
+Contrairement au brouillage, le récepteur garde ici un « fix » valide : il ne signale aucune panne. Deux conséquences sont à retenir : la **navigation** (dérive progressive) et la **synchronisation** (horodatage, réseaux, journaux).
+:::
+
+<Question id="ch3-q3.3" label="Q3.3" lignes={6}>
+Un drone reçoit un GPS dont la position « saute » de plusieurs centaines de mètres en une seconde, sans aucune alerte du récepteur. Quels autres capteurs permettraient de détecter l'anomalie ? Quelle règle de plausibilité écririez-vous dans le programme, et que ferait le drone une fois l'anomalie détectée ?
+</Question>
+
+## LiDAR : des points fantômes
+
+- **Cible.** Les LiDAR des véhicules autonomes, des drones et des robots mobiles.
+- **Principe.** Le LiDAR déduit la distance du temps de retour d'une impulsion laser. L'attaquant renvoie vers lui des impulsions synchronisées, avec un retard choisi : c'est un **relais** qui rejoue le signal avec un décalage.
+- **Effet.** Des obstacles fantômes qui provoquent un freinage inutile, ou un objet réel effacé du nuage de points 3D.
+- **Défense.** Fusion avec la caméra et le radar, contrôle de cohérence du nuage de points, filtrage des points aberrants, instants d'émission aléatoires.
+- **Exemple publié.** Cao et al., « Adversarial Sensor Attack on LiDAR-based Perception in Autonomous Driving », ACM CCS, 2019.
+
+<Question id="ch3-q3.4" label="Q3.4" lignes={6}>
+La distance perçue par un LiDAR se calcule à partir du temps de vol de l'impulsion (aller-retour à la vitesse de la lumière). Écrivez la relation entre la distance et le temps de retour, puis expliquez en une phrase pourquoi un retard ajouté par un relais change la distance perçue. Pourquoi des instants d'émission aléatoires compliquent-ils cette attaque ?
+</Question>
+
+## Radar millimétrique : un faux véhicule
+
+- **Cible.** Les radars à ondes millimétriques (FMCW) du régulateur de vitesse adaptatif et du freinage d'urgence.
+- **Principe.** Le radar émet un signal dont la fréquence varie et déduit la distance et la vitesse de l'écho. Un attaquant renvoie un faux écho décalé pour simuler un autre véhicule.
+- **Effet.** Un véhicule fantôme (freinage brutal), une distance au véhicule précédent faussée, ou un véhicule réel masqué.
+- **Défense.** Paramètres de modulation variables et aléatoires, vérification de la plausibilité cinématique, fusion avec la caméra et le LiDAR, détection des échos incohérents.
+- **Exemple publié.** Komissarov et Wool, « Spoofing Attacks against Vehicular FMCW Radar », arXiv:2104.13318, 2021. Yan, Xu et Liu, DEF CON 24, 2016.
+
+:::tip[À noter]
+Comme pour les ultrasons (page suivante), l'écho n'est pas authentifié : un faux écho bien placé est accepté. La défense principale est de ne pas utiliser des paramètres de modulation prévisibles.
+:::
+
+## Critères de validation
+
+- [ ] Je sais expliquer la différence entre brouiller un récepteur GPS et l'usurper.
+- [ ] Je sais relier la distance perçue par un LiDAR ou un radar à un temps de retour.
+- [ ] Je sais citer au moins deux défenses pour chacun des trois capteurs.
+- [ ] Les questions Q3.3 et Q3.4 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez aux attaques par le [son et les vibrations](/Embedded-System-Course/parcours/chapitre-3/03-son-vibrations/) : microphone, IMU et ultrasons.
+:::

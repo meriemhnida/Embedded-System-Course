@@ -1,0 +1,55 @@
+---
+title: "À retenir et références"
+description: "Chapitre 3 — les trois idées à retenir sur les attaques de capteurs, la marche à suivre pour votre projet et les références publiées."
+---
+
+## À retenir
+
+1. **Un capteur mesure ce qu'il reçoit** : il ne sait pas si le signal est authentique.
+2. **Le chiffrement des messages ne protège pas** une mesure falsifiée avant la numérisation.
+3. **La parade est une architecture** : redondance, plausibilité, repli sûr et tests.
+
+## Pour votre projet
+
+1. Pour chaque capteur de votre montage, demandez-vous : que se passe-t-il si sa mesure est **fausse, mais plausible** ?
+2. Notez le risque dans votre analyse STRIDE, avec sa criticité (vraisemblance × gravité), et traitez en premier les plus élevées.
+3. Prévoyez dans le programme un **contrôle de plausibilité** et un **état de repli sûr**.
+
+## Références
+
+Les attaques du chapitre sont décrites dans les publications suivantes. Pour la lecture complémentaire, commencez par celle du capteur qui vous intéresse.
+
+**GPS**
+- Humphreys et al., « Assessing the Spoofing Threat: Development of a Portable GPS Civilian Spoofer », ION GNSS, 2008.
+- Psiaki et Humphreys, « GNSS Spoofing and Detection », *Proceedings of the IEEE*, vol. 104, p. 1258-1270, 2016.
+
+**LiDAR**
+- Cao et al., « Adversarial Sensor Attack on LiDAR-based Perception in Autonomous Driving », ACM CCS, 2019.
+
+**Microphone**
+- Zhang et al., « DolphinAttack: Inaudible Voice Commands », ACM CCS, 2017.
+- Sugawara et al., « Light Commands: Laser-Based Audio Injection Attacks on Voice-Controllable Systems », USENIX Security, 2020.
+
+**Caméra**
+- Eykholt et al., « Robust Physical-World Attacks on Deep Learning Visual Classification », CVPR, 2018.
+- Nassi et al., « Phantom of the ADAS: Securing Advanced Driver-Assistance Systems from Split-Second Phantom Attacks », ACM CCS, 2020.
+
+**IMU**
+- Son et al., « Rocking Drones with Intentional Sound Noise on Gyroscopic Sensors », USENIX Security, 2015.
+- Trippel et al., « WALNUT: Waging Doubt on the Integrity of MEMS Accelerometers with Acoustic Injection Attacks », IEEE EuroS&P, 2017.
+
+**Ultrasons**
+- Yan, Xu et Liu, « Can You Trust Autonomous Vehicles: Contactless Attacks against Sensors of Self-driving Vehicle », DEF CON 24, 2016.
+- Xu et al., « Analyzing and Enhancing the Security of Ultrasonic Sensors for Autonomous Vehicles », *IEEE Internet of Things Journal*, 2018.
+
+**Radar millimétrique**
+- Komissarov et Wool, « Spoofing Attacks against Vehicular FMCW Radar », arXiv:2104.13318, 2021.
+
+**Empreintes digitales**
+- Rascagneres et Ventura, « Fingerprint cloning: Myth or reality? », Cisco Talos, 8 avril 2020.
+- Aver, [« Falsifier des empreintes digitales : c'est possible, mais difficile »](https://www.kaspersky.fr/blog/sas2020-fingerprint-cloning/14668/), blog Kaspersky, 17 avril 2020.
+- Matsumoto et al., « Impact of Artificial "Gummy" Fingers on Fingerprint Systems », SPIE, 2002.
+
+:::note[Fin du chapitre]
+Validez cette page pour terminer le chapitre 3.
+:::

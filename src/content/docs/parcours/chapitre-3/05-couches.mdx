@@ -1,0 +1,46 @@
+---
+title: "La sécurité traverse plusieurs couches"
+description: "Chapitre 3 — les couches d'un système embarqué, de la sûreté physique aux capteurs, avec pour chacune sa menace principale et sa défense : la défense en profondeur."
+---
+
+import CouchesSecurite from '../../../../components/CouchesSecurite.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Situer chaque menace et chaque défense sur une **couche** du système, et comprendre pourquoi une seule couche ne suffit jamais.
+:::
+
+## Une défense en profondeur
+
+Les huit attaques du chapitre agissent sur les deux couches du bas : les capteurs et la perception. Mais chaque couche a ses propres menaces et ses propres défenses.
+
+<CouchesSecurite />
+
+La couche du haut, la **sûreté physique** (arrêt d'urgence câblé, automate de sûreté), reste indépendante du logiciel. Elle protège même si toutes les couches du dessous sont trompées : c'est la dernière barrière.
+
+:::note[Sûreté ou sécurité ?]
+En français, deux notions voisines se distinguent :
+- la **sûreté de fonctionnement** (*safety*) protège contre les **défaillances accidentelles** : panne de capteur, bogue, coupure ;
+- la **sécurité** (*security*) protège contre les **actions malveillantes** : intrusion, usurpation, falsification.
+
+Un système robuste a besoin des deux : une mesure falsifiée est une action malveillante, mais c'est un mécanisme de sûreté (repli, arrêt) qui en limite les conséquences.
+:::
+
+<Question id="ch3-q3.9" label="Q3.9" lignes={6}>
+Dans votre contrôleur de température (exercice 11), quelle serait la **dernière barrière** si le programme se trompait, par exemple si le capteur DHT22 renvoyait une valeur plausible mais fausse alors que l'armoire surchauffe ? Cette barrière dépend-elle du logiciel ? Que faudrait-il ajouter pour qu'elle en soit indépendante ?
+</Question>
+
+<Question id="ch3-q3.10" label="Q3.10" lignes={7}>
+Pour chacune des cinq couches du schéma, donnez un exemple de menace **autre** que celles déjà indiquées, et la défense que vous lui opposeriez. Indiquez s'il s'agit d'un problème de sûreté, de sécurité, ou des deux.
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais nommer les cinq couches et leurs menaces principales.
+- [ ] Je sais expliquer pourquoi la sûreté physique doit être indépendante du logiciel.
+- [ ] Je sais distinguer sûreté de fonctionnement et sécurité.
+- [ ] Les questions Q3.9 et Q3.10 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis découvrez les [six réflexes de conception](/Embedded-System-Course/parcours/chapitre-3/06-se-defendre/) pour se défendre.
+:::

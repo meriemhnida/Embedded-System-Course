@@ -1,0 +1,51 @@
+---
+title: "Se défendre : six réflexes de conception"
+description: "Chapitre 3 — redondance et fusion, contrôles de plausibilité, signaux authentifiés, protection physique, repli sûr et tests d'attaque : combiner les défenses."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Retenir six réflexes de conception qui, **combinés**, permettent de limiter les effets d'une mesure falsifiée. Aucune défense n'est suffisante seule.
+:::
+
+## Les six réflexes
+
+| Réflexe | Principe |
+|---|---|
+| **Redondance et fusion** | Croiser des capteurs de natures différentes : GNSS et IMU, caméra, radar et LiDAR. Un capteur ne décide jamais seul. |
+| **Contrôles de plausibilité** | Rejeter les valeurs hors plage, les variations trop brusques et les mesures incohérentes entre elles. |
+| **Signaux authentifiés** | Utiliser l'authentification quand elle existe (GNSS) et coder ou randomiser les signaux émis (radar, ultrasons). |
+| **Protection physique** | Blindage, filtre analogique avant le CAN, isolation acoustique ou mécanique, optique protégée. |
+| **Détection et repli sûr** | Détecter l'anomalie, alerter, passer en mode dégradé ou s'arrêter dans un état sûr. |
+| **Tester l'attaque** | Prévoir des essais d'injection de signaux falsifiés dans le plan de test, à chaque niveau du cycle en V. |
+
+Le dernier réflexe prolonge la leçon sur le [modèle en V](/Embedded-System-Course/parcours/chapitre-2/04-modele-en-v/) : chaque niveau de validation doit prévoir des essais avec une **mesure falsifiée**.
+
+## Les défenses de chaque attaque
+
+| Attaque | Défenses principales |
+|---|---|
+| Usurpation GPS | Authentification des signaux (OSNMA), multi-constellation, recoupement avec l'IMU, alerte sur un saut de position ou d'heure |
+| LiDAR | Fusion avec caméra et radar, cohérence du nuage de points, filtrage des points aberrants, émissions aléatoires |
+| Microphone | Filtrage des ultrasons à l'entrée, détection de la non-linéarité, authentification du locuteur, confirmation des actions sensibles |
+| Caméra | Entraînement adversarial, fusion radar et LiDAR, cohérence entre images successives, vérification du contexte |
+| IMU | Isolation acoustique et mécanique, filtre passe-bas avant l'échantillonnage, IMU redondantes, recoupement GNSS et baromètre |
+| Ultrasons | Salves codées ou aléatoires, filtre médian, recoupement caméra et radar, rejet des échos non corrélés à l'émission |
+| Radar millimétrique | Modulation variable et aléatoire, plausibilité cinématique, fusion caméra et LiDAR, détection des échos incohérents |
+| Empreintes digitales | Détection du vivant, limite du nombre d'essais, comparaison au niveau du système, second facteur |
+
+<Question id="ch3-q3.11" label="Q3.11" lignes={9}>
+Reprenez les huit attaques du chapitre. Pour chacune, indiquez à quel(s) réflexe(s) parmi les six appartient chacune de ses défenses. Quel réflexe revient le plus souvent ? Que peut-on en conclure sur la conception d'un système sûr ?
+</Question>
+
+## Critères de validation
+
+- [ ] Je connais les six réflexes et je sais donner un exemple de chacun.
+- [ ] Je sais expliquer pourquoi aucune défense n'est suffisante seule.
+- [ ] Je sais où placer les essais de mesures falsifiées dans le cycle en V.
+- [ ] La question Q3.11 a une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis apprenez à organiser l'analyse des menaces avec la [méthode STRIDE](/Embedded-System-Course/parcours/chapitre-3/07-methode-stride/).
+:::

@@ -1,0 +1,85 @@
+---
+title: "La méthode STRIDE"
+description: "Chapitre 3 — identifier les biens à protéger, classer les menaces avec la méthode STRIDE, évaluer leur criticité et les appliquer aux attaques sur les capteurs."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Avant d'écrire du code de sécurité, **identifier ce qu'il faut protéger** et **contre quoi**. La méthode STRIDE donne une grille pour ne pas oublier de famille de menaces, et la criticité pour décider par quoi commencer.
+:::
+
+## Les biens à protéger
+
+Une analyse de risques commence par la liste des **biens** :
+
+- les **biens essentiels** sont ce qui a de la valeur pour l'utilisateur ou l'exploitant : la **fonction d'alarme**, la **configuration** (les seuils), les **données** transmises à un système de supervision ;
+- les **biens supports** sont les éléments matériels et logiciels sur lesquels ils reposent : la carte, le capteur, la liaison série, la mémoire, le câblage, le boîtier.
+
+Pour chaque bien essentiel, on se demande ce qui serait grave : qu'il devienne **indisponible**, qu'il soit **altéré**, ou qu'il soit **divulgué**. C'est le triptyque **disponibilité, intégrité, confidentialité**.
+
+## La méthode STRIDE
+
+STRIDE classe les menaces en six familles. Chacune s'oppose à une propriété de sécurité.
+
+| Famille | Menace | Propriété visée |
+|---|---|---|
+| **S**poofing | Usurper l'identité d'un utilisateur, d'un composant ou d'une source de mesure | Authentification |
+| **T**ampering | Altérer des données, un programme, un matériel | Intégrité |
+| **R**epudiation | Nier avoir réalisé une action, faute de trace | Traçabilité |
+| **I**nformation disclosure | Divulguer une information protégée | Confidentialité |
+| **D**enial of service | Rendre le service indisponible | Disponibilité |
+| **E**levation of privilege | Obtenir des droits que l'on ne devrait pas avoir | Autorisation |
+
+Deux exemples tirés du chapitre : l'**usurpation GPS** relève de *Spoofing* (une fausse source se fait passer pour les satellites), et le **brouillage** relève de *Denial of service* (la mesure n'est plus disponible).
+
+<Question id="ch3-q3.12" label="Q3.12" lignes={10}>
+Classez les huit attaques du chapitre (GPS, LiDAR, microphone, caméra, IMU, ultrasons, radar, empreintes) dans une ou plusieurs familles STRIDE, en distinguant au besoin l'usurpation du brouillage. Justifiez chaque classement en une phrase et indiquez la propriété de sécurité visée.
+</Question>
+
+## Appliquer STRIDE à votre contrôleur
+
+Pour les questions suivantes, placez-vous dans ce contexte : le contrôleur de température de l'exercice 11 est installé dans une armoire accessible au personnel de maintenance, et son propriétaire envisage de le relier à un système de supervision.
+
+<Question id="ch3-q3.13" label="Q3.13" lignes={7}>
+Pour chacun des **trois biens essentiels** (fonction d'alarme, seuils, données transmises), indiquez la propriété la plus critique (disponibilité, intégrité ou confidentialité) et justifiez en une phrase. Précisez ensuite les biens supports sur lesquels chacun repose.
+</Question>
+
+<Question id="ch3-q3.14" label="Q3.14" lignes={10}>
+Pour **chaque famille STRIDE**, décrivez une menace réaliste qui pèse sur votre contrôleur. Si une famille ne s'applique pas à votre montage actuel, dites pourquoi. Pour chaque menace, indiquez la défense que vous prévoiriez, ou dites qu'il s'agit d'un **risque résiduel**.
+</Question>
+
+## Évaluer la criticité
+
+La **criticité** d'un risque combine sa **vraisemblance** (de 1, peu probable, à 4, quasi certain) et sa **gravité** (de 1, négligeable, à 4, critique) : criticité = vraisemblance × gravité. On traite d'abord les risques dont la criticité est la plus élevée.
+
+| Gravité ↓ / Vraisemblance → | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| **4 critique** | 4 | 8 | 12 | 16 |
+| **3 grave** | 3 | 6 | 9 | 12 |
+| **2 significative** | 2 | 4 | 6 | 8 |
+| **1 négligeable** | 1 | 2 | 3 | 4 |
+
+<Question id="ch3-q3.15" label="Q3.15" lignes={7}>
+Choisissez **trois menaces** de la question Q3.14. Pour chacune, estimez la vraisemblance et la gravité **avant** et **après** application de votre défense, calculez les criticités et classez-les. Justifiez vos estimations.
+</Question>
+
+## Et si la mesure est fausse ?
+
+Ajoutez systématiquement cette question à votre analyse, pour **chaque capteur** : que se passe-t-il si sa mesure est fausse, mais plausible ?
+
+<Question id="ch3-q3.16" label="Q3.16" lignes={8}>
+Pour chaque capteur ou entrée de votre montage (DHT22, bouton-poussoir, interrupteur °C/°F), décrivez la conséquence d'une mesure fausse mais plausible. Quel **contrôle de plausibilité** et quel **état de repli sûr** ajouteriez-vous au programme ? Évaluez la criticité du risque correspondant.
+</Question>
+
+## Critères de validation
+
+- [ ] Les biens essentiels, leurs biens supports et leurs propriétés critiques sont identifiés et justifiés.
+- [ ] Les attaques du chapitre sont classées dans les familles STRIDE.
+- [ ] Les six familles sont examinées pour le contrôleur, chacune par une menace ou une justification.
+- [ ] Trois risques sont évalués avant et après traitement, avec une criticité calculée.
+- [ ] Les questions Q3.12 à Q3.16 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis consultez [l'essentiel à retenir et les références](/Embedded-System-Course/parcours/chapitre-3/08-retenir-references/) du chapitre.
+:::
