@@ -1,0 +1,162 @@
+---
+title: "Partie sécurité · C. Cybersécurité du nœud"
+description: Étape C de la partie sécurité — console de maintenance, validation des entrées, authentification et verrouillage, PIN d'usine, intégrité de la configuration, détection d'ouverture et journal d'audit.
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de l'étape]
+Protéger la configuration et la fonction d'alarme contre une **action malveillante**, comme celles des épreuves 4 et 5 de l'étape 0 : exigences SEC-1 à SEC-6. Marqueurs du code : `TODO C1` à `TODO C5`.
+:::
+
+## La console de maintenance
+
+Le technicien règle le nœud depuis le moniteur série. La console distingue les commandes **publiques** et les commandes **réservées** à une session authentifiée.
+
+| Commande | Accès | Effet |
+|---|---|---|
+| `AIDE` | public | Liste des commandes autorisées |
+| `ETAT` | public | État, mesures, seuil, session, boîtier |
+| `STATS` | public | Indicateurs d'exploitation (étape D) |
+| `CONNEXION <pin>` | public | Ouvre une session |
+| `DECONNEXION` | session | Ferme la session |
+| `PIN <ancien> <nouveau>` | session | Change le code PIN |
+| `SEUIL <valeur>` | session, PIN d'usine changé | Modifie le seuil d'alarme |
+| `JOURNAL` | session, PIN d'usine changé | Affiche le journal d'audit |
+| `ACQUITTER` | session, PIN d'usine changé | Met fin à une intrusion, acquitte une alarme |
+| `TEST …` | session, PIN d'usine changé, mode test | Injection de fautes |
+
+:::note[Information]
+Sans session, une commande réservée reçoit **la même réponse** qu'une commande inconnue : on ne renseigne pas un attaquant sur ce qui existe. De même, `AIDE` n'affiche les commandes réservées qu'une fois la session ouverte.
+:::
+
+## C1. Valider les entrées (SEC-2)
+
+Toute donnée qui entre dans le système est **suspecte** tant qu'elle n'a pas été validée : c'était la leçon de l'épreuve 4. La fonction `lireConsole()`, fournie, lit les caractères **sans attendre** dans un tampon de taille fixe :
+
+```cpp
+} else if (c < 0x20 || c > 0x7E) {
+  ligneRejetee = true;   // caractère de contrôle ou non ASCII
+} else if (lgLigne < LIGNE_MAX) {
+  ligne[lgLigne++] = c;
+} else {
+  ligneRejetee = true;   // jamais d'écriture au-delà du tampon
+}
+```
+
+<Question id="tp3-qc.1" label="QC.1" categorie="securite">
+Que se passerait-il si l'on supprimait le test `lgLigne < LIGNE_MAX` et qu'on envoyait une ligne de 200 caractères ? Comment s'appelle cette vulnérabilité ? Pourquoi est-elle particulièrement grave sur un microcontrôleur sans protection mémoire ?
+</Question>
+
+Écrivez `lireDecimal()` et complétez `changerSeuil()` (`TODO C1`) : seules les formes `35` et `35.5` sont acceptées, et la valeur doit être comprise entre 25 et 60 °C.
+
+<Question id="tp3-qc.2" label="QC.2" categorie="securite">
+Pourquoi l'énoncé interdit-il `atof()` ? Que renvoie-t-elle pour `"35abc"`, pour `"abc"` et pour `"1e3"` ? Quel principe de validation (liste blanche ou liste noire) appliquez-vous dans `lireDecimal()` ?
+</Question>
+
+<Question id="tp3-qc.3" label="QC.3" categorie="securite" lignes={8}>
+**Tests de robustesse.** Ouvrez une session, puis envoyez : `SEUIL 35`, `SEUIL 35.5`, `SEUIL 35abc`, `SEUIL -5`, `SEUIL 99`, `SEUIL 35.55`, `seuil 30`, `SEUIL` sans valeur, `ETAT maintenant` et une ligne de 40 caractères. Pour chacune, notez la réponse attendue, la réponse obtenue et l'événement journalisé.
+</Question>
+
+## C2. Authentifier et freiner les attaques par force brute (SEC-1)
+
+La comparaison du PIN est fournie. Elle s'exécute en **temps constant** : sa durée ne dépend pas de la position du premier chiffre faux.
+
+```cpp
+bool pinEgal(const char *saisi, const char *attendu) {
+  if (strlen(saisi) > 6) return false;
+  char tampon[7];
+  memset(tampon, 0, sizeof(tampon));
+  strncpy(tampon, saisi, 6);
+  uint8_t difference = 0;
+  for (uint8_t i = 0; i < 7; i++) difference |= (uint8_t)(tampon[i] ^ attendu[i]);
+  return difference == 0;
+}
+```
+
+Complétez `connexion()` (`TODO C2`) : aucune tentative n'est évaluée pendant un verrouillage ; chaque échec incrémente `config.echecs`, **enregistré en EEPROM** ; à partir du 3<sup>e</sup> échec, le nœud se verrouille 30 s, puis 1 min, 2 min, 4 min et 8 min au plus. Dans `setup()`, reprenez le verrouillage si `config.echecs` atteint déjà 3 : sur une vraie carte, il suffit d'appuyer sur RESET, ou même de rouvrir le moniteur série, pour redémarrer l'UNO.
+
+<Question id="tp3-qc.4" label="QC.4" categorie="securite">
+Un PIN de 4 chiffres offre 10 000 combinaisons. Un script envoie une tentative toutes les 100 ms. Estimez le temps nécessaire pour toutes les essayer : (a) sans verrouillage ; (b) avec un verrouillage fixe de 30 s toutes les 3 tentatives ; (c) avec la politique de SEC-1. Pourquoi le compteur d'échecs doit-il survivre à un **redémarrage** ?
+</Question>
+
+<Question id="tp3-qc.5" label="QC.5" categorie="securite">
+Une comparaison classique (`strcmp`) s'arrête au premier caractère différent. Expliquez comment un attaquant capable de mesurer finement la durée de la réponse pourrait en tirer parti. Comment s'appelle cette famille d'attaques ?
+</Question>
+
+## C3. Supprimer le mot de passe universel (SEC-3)
+
+Tous les boîtiers sortent d'usine avec le PIN `0000`. Écrivez `changerPin()` et le contrôle de `traiterCommande()` (`TODO C3`) : tant que `config.pinUsine` vaut 1, toute commande autre que `PIN` et `DECONNEXION` est refusée. Le nouveau PIN comporte 4 à 6 chiffres ; refusez les suites triviales (1111, 1234, 4321…) et l'ancien PIN. Un ancien PIN faux compte comme un échec d'authentification et ferme la session.
+
+<Question id="tp3-qc.6" label="QC.6" categorie="securite">
+Quelle disposition de l'ETSI EN 303 645 et quelle catégorie de l'OWASP IoT Top 10 cette exigence applique-t-elle ? Quel risque subsiste entre l'installation d'un boîtier neuf et le premier changement de PIN ?
+</Question>
+
+<Question id="tp3-qc.7" label="QC.7" categorie="securite">
+Le PIN est stocké **en clair** dans l'EEPROM. Un attaquant qui accède physiquement à la carte peut relire toute la mémoire avec un programmateur. Quelles conséquences ? Proposez deux contre-mesures pour un produit réel.
+</Question>
+
+## C4. Garantir l'intégrité de la configuration (SEC-4)
+
+La configuration est une structure enregistrée en EEPROM :
+
+```cpp
+struct Config {
+  uint16_t magic;       // signature 0x5345 : « cette zone contient bien notre configuration »
+  uint8_t version;      // format de la structure
+  float seuilAlarme;    // °C
+  char pin[7];          // 4 à 6 chiffres, complété par des '\0'
+  uint8_t pinUsine;     // 1 tant que le PIN d'usine n'a pas été changé
+  uint8_t echecs;       // échecs d'authentification consécutifs
+  uint8_t crc;          // CRC-8 de tous les octets qui précèdent
+};
+```
+
+`sauverConfig()` calcule le CRC puis écrit la structure avec `EEPROM.put()`, qui ne réécrit que les octets modifiés pour limiter l'usure. Complétez `chargerConfig()` (`TODO C4`) : vérifiez la signature, la version, le CRC, les bornes du seuil et la fin du PIN. Si un contrôle échoue, journalisez `EVT_CONFIG_USINE` (EEPROM vierge) ou `EVT_CONFIG_CORROMPUE`, puis repartez des valeurs par défaut.
+
+Pour tester, ouvrez une session, changez le PIN, puis tapez `TEST CORROMPRE` et `TEST BLOCAGE`. Le chien de garde redémarre la carte **sans effacer l'EEPROM** ; au démarrage, vous devez lire `# EVT CONFIG_CORROMPUE`. Relancer la simulation depuis Wokwi peut au contraire repartir d'une EEPROM vierge.
+
+<Question id="tp3-qc.8" label="QC.8" categorie="securite">
+Le CRC détecte la corruption accidentelle d'un bit. Protège-t-il contre un attaquant qui **modifie volontairement** le seuil dans l'EEPROM ? Pourquoi ? Quel mécanisme cryptographique faudrait-il, et quel nouveau problème pose-t-il ?
+</Question>
+
+<Question id="tp3-qc.9" label="QC.9">
+`crcConfig()` calcule le CRC sur `offsetof(Config, crc)` octets, et non sur `sizeof(Config) - 1`. Les deux valeurs sont égales sur l'ATmega328P. Pourquoi diffèrent-elles sur un processeur 32 bits comme celui de l'ESP32 ? Quel bogue la seconde écriture provoquerait-elle ?
+</Question>
+
+<Question id="tp3-qc.10" label="QC.10" categorie="surete">
+En cas de configuration corrompue, le nœud repart avec le seuil par défaut (40 °C) et le PIN d'usine. Pourquoi ce choix est-il **sûr** pour la fonction d'alarme ? Quel inconvénient présente-t-il pour la sécurité, et quelle autre exigence le compense ?
+</Question>
+
+## C5. Détecter l'ouverture du boîtier (SEC-5)
+
+L'épreuve 5 l'a montré : un boîtier ouvert permet de tromper le capteur. Le contact d'ouverture relie D4 à la masse quand le boîtier est **fermé**. Écrivez `surveillerBoitier()` (`TODO C5`) en filtrant les rebonds sur 50 ms. À l'ouverture : passez en INTRUSION, journalisez l'événement et fermez la session. La fermeture est journalisée, mais l'intrusion reste active jusqu'à `ACQUITTER`.
+
+<Question id="tp3-qc.11" label="QC.11" categorie="securite">
+Que lit D4 si un intrus **coupe le fil** du contact ? Pourquoi ce câblage est-il préférable à un contact qui relierait D4 à la masse quand le boîtier est ouvert ? Faites le lien avec l'épreuve 3. Pourquoi le bouton d'acquittement ne peut-il pas mettre fin à une intrusion ?
+</Question>
+
+## C6. Le journal d'audit (SEC-6)
+
+Le journal, fourni, conserve les **16 derniers événements** dans un tampon circulaire. Quand il est plein, l'événement le plus ancien est écrasé et le compteur `journalPerdus` augmente. La commande `JOURNAL` l'affiche.
+
+<Question id="tp3-qc.12" label="QC.12" categorie="securite">
+Un attaquant veut effacer la trace de son intrusion sans accès à la session. Comment pourrait-il exploiter le tampon circulaire ? Comment l'exploitant peut-il s'en apercevoir, et quelles améliorations proposez-vous ? Pourquoi ne faut-il **jamais** journaliser le PIN saisi, même faux ?
+</Question>
+
+<Question id="tp3-qc.13" label="QC.13" type="code" lignes={16}>
+Collez vos fonctions `lireDecimal()`, `changerSeuil()`, `connexion()`, `changerPin()`, `chargerConfig()` et `surveillerBoitier()`, ainsi que les lignes ajoutées dans `traiterCommande()` et `setup()`.
+</Question>
+
+## Critères de validation
+
+- [ ] Aucune commande de configuration n'est possible sans session ni avant le changement du PIN d'usine.
+- [ ] Trois PIN faux verrouillent la console. Le verrouillage reprend après un redémarrage de la carte : à vérifier sur une vraie carte (bouton RESET), car dans Wokwi `TEST BLOCAGE` exige une session, impossible pendant le verrouillage.
+- [ ] Toutes les entrées de QC.3 sont traitées comme attendu, sans plantage.
+- [ ] Une configuration corrompue est détectée au démarrage et remplacée par des valeurs sûres.
+- [ ] L'ouverture du boîtier déclenche INTRUSION ; seul `ACQUITTER`, en session et boîtier fermé, y met fin.
+- [ ] Le journal ne contient aucun PIN.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[étape D : données et recette](/Embedded-System-Course/parcours/chapitre-3/06-donnees-recette/).
+:::

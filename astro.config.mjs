@@ -22,11 +22,18 @@ export default defineConfig({
 		'/parcours/chapitre-2/tp2/03-signalisation-rvb': '/Embedded-System-Course/parcours/chapitre-2/tp1/ex07-led-rvb/',
 		'/parcours/chapitre-2/tp2/04-bouton-lcd': '/Embedded-System-Course/parcours/chapitre-2/tp1/ex09-bouton-lcd/',
 		'/parcours/chapitre-2/tp2/05-alarme-defi': '/Embedded-System-Course/parcours/chapitre-2/tp1/ex10-avertisseur-sonore/',
-		'/parcours/chapitre-2/tp3/01-presentation': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/01-consignes/',
-		'/parcours/chapitre-2/tp3/02-analyse-risques': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/03-analyse-risques/',
-		'/parcours/chapitre-2/tp3/03-surete': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/04-surete/',
-		'/parcours/chapitre-2/tp3/04-cybersecurite': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/05-cybersecurite/',
-		'/parcours/chapitre-2/tp3/05-donnees-recette': '/Embedded-System-Course/parcours/chapitre-2/tp1/securite/06-donnees-recette/',
+		'/parcours/chapitre-2/tp3/01-presentation': '/Embedded-System-Course/parcours/chapitre-3/01-consignes/',
+		'/parcours/chapitre-2/tp3/02-analyse-risques': '/Embedded-System-Course/parcours/chapitre-3/03-analyse-risques/',
+		'/parcours/chapitre-2/tp3/03-surete': '/Embedded-System-Course/parcours/chapitre-3/04-surete/',
+		'/parcours/chapitre-2/tp3/04-cybersecurite': '/Embedded-System-Course/parcours/chapitre-3/05-cybersecurite/',
+		'/parcours/chapitre-2/tp3/05-donnees-recette': '/Embedded-System-Course/parcours/chapitre-3/06-donnees-recette/',
+		// la partie sécurité du TP1 est devenue le chapitre 3
+		'/parcours/chapitre-2/tp1/securite/01-consignes': '/Embedded-System-Course/parcours/chapitre-3/01-consignes/',
+		'/parcours/chapitre-2/tp1/securite/02-cahier-des-charges': '/Embedded-System-Course/parcours/chapitre-3/02-cahier-des-charges/',
+		'/parcours/chapitre-2/tp1/securite/03-analyse-risques': '/Embedded-System-Course/parcours/chapitre-3/03-analyse-risques/',
+		'/parcours/chapitre-2/tp1/securite/04-surete': '/Embedded-System-Course/parcours/chapitre-3/04-surete/',
+		'/parcours/chapitre-2/tp1/securite/05-cybersecurite': '/Embedded-System-Course/parcours/chapitre-3/05-cybersecurite/',
+		'/parcours/chapitre-2/tp1/securite/06-donnees-recette': '/Embedded-System-Course/parcours/chapitre-3/06-donnees-recette/',
 	},
 	integrations: [
 		starlight({
@@ -63,7 +70,7 @@ export default defineConfig({
 						{ label: '3. Guide des travaux pratiques', slug: 'parcours/chapitre-2/03-guide-tp' },
 						{ label: '4. Concevoir avec le modèle en V', slug: 'parcours/chapitre-2/04-modele-en-v' },
 						{
-							// Un seul TP : une page par exercice, puis la partie sécurité, en dernier.
+							// Un seul TP : une page par exercice.
 							label: 'TP1 · De la LED au contrôleur de température',
 							collapsed: true,
 							items: [
@@ -79,22 +86,20 @@ export default defineConfig({
 								{ label: 'Exercice 9 · Bouton et écran LCD', slug: 'parcours/chapitre-2/tp1/ex09-bouton-lcd' },
 								{ label: 'Exercice 10 · Avertisseur sonore', slug: 'parcours/chapitre-2/tp1/ex10-avertisseur-sonore' },
 								{ label: 'Exercice 11 · Unités et programme final', slug: 'parcours/chapitre-2/tp1/ex11-unites-programme-final' },
-								{
-									label: 'Partie sécurité',
-									collapsed: true,
-									items: [
-										{ label: 'Consignes et mise à l’épreuve', slug: 'parcours/chapitre-2/tp1/securite/01-consignes' },
-										{ label: 'Cahier des charges et montage', slug: 'parcours/chapitre-2/tp1/securite/02-cahier-des-charges' },
-										{ label: 'A. Analyse des risques', slug: 'parcours/chapitre-2/tp1/securite/03-analyse-risques' },
-										{ label: 'B. Sûreté de fonctionnement', slug: 'parcours/chapitre-2/tp1/securite/04-surete' },
-										{ label: 'C. Cybersécurité', slug: 'parcours/chapitre-2/tp1/securite/05-cybersecurite' },
-										{ label: 'D. Données et recette', slug: 'parcours/chapitre-2/tp1/securite/06-donnees-recette' },
-									],
-								},
 							],
 						},
 					],
-					
+				},
+				{
+					label: 'Chapitre 3 : Sécurité des systèmes embarqués',
+					items: [
+						{ label: 'Consignes et mise à l’épreuve', slug: 'parcours/chapitre-3/01-consignes' },
+						{ label: 'Cahier des charges et montage', slug: 'parcours/chapitre-3/02-cahier-des-charges' },
+						{ label: 'A. Analyse des risques', slug: 'parcours/chapitre-3/03-analyse-risques' },
+						{ label: 'B. Sûreté de fonctionnement', slug: 'parcours/chapitre-3/04-surete' },
+						{ label: 'C. Cybersécurité', slug: 'parcours/chapitre-3/05-cybersecurite' },
+						{ label: 'D. Données et recette', slug: 'parcours/chapitre-3/06-donnees-recette' },
+					],
 				},
 				{ label: 'Examen Blanc', slug: 'examen-blanc' },
 				{ label: 'Mon parcours', link: '/mon-parcours/' },

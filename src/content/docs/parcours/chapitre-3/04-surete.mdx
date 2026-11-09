@@ -1,0 +1,131 @@
+---
+title: "Partie sécurité · B. Sûreté de fonctionnement"
+description: Étape B de la partie sécurité — ordonnancement non bloquant, machine à états avec hystérésis, défaut capteur, acquittement et chien de garde.
+---
+
+import Question from '../../../../components/Question.astro';
+import MachineEtats from '../../../../components/MachineEtats.astro';
+
+:::note[Objectif de l'étape]
+Garantir que le nœud **surveille en permanence** et que **toute défaillance conduit à un état sûr et signalé** : exigences SÛR-1 à SÛR-4. Les épreuves 1 et 2 de l'étape 0 ont montré ce qui se passe sans ces exigences. Marqueurs du code : `TODO B1` à `TODO B4`.
+:::
+
+## L'architecture du programme
+
+Comme votre programme final de l'exercice 11, le code de départ ne contient **aucune attente** dans `loop()`. Chaque tâche fait un petit travail puis rend la main : c'est un **ordonnancement coopératif**. Un tour de boucle dure moins d'une milliseconde, sauf quand le capteur est lu.
+
+```cpp
+void loop() {
+  // TODO B4 : réarmer le chien de garde
+  const unsigned long maintenant = millis();
+
+  lireConsole();                                   // commandes reçues, sans attendre
+  surveillerBoitier(maintenant);                   // contact d'ouverture (étape C)
+  if (appuiBouton(maintenant)) acquittementLocal();
+
+  if (maintenant - tAcquisition >= PERIODE_ACQ_MS) {   // toutes les 2 s
+    tAcquisition += PERIODE_ACQ_MS;
+    acquerir(maintenant);
+  }
+  gererSession(maintenant);                        // expiration de la session (étape C)
+
+  const uint8_t nouvelEtat = calculerEtat();       // état le plus prioritaire
+  if (nouvelEtat != etat) {
+    etat = nouvelEtat;
+    telemetrieImmediate = true;                    // trame sur changement d'état (étape D)
+  }
+  // ... télémétrie périodique, LED, buzzer, écran
+}
+```
+
+La fonction `calculerEtat()`, fournie, choisit l'état affiché selon un ordre de **priorité** : INTRUSION, puis DÉFAUT CAPTEUR, puis l'état thermique.
+
+## B1. Machine à états et hystérésis (SÛR-2)
+
+L'état thermique dépend de la température **et de l'état précédent** : c'est ce qui permet l'**hystérésis** que vous aviez proposée à la question Q8.3.
+
+<MachineEtats />
+
+On note **S** le seuil d'alarme (40 °C par défaut), **H** l'hystérésis (1 °C) et 10 °C le seuil de froid.
+
+<Question id="tp3-qb.1" label="QB.1" categorie="surete" lignes={8}>
+Donnez la **condition** de chaque transition **t1 à t8**, en fonction de S, H et de la température T, d'après l'exigence SÛR-2. Calculez les valeurs numériques pour S = 40 °C.
+</Question>
+
+Complétez `evaluerThermique(t, precedent)` (`TODO B1`). La fonction renvoie le nouvel état thermique ; elle doit aussi traiter les **sauts de plusieurs zones** (de NORMAL à ALARME en une mesure, par exemple).
+
+<Question id="tp3-qb.2" label="QB.2" categorie="surete" lignes={6}>
+En cliquant sur le DHT22, appliquez la séquence **24 → 38 → 39,5 → 40 → 39,5 → 38,9 → 37,5 → 36,9 °C** en attendant une mesure entre chaque réglage. Pour chaque valeur, notez l'état **attendu** puis l'état **observé** (LED, écran, trame).
+</Question>
+
+## B2. Défaut capteur (SÛR-1)
+
+Vous l'avez constaté à l'épreuve 1 : une lecture invalide renvoie `NaN`, et un programme naïf affiche alors « normal ». Une seule lecture ratée peut être un incident passager ; **trois de suite** signent une panne.
+
+Complétez `acquerir()` (`TODO B2`) : comptez les échecs consécutifs, déclarez le défaut au troisième en journalisant `EVT_DEFAUT_CAPTEUR`, puis levez-le à la première lecture valide en journalisant `EVT_CAPTEUR_RETABLI`.
+
+Deux façons de tester :
+
+- **arrêter** la simulation, **supprimer** le fil de données du DHT22, puis relancer, comme à l'épreuve 1 ;
+- en mode test, taper `CONNEXION 0000` puis `TEST CAPTEUR` : les lectures échouent pendant 10 s.
+
+<Question id="tp3-qb.3" label="QB.3" categorie="surete">
+Pourquoi attendre **trois** échecs consécutifs plutôt qu'un seul ? Combien de temps s'écoule entre la panne et sa signalisation ? Quel compromis fait-on entre fausses alarmes et délai de détection ?
+</Question>
+
+<Question id="tp3-qb.4" label="QB.4" categorie="surete">
+Énoncez le principe de **sécurité positive** (*fail-safe*) appliqué à ce nœud. Pourquoi un capteur muet doit-il produire une alerte plutôt que l'état NORMAL ? Citez un autre endroit du montage où ce principe est déjà appliqué.
+</Question>
+
+## B3. Acquittement (SÛR-3)
+
+Complétez `acquittementLocal()` (`TODO B3`) : en ALARME, un appui coupe le son et passe en ALARME ACQ. (LED rouge fixe) ; en DÉFAUT CAPTEUR, il coupe les bips. Le bouton n'a **aucun effet** sur une intrusion.
+
+<Question id="tp3-qb.5" label="QB.5" categorie="surete">
+Que doit devenir l'acquittement quand l'alarme **se termine** puis **revient** ? Vérifiez dans `mettreAJourThermique()` comment le programme le gère et expliquez pourquoi.
+</Question>
+
+## B4. Chien de garde (SÛR-4)
+
+L'épreuve 2 l'a montré : un programme bloqué cesse de surveiller, sans que personne ne le sache. Le **chien de garde** (*watchdog*) est un minuteur matériel, indépendant du programme. S'il n'est pas **réarmé** avant l'échéance (ici 2 s), il **redémarre** le microcontrôleur. Un programme bloqué ne passe plus par l'instruction de réarmement : la carte repart d'elle-même au lieu de rester figée.
+
+Le début de `setup()` est fourni :
+
+```cpp
+const uint8_t causeReset = MCUSR;  // registre des causes du dernier redémarrage
+MCUSR = 0;
+wdt_disable();                     // après un redémarrage par le chien de garde, celui-ci reste actif
+```
+
+Ajoutez `wdt_enable(WDTO_2S);` à la **fin** de `setup()` et `wdt_reset();` au **début** de `loop()` (`TODO B4`). Testez avec `TEST BLOCAGE`, en session : environ 2 s plus tard, la carte redémarre et affiche `# EVT DEMARRAGE 8` (le bit WDRF de MCUSR) puis `# Redemarrage provoque par le chien de garde`.
+
+:::caution[Sur une vraie carte]
+Sur une carte UNO réelle, le chargeur d'amorçage (*bootloader*) s'exécute avant votre programme et peut **effacer MCUSR** : la cause du redémarrage n'est alors plus lisible. Wokwi charge directement le programme, sans bootloader.
+:::
+
+<Question id="tp3-qb.6" label="QB.6" categorie="surete">
+Pourquoi `wdt_reset()` doit-il être appelé **uniquement dans `loop()`**, et surtout pas dans une interruption de minuterie qui se déclencherait toutes les 100 ms ?
+</Question>
+
+<Question id="tp3-qb.7" label="QB.7">
+Pourquoi faut-il désactiver le chien de garde **au tout début** de `setup()`, et ne l'activer qu'**à la fin** ? Que se passerait-il si l'initialisation de l'écran et le test des voyants duraient plus de 2 s ?
+</Question>
+
+<Question id="tp3-qb.8" label="QB.8">
+Évaluez la **durée maximale** d'un tour de `loop()`. La commande `JOURNAL` affiche environ 600 caractères ; or `Serial.print()` attend dès que son tampon de 64 octets est plein. Calculez la durée d'affichage à 9 600 bauds et à 115 200 bauds. Pourquoi le nœud sécurisé fonctionne-t-il à 115 200 bauds, alors que l'exercice 11 se contentait de 9 600 bauds ?
+</Question>
+
+<Question id="tp3-qb.9" label="QB.9" type="code" lignes={14}>
+Collez vos fonctions `evaluerThermique()`, `acquerir()` et `acquittementLocal()`, ainsi que les lignes ajoutées pour le chien de garde.
+</Question>
+
+## Critères de validation
+
+- [ ] La séquence de QB.2 produit les états attendus, y compris le maintien en alarme à 39,5 °C.
+- [ ] Trois lectures invalides déclenchent DÉFAUT CAPTEUR ; le retour du capteur est journalisé.
+- [ ] Le bouton acquitte une alarme : son coupé, LED rouge fixe.
+- [ ] `TEST BLOCAGE` provoque un redémarrage en 2 s environ, avec la cause affichée.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[étape C : cybersécurité du nœud](/Embedded-System-Course/parcours/chapitre-3/05-cybersecurite/).
+:::

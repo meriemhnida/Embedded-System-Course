@@ -1,0 +1,150 @@
+---
+title: "Partie sécurité · D. Données, indicateurs et recette"
+description: Étape D de la partie sécurité — trames de télémétrie contrôlées par CRC, contrôle de vraisemblance, indicateurs d'exploitation, plan de recette, comparaison avant / après et bilan de sécurité.
+---
+
+import Question from '../../../../components/Question.astro';
+import VerificateurTrame from '../../../../components/VerificateurTrame.astro';
+
+:::note[Objectif de l'étape]
+Transformer les mesures en **données de confiance** pour la supervision (DATA-1 à DATA-3), puis **prouver** que le nœud respecte tout le cahier des charges par une **recette** qui rejoue les épreuves de l'étape 0. Marqueurs du code : `TODO D1` à `TODO D3`.
+:::
+
+## D1. Des trames de télémétrie contrôlées (DATA-1)
+
+La supervision reçoit les mesures sous forme de **trames texte**, une par ligne. Le format est inspiré des trames NMEA des récepteurs GPS :
+
+```text
+$TEL,<séquence>,<t_ms>,<température>,<humidité>,<état>,<qualité>*<CRC>
+```
+
+| Champ | Contenu |
+|---|---|
+| séquence | Numéro de la trame, de 0 à 65 535, augmenté de 1 à chaque envoi |
+| t_ms | Date d'émission en millisecondes depuis le démarrage (`millis()`) |
+| température, humidité | Une décimale ; champ **vide** si la mesure n'est pas valide |
+| état | `NORMAL`, `FROID`, `PREALERTE`, `ALARME`, `ALARME_ACQ`, `DEFAUT_CAPTEUR` ou `INTRUSION` |
+| qualité | `OK`, `SUSPECT` (DATA-2), `INVALIDE` (lecture ratée) ou `DEFAUT` (SÛR-1) |
+| CRC | CRC-16/CCITT-FALSE des caractères compris **entre `$` et `*`**, en 4 chiffres hexadécimaux majuscules |
+
+Exemples de trames valides :
+
+```text
+$TEL,42,84012,24.0,40.0,NORMAL,OK*0825
+$TEL,43,86012,38.6,41.0,PREALERTE,OK*7BC5
+$TEL,44,88012,45.2,40.5,ALARME,SUSPECT*5671
+$TEL,45,90012,,,DEFAUT_CAPTEUR,DEFAUT*A93C
+```
+
+Complétez `envoyerTelemetrie()` (`TODO D1`). La fonction `crc16()` est fournie. Construisez la partie entre `$` et `*` dans un tableau de caractères avec `snprintf_P()`, en convertissant les réels avec `dtostrf()` ; le format `%S` (majuscule) insère une chaîne stockée en mémoire Flash, comme celles que renvoient `nomEtat()` et `qualite()`.
+
+### Vérifier vos trames
+
+Copiez quelques lignes du moniteur série de Wokwi et collez-les ci-dessous. L'outil recalcule chaque CRC et signale les trames manquantes.
+
+<VerificateurTrame />
+
+<Question id="tp3-qd.1" label="QD.1" categorie="donnees">
+À quoi sert le **numéro de séquence** ? Quelles anomalies permet-il de détecter que la date `t_ms` seule ne permet pas de voir ? Que se passe-t-il pour la séquence quand le nœud redémarre ?
+</Question>
+
+<Question id="tp3-qd.2" label="QD.2">
+Sur l'ATmega328P, `snprintf(buf, n, "%.1f", 24.5)` n'écrit pas `24.5`. Pourquoi la bibliothèque C de l'AVR ne gère-t-elle pas `%f` par défaut ? Quelle solution avez-vous employée ?
+</Question>
+
+<Question id="tp3-qd.3" label="QD.3" categorie="securite">
+Collez dans l'outil une trame valide, puis modifiez **un seul chiffre** de la température. Que se passe-t-il ? Un attaquant qui intercepte la liaison peut-il pour autant **fabriquer** une fausse trame acceptée ? Que faudrait-il pour l'en empêcher ?
+</Question>
+
+## D2. Contrôle de vraisemblance (DATA-2)
+
+L'air d'une armoire ne gagne pas 5 °C en 2 secondes. Une telle variation trahit un capteur **défaillant** ou **manipulé** (sèche-cheveux, bombe de froid), comme à l'épreuve 5. Complétez `acquerir()` (`TODO D2`) : comptez la mesure suspecte, passez la qualité à `SUSPECT` et journalisez `EVT_MESURE_SUSPECTE` **une seule fois par série**. Testez en faisant passer le DHT22 de 24 à 45 °C d'un coup.
+
+<Question id="tp3-qd.4" label="QD.4" categorie="surete">
+Pourquoi la mesure suspecte **reste-t-elle prise en compte** pour l'alarme, au lieu d'être rejetée ? Décrivez un scénario réel où la rejeter serait dangereux, puis un scénario où un attaquant tirerait parti d'une règle de rejet.
+</Question>
+
+## D3. Indicateurs d'exploitation (DATA-3)
+
+Complétez `afficherStats()` (`TODO D3`). Les mesures valides sont déjà rangées dans `stats.histo`, un tampon circulaire de 30 valeurs en dixièmes de degré : il couvre la dernière minute.
+
+Exemple de sortie attendue :
+
+```text
+OK mesures=120 echecs=4 (3.3%) suspectes=1
+   Tmin=21.5 Tmax=45.2 Tmoy(1 min)=24.1
+   alarmes=2 duree cumulee=96 s
+```
+
+<Question id="tp3-qd.5" label="QD.5" categorie="donnees">
+Le client veut un **tableau de bord** pour ses 200 armoires. Proposez trois indicateurs utiles à l'exploitation (par exemple la disponibilité du capteur, le temps passé en alarme par semaine), en précisant pour chacun son calcul, sa période et la décision qu'il éclaire. Pourquoi calcule-t-on certains indicateurs **dans le nœud** plutôt que dans la supervision ?
+</Question>
+
+## D4. La recette
+
+La **recette** prouve, exigence par exigence, que le produit fait ce qui est demandé. Chaque test est **reproductible** : une autre personne doit obtenir le même résultat en suivant la procédure.
+
+Rédigez puis exécutez votre plan de recette sur ce modèle :
+
+| N° | Exigence | Procédure | Résultat attendu | Résultat obtenu | Verdict |
+|---|---|---|---|---|---|
+| R1 | SÛR-2 | Régler le DHT22 à 40 °C puis à 39,5 °C | ALARME, puis maintien en ALARME | … | … |
+| R2 | SEC-1 | Envoyer 3 PIN faux, puis le bon PIN | Verrouillage de 30 s, bon PIN refusé pendant ce délai | … | … |
+| R3 | DATA-1 | Coller 10 trames dans l'outil de vérification | 10 trames intègres, aucune manquante | … | … |
+
+:::caution[Important]
+Une fois SEC-3 en place, les commandes `TEST …` exigent d'avoir **changé le PIN d'usine**. Commencez donc votre recette par `CONNEXION 0000` puis `PIN 0000 <nouveau PIN>`.
+:::
+
+<Question id="tp3-qd.6" label="QD.6" categorie="surete" lignes={14}>
+Collez votre **plan de recette exécuté** : au moins **14 tests**, avec au moins un test par exigence (SÛR-1 à SÛR-4, SEC-1 à SEC-6, DATA-1 à DATA-3) et au moins trois tests de **cas d'erreur**. Indiquez le verdict de chaque test et, pour chaque échec, la correction apportée.
+</Question>
+
+## Avant / après : la manipulation finale refaite
+
+Vous avez refait la manipulation finale de l'exercice 11 en y intégrant les aspects de sécurité. Il reste à **montrer** ce qu'ils changent.
+
+<Question id="tp1-qd.avant-apres" label="QD.7" categorie="securite" lignes={8}>
+**Avant / après.** Rejouez les six épreuves de l'étape 0 sur votre nœud sécurisé (au besoin avec `TEST CAPTEUR` et `TEST BLOCAGE`). Présentez un tableau qui donne, pour chaque épreuve, le comportement de votre programme de l'exercice 11 (vos réponses QS.1 à QS.6), celui du nœud sécurisé, et l'exigence et le mécanisme qui expliquent la différence. Signalez les épreuves dont le résultat reste insatisfaisant.
+</Question>
+
+## Bilan de sécurité
+
+<Question id="tp3-qd.7" label="QD.8" categorie="securite" lignes={8}>
+Reprenez votre analyse de risques (étape A). Quelles **vulnérabilités subsistent** ? Pensez par exemple à la liaison série en clair, aux dates relatives à `millis()`, au PIN stocké en clair, à l'absence de mise à jour sécurisée, à la valeur de `MODE_TEST`. Proposez une **feuille de route** priorisée pour la version suivante.
+</Question>
+
+<Question id="tp3-qd.8" label="QD.9" type="code" lignes={16}>
+Collez vos fonctions `envoyerTelemetrie()` et `afficherStats()`, ainsi que le contrôle de vraisemblance ajouté dans `acquerir()`.
+</Question>
+
+## Pour aller plus loin : vers un nœud réellement connecté
+
+Le même cahier des charges se transpose sur une carte **ESP32**, que Wokwi simule aussi, avec accès Wi-Fi :
+
+- publier les trames vers un **broker MQTT** avec un chiffrement **TLS** et un certificat vérifié ;
+- signer chaque trame avec un **HMAC-SHA256** et une clé propre à chaque boîtier, au lieu d'un simple CRC ;
+- horodater les événements avec une heure réelle (serveur **NTP**) ;
+- activer le **démarrage sécurisé** et le **chiffrement de la mémoire Flash** pour protéger le code et les secrets ;
+- prévoir des **mises à jour à distance signées** ;
+- afficher les indicateurs dans un tableau de bord de supervision.
+
+## Livrables de la partie sécurité
+
+1. Le **compte rendu** de la partie sécurité, exporté en PDF depuis [Mes réponses](/Embedded-System-Course/mes-reponses/) (sélection « Chapitre 3 : Sécurité des systèmes embarqués ») : mise à l'épreuve, analyse de risques, réponses, plan de recette exécuté, comparaison avant / après, bilan.
+2. Le **lien Wokwi** du projet final.
+3. Le **programme final** (`sketch.ino`), sans aucun `TODO` restant.
+
+## Auto-évaluation
+
+- [ ] Je sais conduire une analyse STRIDE et justifier une exigence par un risque.
+- [ ] Je sais concevoir une machine à états non bloquante avec hystérésis et chien de garde.
+- [ ] Je sais expliquer et appliquer la sécurité positive.
+- [ ] Je sais valider une entrée, authentifier un utilisateur et freiner une attaque par force brute.
+- [ ] Je sais distinguer un contrôle d'intégrité (CRC) d'une authentification des données (HMAC, signature).
+- [ ] Je sais produire des données exploitables et vérifier leur intégrité à la réception.
+- [ ] Je sais rédiger et exécuter un plan de recette relié aux exigences.
+
+:::note[Fin du chapitre 2]
+Validez cette page pour terminer le chapitre. Pensez à exporter votre compte rendu depuis [Mes réponses](/Embedded-System-Course/mes-reponses/).
+:::

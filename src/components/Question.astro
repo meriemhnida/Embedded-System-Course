@@ -1,7 +1,7 @@
 ---
 // Question de TP avec une zone de réponse enregistrée automatiquement dans le navigateur.
 // Utilisation dans une page .mdx :
-//   <Question id="tp1-q8.4" label="Q8.4" categorie="ingenieur">
+//   <Question id="tp1-q8.4" label="Q8.4">
 //   Énoncé de la question, en Markdown.
 //   </Question>
 // L'identifiant doit être unique sur tout le site et ne plus changer : il sert de clé d'enregistrement.
@@ -10,12 +10,11 @@ interface Props {
 	label: string;
 	type?: 'texte' | 'code';
 	lignes?: number;
-	categorie?: 'ingenieur' | 'securite' | 'surete' | 'donnees';
+	categorie?: 'securite' | 'surete' | 'donnees';
 }
 
 const { id, label, type = 'texte', lignes, categorie } = Astro.props;
 const libelles = {
-	ingenieur: 'Ingénieur',
 	securite: 'Cybersécurité',
 	surete: 'Sûreté',
 	donnees: 'Données',
@@ -156,9 +155,6 @@ const ancre = `q-${id}`;
 		padding: 0.05rem 0.5rem;
 		border-radius: 999px;
 		border: 1px solid currentColor;
-	}
-	.question__badge--ingenieur {
-		color: var(--sl-color-accent-high);
 	}
 	.question__badge--securite {
 		color: var(--cadre-rouge-titre);
