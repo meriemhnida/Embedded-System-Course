@@ -4,7 +4,7 @@ description: Simuler une LED qui clignote sur une Arduino UNO avec Wokwi.
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cet atelier, tu seras capable de :
+À la fin de cet atelier, vous serez capables de :
 - créer un projet Arduino sur le simulateur Wokwi ;
 - câbler une LED avec sa résistance ;
 - écrire et comprendre un programme qui fait clignoter la LED.
@@ -16,22 +16,22 @@ Avant de brancher un vrai circuit, on peut le **simuler**. Wokwi est un simulate
 
 ## Préparer la simulation
 
-1. Ouvre **wokwi.com** dans ton navigateur.
-2. Connecte-toi avec ton **compte GitHub** : tes projets seront conservés.
-3. Crée un nouveau projet **« Arduino Uno »**.
+1. Ouvrez **wokwi.com** dans votre navigateur.
+2. Connectez-vous avec votre **compte GitHub** : vos projets seront conservés.
+3. Créez un nouveau projet **« Arduino Uno »**.
 
 ![Le simulateur Wokwi avec une carte ESP32 et un écran LCD](../../../../assets/parcours/chapitre-1/img/wokwi.webp)
 
 *L'interface de Wokwi : la carte et les composants au centre, le programme à côté.*
 
 :::note[Bon à savoir]
-En te connectant avec ton compte GitHub, tu **conserves l'historique de tous tes projets**. Pense à enregistrer chaque montage.
+En vous connectant avec votre compte GitHub, vous **conservez l'historique de tous vos projets**. Pensez à enregistrer chaque montage.
 :::
 
 ## Le montage
 
-- Relie l'**anode** (patte longue) de la LED à la **broche 13**.
-- Relie la **cathode** (patte courte) à la masse **GND**, à travers une **résistance de 220 Ω**.
+- Reliez l'**anode** (patte longue) de la LED à la **broche 13**.
+- Reliez la **cathode** (patte courte) à la masse **GND**, à travers une **résistance de 220 Ω**.
 
 ![Une LED et sa résistance branchées sur une carte Arduino UNO avec une plaque d'essai](../../../../assets/parcours/chapitre-1/img/montage-led-breadboard.webp)
 ![Le montage de la LED dans Wokwi](../../../../assets/parcours/chapitre-1/img/montage-led-wokwi.webp)
@@ -77,12 +77,12 @@ Chaque ligne a un rôle précis :
 | `delay(250)` | Attend 250 millisecondes |
 | `digitalWrite(LEDPin, LOW)` | Met la broche à 0 V : la LED s'éteint |
 
-Lance la simulation et observe la LED.
+Lancez la simulation et observez la LED.
 
-:::tip[À toi de jouer]
+:::tip[À vous de jouer]
 1. Quelle est la durée d'un cycle complet (allumée puis éteinte) ?
-2. Que se passe-t-il si tu remplaces `delay(250)` par `delay(50)` ?
-3. Modifie le programme pour que la LED reste allumée 1 seconde et éteinte 250 ms.
+2. Que se passe-t-il si vous remplacez `delay(250)` par `delay(50)` ?
+3. Modifiez le programme pour que la LED reste allumée 1 seconde et éteinte 250 ms.
 :::
 
 <details>
@@ -90,10 +90,10 @@ Lance la simulation et observe la LED.
 
 1. 250 ms + 250 ms = **500 ms**.
 2. Le clignotement devient beaucoup plus rapide : le cycle dure 100 ms.
-3. Remplace le premier `delay(250)` par `delay(1000)` : la LED reste allumée 1 seconde, puis éteinte 250 ms.
+3. Remplacez le premier `delay(250)` par `delay(1000)` : la LED reste allumée 1 seconde, puis éteinte 250 ms.
 
 </details>
 
 :::note[Prochaine étape]
-Quand la LED clignote comme prévu, valide cette leçon en bas de page.
+Quand la LED clignote comme prévu, validez cette leçon en bas de page.
 :::

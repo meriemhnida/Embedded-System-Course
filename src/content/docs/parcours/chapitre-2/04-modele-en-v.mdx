@@ -18,7 +18,7 @@ import Question from '../../../../components/Question.astro';
 
 Écrire du code pour allumer une LED, c'est simple. Concevoir un **système de freinage antiblocage (ABS)** pour une voiture — qui doit détecter un blocage de roue en moins de 10 ms, adapter la pression de freinage individuellement sur chaque roue, fonctionner par −40 °C comme par +85 °C, et ne jamais tomber en panne — c'est une autre histoire.
 
-Dans votre cours, la section **Processus d'Ingénierie des SE** commence par la spécification des capteurs et actionneurs : *que doit mesurer le système ? que doit-il faire ?* C'est exactement la première phase du modèle en V.
+Tout projet embarqué commence par la spécification des capteurs et des actionneurs : *que doit mesurer le système ? que doit-il faire ?* C'est exactement la première phase du modèle en V.
 
 Sans méthode structurée, les problèmes arrivent tard. **Corriger un défaut détecté en phase de validation coûte dix à cent fois plus cher** que de le détecter lors de la spécification. Dans l'industrie automobile, un rappel de véhicule peut coûter des centaines de millions d'euros.
 
@@ -234,7 +234,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
 `}</style>
 
 <div class="vmodel-container">
-  <p class="vmodel-hint">👆 Cliquez sur un rectangle pour afficher le détail de la phase et son exemple</p>
+  <p class="vmodel-hint">Cliquez sur un rectangle pour afficher le détail de la phase et son exemple</p>
   <svg class="vmodel-svg" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Modèle en V interactif">
     <defs>
       <marker id="vm-arrow-c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
@@ -311,7 +311,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
     <h3>Spécification des exigences</h3>
     <p>On décrit <strong>ce que le système doit faire</strong>, en termes fonctionnels (EF) et non fonctionnels (ENF), sans encore décider comment. C'est la réponse à la question : <em>quels capteurs ? quels actionneurs ? quels comportements ?</em></p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Système ABS :</strong><br/>
+      <strong>Exemple automobile — Système ABS :</strong><br/>
       <table>
         <thead><tr><th>Exigence</th><th>Description</th></tr></thead>
         <tbody>
@@ -322,7 +322,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
           <tr><td><code>ENF-02</code></td><td>Répondre à toute interruption en moins de 1 ms.</td></tr>
         </tbody>
       </table>
-      <p class="vm-note">ℹ️ Les exigences doivent être <strong>mesurables et testables</strong> : on doit pouvoir dire si elles sont satisfaites ou non. <em>«&nbsp;Le système doit être rapide&nbsp;»</em> n'est pas une exigence valide. <em>«&nbsp;Le temps de réponse doit être inférieur à 10 ms&nbsp;»</em> l'est.</p>
+      <p class="vm-note">Les exigences doivent être <strong>mesurables et testables</strong> : on doit pouvoir dire si elles sont satisfaites ou non. <em>«&nbsp;Le système doit être rapide&nbsp;»</em> n'est pas une exigence valide. <em>«&nbsp;Le temps de réponse doit être inférieur à 10 ms&nbsp;»</em> l'est.</p>
     </div>
   </div>
 
@@ -331,7 +331,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
     <h3>Architecture du système</h3>
     <p>On choisit les <strong>composants matériels</strong>, les <strong>protocoles de communication</strong> et la répartition des responsabilités entre les modules logiciels.</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Architecture ABS :</strong><br/>
+      <strong>Exemple automobile — Architecture ABS :</strong><br/>
       <table>
         <thead><tr><th>Composant</th><th>Interface</th><th>Rôle (exigences couvertes)</th></tr></thead>
         <tbody>
@@ -342,7 +342,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
           <tr><td>Tableau de bord</td><td>Bus CAN</td><td>EF-03 : voyant défaut</td></tr>
         </tbody>
       </table>
-      <p class="vm-note">ℹ️ Chaque composant est tracé vers une exigence. Un composant sans exigence est superflu ; une exigence sans composant est oubliée.</p>
+      <p class="vm-note">Chaque composant est tracé vers une exigence. Un composant sans exigence est superflu ; une exigence sans composant est oubliée.</p>
     </div>
   </div>
 
@@ -351,7 +351,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
     <h3>Conception détaillée</h3>
     <p>On définit <strong>chaque module logiciel</strong> : ses entrées, sorties, algorithmes, cas aux limites, et les règles de réalisation.</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Module de détection de glissement :</strong><br/>
+      <strong>Exemple automobile — Module de détection de glissement :</strong><br/>
       <table>
         <thead><tr><th>Règle</th><th>Description</th></tr></thead>
         <tbody>
@@ -370,7 +370,7 @@ Le **modèle en V** est la réponse de l'industrie embarquée (automobile, aéro
     <h3>Codage et implémentation</h3>
     <p>On transforme la conception détaillée en <strong>code source</strong>, en respectant les règles de réalisation définies à l'étape précédente.</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Extrait du module ABS en C embarqué :</strong>
+      <strong>Exemple automobile — Extrait du module ABS en C embarqué :</strong>
       <pre class="vm-code"><code>{`#include <stdbool.h>
 #include <stdint.h>
 
@@ -393,7 +393,7 @@ bool detect_lock(float slip, uint8_t *count) {
     }
     return (*count >= DEBOUNCE_CYCLES);
 }`}</code></pre>
-      <p class="vm-note">ℹ️ Chaque fonction implémente une règle de réalisation précise (P2, P3, P5). Le code est <strong>traçable</strong> : on peut retrouver quelle exigence chaque ligne satisfait.</p>
+      <p class="vm-note">Chaque fonction implémente une règle de réalisation précise (P2, P3, P5). Le code est <strong>traçable</strong> : on peut retrouver quelle exigence chaque ligne satisfait.</p>
     </div>
   </div>
 
@@ -402,7 +402,7 @@ bool detect_lock(float slip, uint8_t *count) {
     <h3>Tests unitaires</h3>
     <p>On teste <strong>chaque fonction isolément</strong>, avec des entrées connues et des résultats attendus. Cette étape vérifie la conception détaillée (phase ③).</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Tests du module de glissement :</strong>
+      <strong>Exemple automobile — Tests du module de glissement :</strong>
       <pre class="vm-code"><code>{`/* Tests unitaires avec Unity (framework de test en C) */
 void test_slip_normal_braking(void) {
     /* 60 km/h véhicule, 55 km/h roue → glissement 8 % → pas de blocage */
@@ -426,7 +426,7 @@ void test_debounce_resets_on_ok(void) {
     detect_lock(0.05f, &count); /* sous le seuil → reset */
     TEST_ASSERT_EQUAL_UINT8(0, count);
 }`}</code></pre>
-      <p class="vm-note">ℹ️ Les tests aux <strong>valeurs limites</strong> (ici le seuil à 0,20) sont les plus importants : un <code>&gt;</code> ou un <code>≥</code> mal placé passe inaperçu sur les valeurs «&nbsp;normales&nbsp;».</p>
+      <p class="vm-note">Les tests aux <strong>valeurs limites</strong> (ici le seuil à 0,20) sont les plus importants : un <code>&gt;</code> ou un <code>≥</code> mal placé passe inaperçu sur les valeurs «&nbsp;normales&nbsp;».</p>
     </div>
   </div>
 
@@ -435,7 +435,7 @@ void test_debounce_resets_on_ok(void) {
     <h3>Tests d'intégration</h3>
     <p>On assemble plusieurs modules et on vérifie qu'ils <strong>fonctionnent correctement ensemble</strong>. Cette étape vérifie l'architecture (phase ②).</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Scénarios d'intégration ABS :</strong>
+      <strong>Exemple automobile — Scénarios d'intégration ABS :</strong>
       <table>
         <thead><tr><th>Scénario</th><th>Modules impliqués</th><th>Résultat attendu</th></tr></thead>
         <tbody>
@@ -445,7 +445,7 @@ void test_debounce_resets_on_ok(void) {
           <tr><td>Redémarrage après erreur</td><td>ECU + mémoire EEPROM</td><td>Code d'erreur enregistré ; comportement nominal restauré si le capteur est OK.</td></tr>
         </tbody>
       </table>
-      <p class="vm-note">ℹ️ Si un test d'intégration échoue, l'erreur vient souvent de l'<strong>interface</strong> entre modules (mauvais format de donnée, timing, unité) et non du code interne de chaque module.</p>
+      <p class="vm-note">Si un test d'intégration échoue, l'erreur vient souvent de l'<strong>interface</strong> entre modules (mauvais format de donnée, timing, unité) et non du code interne de chaque module.</p>
     </div>
   </div>
 
@@ -454,7 +454,7 @@ void test_debounce_resets_on_ok(void) {
     <h3>Tests d'acceptation et validation</h3>
     <p>Le client ou l'organisme d'homologation vérifie que le système <strong>répond au besoin initial</strong> exprimé dans la spécification (phase ①). C'est la «&nbsp;recette&nbsp;» : le système peut-il être livré ?</p>
     <div class="example-block">
-      <strong>🚗 Exemple automobile — Validation de l'ABS avant homologation :</strong>
+      <strong>Exemple automobile — Validation de l'ABS avant homologation :</strong>
       <table>
         <thead><tr><th>Exigence initiale</th><th>Test d'acceptation</th><th>Critère de succès</th></tr></thead>
         <tbody>
@@ -464,7 +464,7 @@ void test_debounce_resets_on_ok(void) {
           <tr><td>EF-03 : voyant défaut</td><td>Déconnexion de chaque capteur, l'un après l'autre</td><td>Voyant allumé dans les 200 ms à chaque déconnexion</td></tr>
         </tbody>
       </table>
-      <p class="vm-note">ℹ️ La validation ne teste pas le code, elle teste le <strong>comportement du système complet</strong> dans des conditions réelles. Si un test d'acceptation échoue, c'est souvent une exigence mal écrite à la phase ① — et tout le V doit être revu. Pour un système de sécurité comme l'ABS, toute la démarche est encadrée par la norme <strong>ISO 26262</strong> (sécurité fonctionnelle automobile).</p>
+      <p class="vm-note">La validation ne teste pas le code, elle teste le <strong>comportement du système complet</strong> dans des conditions réelles. Si un test d'acceptation échoue, c'est souvent une exigence mal écrite à la phase ① — et tout le V doit être revu. Pour un système de sécurité comme l'ABS, toute la démarche est encadrée par la norme <strong>ISO 26262</strong> (sécurité fonctionnelle automobile).</p>
     </div>
   </div>
 </div>
@@ -528,7 +528,7 @@ Le **diagramme d'états-transitions** oblige à lister tous les états possibles
 
 ---
 
-## Teste-toi
+## Testez-vous
 
 <Question id="c2-vmodel-q1" label="Q1">
 Quelle est la différence entre un test unitaire (phase ⑤) et un test d'intégration (phase ⑥) ? Donnez un exemple concret dans le domaine des systèmes embarqués.

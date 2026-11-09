@@ -107,11 +107,11 @@ Sur une carte UNO réelle, le chargeur d'amorçage (*bootloader*) s'exécute ava
 Pourquoi `wdt_reset()` doit-il être appelé **uniquement dans `loop()`**, et surtout pas dans une interruption de minuterie qui se déclencherait toutes les 100 ms ?
 </Question>
 
-<Question id="tp3-qb.7" label="QB.7" categorie="ingenieur">
+<Question id="tp3-qb.7" label="QB.7">
 Pourquoi faut-il désactiver le chien de garde **au tout début** de `setup()`, et ne l'activer qu'**à la fin** ? Que se passerait-il si l'initialisation de l'écran et le test des voyants duraient plus de 2 s ?
 </Question>
 
-<Question id="tp3-qb.8" label="QB.8" categorie="ingenieur">
+<Question id="tp3-qb.8" label="QB.8">
 Évaluez la **durée maximale** d'un tour de `loop()`. La commande `JOURNAL` affiche environ 600 caractères ; or `Serial.print()` attend dès que son tampon de 64 octets est plein. Calculez la durée d'affichage à 9 600 bauds et à 115 200 bauds. Pourquoi le nœud sécurisé fonctionne-t-il à 115 200 bauds, alors que l'exercice 11 se contentait de 9 600 bauds ?
 </Question>
 

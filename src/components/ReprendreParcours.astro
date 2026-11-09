@@ -7,7 +7,7 @@ const accueilParcours = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}mon-par
 
 <section class="reprendre" data-lecons={JSON.stringify(lecons)} data-accueil={accueilParcours}>
 	<div class="texte">
-		<strong class="titre">Ton parcours</strong>
+		<strong class="titre">Votre parcours</strong>
 		<span class="detail"></span>
 		<div class="barre" aria-hidden="true"><span class="remplissage"></span></div>
 	</div>
@@ -30,13 +30,13 @@ const accueilParcours = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}mon-par
 		remplissage.style.width = `${lecons.length ? Math.round((faites / lecons.length) * 100) : 0}%`;
 
 		if (faites === 0) {
-			detail.textContent = `${lecons.length} leçons t'attendent. Valide chaque leçon pour avancer.`;
+			detail.textContent = `${lecons.length} leçons vous attendent. Validez chaque leçon pour avancer.`;
 		} else if (suivante) {
 			detail.textContent = `${faites} / ${lecons.length} leçons validées. Prochaine étape : ${suivante.label}`;
 			bouton.textContent = 'Reprendre là où j’en étais →';
 			bouton.href = suivante.href;
 		} else {
-			detail.textContent = `Bravo, tu as validé les ${lecons.length} leçons du parcours.`;
+			detail.textContent = `Bravo, vous avez validé les ${lecons.length} leçons du parcours.`;
 			bouton.textContent = 'Voir mon parcours →';
 			bouton.href = accueil;
 		}

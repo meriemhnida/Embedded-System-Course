@@ -44,7 +44,7 @@ void loop() {
 Pourquoi les deux pattes de la LED ont-elles des longueurs différentes ? Quel est le rôle de l'**anode** et de la **cathode** ? Que se passe-t-il si l'on branche la LED à l'envers ?
 </Question>
 
-<Question id="tp1-q2.2" label="Q2.2" categorie="ingenieur">
+<Question id="tp1-q2.2" label="Q2.2">
 **Dimensionnement.** La sortie fournit 5 V, la LED fait chuter environ 2 V et l'on vise un courant de 15 mA. Calculez la résistance nécessaire. Pourquoi choisit-on 220 Ω, une valeur de la série normalisée E12 ? Quel courant circule alors ?
 </Question>
 
@@ -62,7 +62,7 @@ Que remarquez-vous sur la LED **L** de la carte pendant cet exercice ? Expliquez
 `delay()` **bloque** le microcontrôleur : pendant 250 ms, il ne lit aucun bouton et ne répond à rien. Dans un produit, on mesure le temps écoulé avec `millis()`, le nombre de millisecondes depuis le démarrage, sans jamais attendre.
 :::
 
-<Question id="tp1-q2.5" label="Q2.5" type="code" categorie="ingenieur">
+<Question id="tp1-q2.5" label="Q2.5" type="code">
 Réécrivez le clignotement **sans `delay()`**, à l'aide de `millis()`. Collez votre programme, puis expliquez en commentaire pourquoi on écrit `millis() - instant >= PERIODE` plutôt que `millis() >= instant + PERIODE` (indice : que devient `millis()` au bout de 49,7 jours ?).
 </Question>
 

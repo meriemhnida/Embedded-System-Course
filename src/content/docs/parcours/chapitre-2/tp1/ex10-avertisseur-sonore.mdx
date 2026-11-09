@@ -42,11 +42,11 @@ Portez la température du capteur à 42 °C, puis ramenez-la à 30 °C.
 Pourquoi faut-il utiliser `tone()` plutôt que `digitalWrite()` pour faire sonner ce buzzer ?
 </Question>
 
-<Question id="tp2-q5.2" label="Q10.2" categorie="ingenieur">
+<Question id="tp2-q5.2" label="Q10.2">
 Dans l'exercice 9, la mesure n'a lieu **que si l'on appuie sur le bouton**. Que se passe-t-il si la température dépasse 40 °C alors que personne n'appuie ? L'exigence EF4 est-elle respectée ? Proposez une nouvelle organisation de `loop()` qui sépare la **surveillance** (mesure toutes les 2 s, LED, buzzer) de l'**affichage** (écran LCD à la demande).
 </Question>
 
-<Question id="tp2-q5.3" label="Q10.3" categorie="ingenieur">
+<Question id="tp2-q5.3" label="Q10.3">
 Consultez la [documentation de `tone()`](https://docs.arduino.cc/language-reference/en/functions/advanced-io/tone/). Sur l'UNO, quelles broches PWM sont perturbées pendant qu'un son est joué ? Notre LED RVB est-elle concernée ? Pourquoi les couleurs pures (valeurs 0 ou 255) s'affichent-elles quand même correctement ? Proposez un câblage qui supprime le conflit.
 </Question>
 

@@ -4,7 +4,7 @@ description: Lire l'état d'un bouton-poussoir et allumer une LED en conséquenc
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cet atelier, tu seras capable de :
+À la fin de cet atelier, vous serez capables de :
 - utiliser une broche comme entrée numérique ;
 - expliquer le rôle d'une résistance de tirage (pull-down) ;
 - écrire un programme où une LED suit l'état d'un bouton.
@@ -60,11 +60,11 @@ La dernière ligne fait deux choses en une : elle **lit** la broche 2 avec `digi
 `LED_BUILTIN` est une constante d'Arduino qui désigne la LED intégrée à la carte. Sur la UNO, il s'agit de la broche 13.
 :::
 
-Lance la simulation et clique sur le bouton : la LED s'allume tant que tu appuies.
+Lancez la simulation et cliquez sur le bouton : la LED s'allume tant que vous appuyez.
 
-:::tip[À toi de jouer]
+:::tip[À vous de jouer]
 1. Quelle valeur lit `digitalRead()` quand le bouton est appuyé ? Quand il est relâché ?
-2. Que se passe-t-il si tu retires la résistance de la broche 2 ?
+2. Que se passe-t-il si vous retirez la résistance de la broche 2 ?
 3. Comment faire pour que la LED reste allumée après un appui ? (Indice : une variable peut mémoriser l'état.)
 :::
 
@@ -78,5 +78,5 @@ Lance la simulation et clique sur le bouton : la LED s'allume tant que tu appuie
 </details>
 
 :::note[Prochaine étape]
-Quand le bouton allume la LED, valide cette leçon en bas de page.
+Quand le bouton allume la LED, validez cette leçon en bas de page.
 :::

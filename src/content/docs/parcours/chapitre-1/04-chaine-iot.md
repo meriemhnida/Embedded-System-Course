@@ -4,7 +4,7 @@ description: Les couches d'un système IoT, des capteurs jusqu'à l'application 
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cette leçon, tu seras capable de :
+À la fin de cette leçon, vous serez capables de :
 - expliquer ce qu'est l'IoT et le distinguer d'un système cyber-physique ;
 - décrire les cinq couches d'une chaîne IoT ;
 - choisir entre traitement local (Edge) et cloud ;
@@ -110,11 +110,11 @@ Le **TinyML** consiste à exécuter un modèle d'intelligence artificielle **dir
 
 *Le TinyML réunit l'apprentissage automatique et les systèmes embarqués pour des appareils alimentés par batterie.*
 
-## Teste-toi
+## Testez-vous
 
 1. Quelle couche de la chaîne IoT correspond à un tableau de bord ?
 2. Pourquoi une passerelle Edge est-elle préférable à l'envoi brut de toutes les mesures de vibrations vers le cloud ?
-3. Un capteur fonctionne sur pile pendant plusieurs années, à plusieurs kilomètres de la passerelle. Quelle famille de réseau choisis-tu ?
+3. Un capteur fonctionne sur pile pendant plusieurs années, à plusieurs kilomètres de la passerelle. Quelle famille de réseau choisissez-vous ?
 
 <details>
 <summary>Voir les réponses</summary>
@@ -126,5 +126,5 @@ Le **TinyML** consiste à exécuter un modèle d'intelligence artificielle **dir
 </details>
 
 :::note[Prochaine étape]
-Quand tu as répondu aux questions, valide cette leçon en bas de page.
+Quand vous avez répondu aux questions, validez cette leçon en bas de page.
 :::

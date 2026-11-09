@@ -120,7 +120,7 @@ Pour tester, ouvrez une session, changez le PIN, puis tapez `TEST CORROMPRE` et 
 Le CRC détecte la corruption accidentelle d'un bit. Protège-t-il contre un attaquant qui **modifie volontairement** le seuil dans l'EEPROM ? Pourquoi ? Quel mécanisme cryptographique faudrait-il, et quel nouveau problème pose-t-il ?
 </Question>
 
-<Question id="tp3-qc.9" label="QC.9" categorie="ingenieur">
+<Question id="tp3-qc.9" label="QC.9">
 `crcConfig()` calcule le CRC sur `offsetof(Config, crc)` octets, et non sur `sizeof(Config) - 1`. Les deux valeurs sont égales sur l'ATmega328P. Pourquoi diffèrent-elles sur un processeur 32 bits comme celui de l'ESP32 ? Quel bogue la seconde écriture provoquerait-elle ?
 </Question>
 

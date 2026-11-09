@@ -4,8 +4,8 @@ description: Définition, exemples et contraintes d'un système embarqué.
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cette leçon, tu seras capable de :
-- définir un système embarqué avec tes propres mots ;
+À la fin de cette leçon, vous serez capables de :
+- définir un système embarqué avec vos propres mots ;
 - citer des exemples dans la vie quotidienne ;
 - expliquer ses cinq contraintes principales, dont le temps réel.
 :::
@@ -14,7 +14,7 @@ description: Définition, exemples et contraintes d'un système embarqué.
 
 Quand on pense à un ordinateur, on imagine un portable ou un PC : un écran, un clavier, et la possibilité de lancer n'importe quel logiciel. Un **système embarqué** est tout autre chose. C'est un petit ordinateur **intégré à un objet** pour piloter une fonction précise. L'utilisateur ne le voit presque jamais.
 
-Fais le tour de ta maison ou de ta voiture : le lave-linge, le thermostat, le distributeur de billets, le régulateur de vitesse, la montre connectée... Tous contiennent un système embarqué.
+Faites le tour de votre maison ou de votre voiture : le lave-linge, le thermostat, le distributeur de billets, le régulateur de vitesse, la montre connectée... Tous contiennent un système embarqué.
 
 ![Objets du quotidien : imagerie médicale, voiture, engin de chantier, bateau, lave-linge, imprimante](../../../../assets/parcours/chapitre-1/img/objets-systemes-embarques.webp)
 
@@ -51,9 +51,9 @@ Tous les systèmes embarqués suivent la même logique : **observer, décider, a
 
 *Le système embarqué reçoit des informations de l'environnement physique par ses capteurs, et agit sur lui par ses actionneurs.*
 
-Si ce système est relié à Internet, on parle d'**objet connecté** ou d'**IoT** (Internet des objets). Tu le verras dans la leçon 4.
+Si ce système est relié à Internet, on parle d'**objet connecté** ou d'**IoT** (Internet des objets). Vous le verrez dans la leçon 4.
 
-## Des systèmes que tu peux construire
+## Des systèmes que vous pouvez construire
 
 Les systèmes embarqués ne sont pas réservés aux industriels. Avec une carte Arduino et quelques composants, on construit des projets très variés. Voici quelques exemples de réalisations :
 
@@ -87,16 +87,16 @@ La voiture illustre bien ces contraintes. Une voiture haut de gamme contient une
 
 Dans un système temps réel, un calcul est **déclenché par un événement extérieur** (par exemple une interruption matérielle). Surtout, **le résultat n'a de valeur que s'il arrive à temps**.
 
-Imagine un moniteur cardiaque qui surveille l'activité électrique du cœur d'un patient. Une mesure juste, mais délivrée trop tard, ne sert à rien : c'est le moment de la réponse qui compte, pas seulement sa justesse.
+Imaginez un moniteur cardiaque qui surveille l'activité électrique du cœur d'un patient. Une mesure juste, mais délivrée trop tard, ne sert à rien : c'est le moment de la réponse qui compte, pas seulement sa justesse.
 
 :::caution[Important]
 Un système embarqué n'est pas forcément un système temps réel, et inversement. Mais **la plupart des systèmes embarqués fonctionnent en temps réel**, parce qu'ils réagissent à des événements du monde physique.
 :::
 
-## Teste-toi
+## Testez-vous
 
 1. Pourquoi un PC n'est-il pas un système embarqué, alors qu'un thermomètre à microprocesseur en est un ?
-2. Donne deux contraintes qui s'appliquent à un capteur alimenté par une pile.
+2. Donnez deux contraintes qui s'appliquent à un capteur alimenté par une pile.
 3. Pourquoi un résultat tardif peut-il être inutile dans un moniteur cardiaque ?
 
 <details>
@@ -109,5 +109,5 @@ Un système embarqué n'est pas forcément un système temps réel, et inverseme
 </details>
 
 :::note[Prochaine étape]
-Quand tu as répondu aux questions, valide cette leçon en bas de page.
+Quand vous avez répondu aux questions, validez cette leçon en bas de page.
 :::

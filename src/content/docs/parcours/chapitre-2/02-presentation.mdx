@@ -1,23 +1,23 @@
 ---
 title: Présentation de la carte
-description: "Explorer l'Arduino UNO avec un schéma interactif : survole et clique sur chaque broche et chaque composant."
+description: "Explorer l'Arduino UNO avec un schéma interactif : survolez et cliquez sur chaque broche et chaque composant."
 ---
 
 import ArduinoUno from '../../../../components/ArduinoUno.astro';
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectifs de l'atelier]
-À la fin de cet atelier, tu seras capable de :
+À la fin de cet atelier, vous serez capables de :
 - nommer les principaux composants de la carte Arduino UNO et leur rôle ;
 - distinguer à vue les broches numériques, PWM, analogiques, d'alimentation et de masse ;
 - choisir la bonne broche pour brancher une LED, un bouton ou un capteur.
 :::
 
-## Explore la carte
+## Explorez la carte
 
-Voici l'Arduino UNO vue de dessus, avec le port USB à gauche. **Passe la souris** sur une broche pour un aperçu rapide, puis **clique dessus** pour lire l'explication complète, avec un exemple de code.
+Voici l'Arduino UNO vue de dessus, avec le port USB à gauche. **Passez la souris** sur une broche pour un aperçu rapide, puis **cliquez dessus** pour lire l'explication complète, avec un exemple de code.
 
-Le bouton **Visite guidée : suivant** te fait parcourir tous les éléments dans l'ordre. Les boutons de couleur au-dessus de la carte servent à **mettre en évidence** un seul type de broches.
+Le bouton **Visite guidée : suivant** vous fait parcourir tous les éléments dans l'ordre. Les boutons de couleur au-dessus de la carte servent à **mettre en évidence** un seul type de broches.
 
 <ArduinoUno />
 
@@ -40,16 +40,16 @@ Les broches du **haut** sont les entrées-sorties **numériques** (0 à 13). Les
 Une broche numérique donne au maximum **20 mA** : une LED doit toujours avoir une **résistance** en série. Seules les 6 broches marquées **~** font de la **PWM**.
 :::
 
-:::tip[À toi de jouer]
-Avant de passer à la suite, retrouve sur la carte :
+:::tip[À vous de jouer]
+Avant de passer à la suite, retrouvez sur la carte :
 1. la broche reliée à la LED intégrée « L » ;
 2. les deux broches qui servent aussi au bus I²C ;
 3. la broche à utiliser pour alimenter un capteur en 3,3 V.
 :::
 
-## Teste-toi
+## Testez-vous
 
-Réponds dans les cadres : ta réponse est enregistrée dans ce navigateur. Compare ensuite avec la correction.
+Répondez dans les cadres : votre réponse est enregistrée dans ce navigateur. Comparez ensuite avec la correction.
 
 <Question id="c2-carte-q1" label="Q1">
 Quelles broches numériques permettent de faire de la PWM ?
@@ -73,5 +73,5 @@ Pourquoi ne faut-il pas brancher un montage sur D0 et D1 pendant un téléversem
 </details>
 
 :::note[Prochaine étape]
-Quand tu sais nommer et situer chaque broche, valide cette leçon en bas de page, puis lis le [guide des travaux pratiques](/Embedded-System-Course/parcours/chapitre-2/03-guide-tp/).
+Quand vous savez nommer et situer chaque broche, validez cette leçon en bas de page, puis lisez le [guide des travaux pratiques](/Embedded-System-Course/parcours/chapitre-2/03-guide-tp/).
 :::

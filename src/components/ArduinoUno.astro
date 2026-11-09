@@ -26,7 +26,7 @@ const ordre = JSON.stringify((await import('../data/arduino-uno')).ordre);
 	</div>
 
 	<div class="scene">
-		<svg viewBox="0 0 900 540" role="group" aria-label="Schéma interactif de la carte Arduino UNO. Clique sur une broche ou un composant pour obtenir son explication.">
+		<svg viewBox="0 0 900 540" role="group" aria-label="Schéma interactif de la carte Arduino UNO. Cliquez sur une broche ou un composant pour obtenir son explication.">
 			<rect class="carte" x="30" y="30" width="830" height="480" rx="16"></rect>
 			<rect class="trou" x="52" y="48" width="14" height="14" rx="7"></rect>
 			<rect class="trou" x="52" y="478" width="14" height="14" rx="7"></rect>
@@ -154,7 +154,7 @@ const ordre = JSON.stringify((await import('../data/arduino-uno')).ordre);
 	</div>
 
 	<div class="panneau" aria-live="polite">
-		<p class="invite">👆 <strong>Clique sur une broche ou un composant</strong> de la carte pour afficher son explication. Passe la souris dessus pour un aperçu rapide.</p>
+		<p class="invite"><strong>Cliquez sur une broche ou un composant</strong> de la carte pour afficher son explication. Passez la souris dessus pour un aperçu rapide.</p>
 		<div class="contenu" hidden>
 			<div class="entete">
 				<span class="badge"></span>
@@ -196,7 +196,7 @@ const ordre = JSON.stringify((await import('../data/arduino-uno')).ordre);
 		const afficherBulle = (n: Element) => {
 			const e = elements[(n as HTMLElement).dataset.id!];
 			if (!e) return;
-			bulle.innerHTML = `<strong>${echapper(e.titre)}</strong><span>${echapper(e.resume)}</span><em>Clique pour en savoir plus</em>`;
+			bulle.innerHTML = `<strong>${echapper(e.titre)}</strong><span>${echapper(e.resume)}</span><em>Cliquez pour en savoir plus</em>`;
 			bulle.hidden = false;
 			const s = scene.getBoundingClientRect();
 			const r = n.getBoundingClientRect();

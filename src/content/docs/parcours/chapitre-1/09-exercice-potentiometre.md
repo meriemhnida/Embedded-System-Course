@@ -4,11 +4,11 @@ description: Régler la luminosité d'une LED avec un potentiomètre, grâce à 
 ---
 
 :::caution[Exercice à terminer avant la séance suivante]
-Enregistre ton montage dans ton compte Wokwi (connexion GitHub). Pense aussi à former les binômes du projet (contrôle continu : 40 % de la note), et à revoir : polarité de la LED, résistance série, `analogRead()` et PWM (`analogWrite()`).
+Enregistrez votre montage dans votre compte Wokwi (connexion GitHub). Pensez aussi à former les binômes du projet (contrôle continu : 40 % de la note), et à revoir : polarité de la LED, résistance série, `analogRead()` et PWM (`analogWrite()`).
 :::
 
 :::note[Objectifs de la leçon]
-À la fin de cet exercice, tu seras capable de :
+À la fin de cet exercice, vous serez capables de :
 - lire une valeur analogique avec un potentiomètre ;
 - convertir cette valeur pour l'utiliser en PWM avec `map()` ;
 - régler la luminosité d'une LED.
@@ -72,10 +72,10 @@ La fonction `map()` fait un **changement d'échelle proportionnel** : elle trans
 `analogWrite()` ne fonctionne que sur les broches **PWM** : 3, 5, 6, 9, 10 et 11. C'est pourquoi la LED est branchée sur la broche 11.
 :::
 
-:::tip[À toi de jouer]
+:::tip[À vous de jouer]
 1. Que vaut `brightness` quand le curseur est à mi-course ?
 2. Pourquoi utiliser la broche 11 et non la broche 12 ?
-3. Que se passe-t-il si tu enlèves `delay(20)` ?
+3. Que se passe-t-il si vous enlevez `delay(20)` ?
 :::
 
 <details>
@@ -88,5 +88,5 @@ La fonction `map()` fait un **changement d'échelle proportionnel** : elle trans
 </details>
 
 :::note[Prochaine étape]
-Quand la luminosité de la LED varie avec le potentiomètre, valide cette leçon en bas de page : tu auras terminé le chapitre 1.
+Quand la luminosité de la LED varie avec le potentiomètre, validez cette leçon en bas de page : vous aurez terminé le chapitre 1.
 :::

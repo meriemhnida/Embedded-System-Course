@@ -4,7 +4,7 @@ description: Mesurer le monde physique avec un capteur, agir sur lui avec un act
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cette leçon, tu seras capable de :
+À la fin de cette leçon, vous serez capables de :
 - distinguer un capteur d'un actionneur ;
 - décrire les étapes entre la mesure et l'action ;
 - choisir un capteur ou un actionneur adapté à un besoin.
@@ -123,8 +123,8 @@ Les actionneurs transforment les informations du programme en action physique. L
 Une broche de microcontrôleur ne délivre que **quelques milliampères**. Un moteur ou une pompe ne se branche **jamais directement** sur une broche : il faut une **interface de puissance** (transistor, relais ou pont en H).
 :::
 
-:::tip[À toi de jouer]
-Tu dois mesurer la température et l'humidité d'une serre, avec une plage de 0 à 50 °C. Quel capteur choisis-tu, et pourquoi ?
+:::tip[À vous de jouer]
+Vous devez mesurer la température et l'humidité d'une serre, avec une plage de 0 à 50 °C. Quel capteur choisissez-vous, et pourquoi ?
 :::
 
 <details>
@@ -134,9 +134,9 @@ Le **DHT22** : il mesure à la fois la température et l'humidité, sur une plag
 
 </details>
 
-## Teste-toi
+## Testez-vous
 
-1. Donne un exemple de capteur et un exemple d'actionneur dans une machine à laver.
+1. Donnez un exemple de capteur et un exemple d'actionneur dans une machine à laver.
 2. Pourquoi ne branche-t-on pas un moteur directement sur une broche du microcontrôleur ?
 3. Que signifie « boucle fermée » ?
 
@@ -150,5 +150,5 @@ Le **DHT22** : il mesure à la fois la température et l'humidité, sur une plag
 </details>
 
 :::note[Prochaine étape]
-Quand tu as répondu aux questions, valide cette leçon en bas de page.
+Quand vous avez répondu aux questions, validez cette leçon en bas de page.
 :::

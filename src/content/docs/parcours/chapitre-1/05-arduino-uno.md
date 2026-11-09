@@ -4,7 +4,7 @@ description: Localiser le microcontrôleur, les broches numériques, analogiques
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cette leçon, tu seras capable de :
+À la fin de cette leçon, vous serez capables de :
 - localiser le microcontrôleur et l'alimentation sur la carte ;
 - distinguer les broches numériques, analogiques, PWM et d'alimentation ;
 - configurer une broche en entrée ou en sortie et lire une valeur analogique.
@@ -147,9 +147,9 @@ On utilise la PWM pour régler la luminosité d'une LED ou la vitesse d'un moteu
 
 ## Le bouton RESET
 
-Le bouton RESET **redémarre** le microcontrôleur. Il permet aussi de le forcer en mode **bootloader**, un petit programme préinstallé sur la puce. Le bootloader reçoit ton programme depuis l'ordinateur et l'écrit dans la mémoire Flash.
+Le bouton RESET **redémarre** le microcontrôleur. Il permet aussi de le forcer en mode **bootloader**, un petit programme préinstallé sur la puce. Le bootloader reçoit votre programme depuis l'ordinateur et l'écrit dans la mémoire Flash.
 
-## Teste-toi
+## Testez-vous
 
 1. Combien de broches d'entrées-sorties la UNO R3 possède-t-elle ?
 2. Quelles broches permettent d'utiliser `analogWrite()` ?
@@ -167,5 +167,5 @@ Le bouton RESET **redémarre** le microcontrôleur. Il permet aussi de le forcer
 </details>
 
 :::note[Prochaine étape]
-Quand tu as répondu aux questions, valide cette leçon en bas de page.
+Quand vous avez répondu aux questions, validez cette leçon en bas de page.
 :::

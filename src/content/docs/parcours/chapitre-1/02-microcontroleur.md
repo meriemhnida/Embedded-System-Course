@@ -4,7 +4,7 @@ description: Différences entre microcontrôleur, microprocesseur et carte de d�
 ---
 
 :::note[Objectifs de la leçon]
-À la fin de cette leçon, tu seras capable de :
+À la fin de cette leçon, vous serez capables de :
 - expliquer la différence entre un microcontrôleur et un microprocesseur ;
 - choisir lequel utiliser selon le besoin ;
 - repérer les blocs d'une carte de développement.
@@ -71,7 +71,7 @@ Une carte de développement contient donc :
 - des **boutons** BOOT, EN ou RESET.
 
 :::caution[Important]
-Ne confonds pas : le **microcontrôleur** est la puce, la **carte** est la puce plus tout ce qui l'entoure, et un **ordinateur monocarte** comme le Raspberry Pi 5 fait tourner Linux avec un processeur d'application. Ce n'est **pas** un microcontrôleur.
+Ne confondez pas : le **microcontrôleur** est la puce, la **carte** est la puce plus tout ce qui l'entoure, et un **ordinateur monocarte** comme le Raspberry Pi 5 fait tourner Linux avec un processeur d'application. Ce n'est **pas** un microcontrôleur.
 :::
 
 ## Quelques cartes à connaître
@@ -93,10 +93,10 @@ Chaque carte a ses points forts. Les plus courantes en formation sont les suivan
 | Raspberry Pi Pico 2 W | Raspberry Pi (RP2350) | Wi-Fi, blocs PIO programmables |
 | Nucleo-F401RE | STMicroelectronics | Carte STM32 pour apprendre le C |
 
-## Teste-toi
+## Testez-vous
 
-1. Cite trois éléments présents dans un microcontrôleur et absents d'un microprocesseur classique.
-2. Dans quelle catégorie rangerais-tu le processeur d'un smartphone ? Celui d'une machine à laver ?
+1. Citez trois éléments présents dans un microcontrôleur et absents d'un microprocesseur classique.
+2. Dans quelle catégorie rangeriez-vous le processeur d'un smartphone ? Celui d'une machine à laver ?
 3. À quoi sert le pont USB-série d'une carte de développement ?
 
 <details>
@@ -109,5 +109,5 @@ Chaque carte a ses points forts. Les plus courantes en formation sont les suivan
 </details>
 
 :::note[Prochaine étape]
-Quand tu as répondu aux questions, valide cette leçon en bas de page.
+Quand vous avez répondu aux questions, validez cette leçon en bas de page.
 :::

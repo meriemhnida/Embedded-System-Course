@@ -31,7 +31,7 @@ const GND = (id: string): Element => ({
 	resume: 'La masse, le 0 V de référence du montage.',
 	points: [
 		'Toutes les tensions du montage sont mesurées par rapport à la masse.',
-		'Les trois broches GND sont reliées entre elles : utilise celle qui est la plus proche de ton montage.',
+		'Les trois broches GND sont reliées entre elles : utilisez celle qui est la plus proche de votre montage.',
 		'Chaque composant (LED, capteur, bouton) doit avoir un chemin de retour vers GND pour que le courant circule.',
 	],
 	astuce: 'Un montage qui ne fonctionne pas vient souvent d’une masse oubliée.',
@@ -113,7 +113,7 @@ export const elements: Record<string, Element> = {
 			'On peut fournir une autre référence (plus basse) sur AREF pour mesurer plus finement de petites tensions.',
 		],
 		code: 'analogReference(EXTERNAL);',
-		attention: 'Ne branche une tension sur AREF que si tu as appelé analogReference(EXTERNAL), et ne dépasse jamais 5 V.',
+		attention: 'Ne branchez une tension sur AREF que si vous avez appelé analogReference(EXTERNAL), et ne dépassez jamais 5 V.',
 	},
 	gnd1: GND('gnd1'),
 	d13: num(13, ['SCK : horloge du bus SPI.', 'Reliée à la LED intégrée « L » de la carte (constante LED_BUILTIN) : pratique pour un premier test sans rien brancher.']),
@@ -136,7 +136,7 @@ export const elements: Record<string, Element> = {
 			'Elle est partagée avec le port USB : c’est ce qui permet d’afficher du texte dans le moniteur série.',
 		],
 		code: 'Serial.begin(9600);\nSerial.println("Bonjour");',
-		attention: 'Évite de brancher quelque chose sur D0 et D1 si tu utilises le moniteur série.',
+		attention: 'Évitez de brancher quelque chose sur D0 et D1 si vous utilisez le moniteur série.',
 	},
 	d0: {
 		id: 'd0', label: 'RX', categorie: 'communication', titre: 'D0 / RX : réception série',
@@ -147,7 +147,7 @@ export const elements: Record<string, Element> = {
 			'Pour croiser deux cartes : TX de l’une va sur RX de l’autre.',
 		],
 		code: 'if (Serial.available()) {\n  char c = Serial.read();\n}',
-		attention: 'Débranche ce qui est relié à D0 avant de téléverser un programme : il peut bloquer le transfert.',
+		attention: 'Débranchez ce qui est relié à D0 avant de téléverser un programme : il peut bloquer le transfert.',
 	},
 
 	// ---------- Alimentation (bas) ----------
@@ -161,7 +161,7 @@ export const elements: Record<string, Element> = {
 		resume: 'Indique aux shields la tension utilisée par la carte (5 V).',
 		points: [
 			'Un shield adapté lit cette broche pour savoir s’il travaille en 5 V ou en 3,3 V.',
-			'Tu n’as normalement pas à t’en servir directement.',
+			'Vous n’avez normalement pas à vous en servir directement.',
 		],
 	},
 	reset: {
@@ -180,7 +180,7 @@ export const elements: Record<string, Element> = {
 			'Fournit 3,3 V, nécessaires à certains capteurs et modules (Wi-Fi, Bluetooth, etc.).',
 			'Courant maximal : 50 mA seulement.',
 		],
-		attention: 'Ne relie jamais cette broche au 5 V : tu détruirais le composant 3,3 V.',
+		attention: 'Ne reliez jamais cette broche au 5 V : vous détruiriez le composant 3,3 V.',
 	},
 	v5: {
 		id: 'v5', label: '5V', categorie: 'alimentation', titre: '5 V : sortie 5 volts',
@@ -190,8 +190,8 @@ export const elements: Record<string, Element> = {
 			'C’est cette broche que l’on relie au côté « haut » d’un capteur ou d’un potentiomètre.',
 			'Le courant disponible dépend de l’alimentation : quelques centaines de mA en USB.',
 		],
-		astuce: 'Pour un gros moteur ou un ruban de LEDs, utilise une alimentation séparée.',
-		attention: 'Ne branche pas d’alimentation externe sur cette broche sans savoir ce que tu fais.',
+		astuce: 'Pour un gros moteur ou un ruban de LEDs, utilisez une alimentation séparée.',
+		attention: 'Ne branchez pas d’alimentation externe sur cette broche sans savoir ce que vous faites.',
 	},
 	gnd2: GND('gnd2'),
 	gnd3: GND('gnd3'),
@@ -203,7 +203,7 @@ export const elements: Record<string, Element> = {
 			'Quand la carte est alimentée par la prise jack, VIN affiche la tension de la prise.',
 			'Le régulateur de la carte transforme cette tension en 5 V.',
 		],
-		attention: 'Ne dépasse pas 12 V en continu : le régulateur chauffe.',
+		attention: 'Ne dépassez pas 12 V en continu : le régulateur chauffe.',
 	},
 
 	// ---------- Analogiques ----------
@@ -220,7 +220,7 @@ export const elements: Record<string, Element> = {
 		resume: 'Alimente la carte et téléverse le programme.',
 		points: [
 			'Relie la carte à l’ordinateur par un câble USB.',
-			'Fait trois choses : alimenter la carte en 5 V, téléverser ton programme, et ouvrir une liaison série (moniteur série).',
+			'Fait trois choses : alimenter la carte en 5 V, téléverser votre programme, et ouvrir une liaison série (moniteur série).',
 		],
 	},
 	jack: {
@@ -234,10 +234,10 @@ export const elements: Record<string, Element> = {
 	},
 	mcu: {
 		id: 'mcu', label: 'ATmega328P', categorie: 'composant', titre: 'Microcontrôleur ATmega328P',
-		resume: 'Le cerveau de la carte : il exécute ton programme.',
+		resume: 'Le cerveau de la carte : il exécute votre programme.',
 		points: [
 			'Microcontrôleur 8 bits de Microchip (ex-Atmel), cadencé à 16 MHz.',
-			'Mémoire Flash de 32 Ko : ton programme. SRAM de 2 Ko : les variables. EEPROM de 1 Ko : données conservées hors tension.',
+			'Mémoire Flash de 32 Ko : votre programme. SRAM de 2 Ko : les variables. EEPROM de 1 Ko : données conservées hors tension.',
 			'Il pilote toutes les broches d’entrée-sortie.',
 		],
 	},
@@ -285,7 +285,7 @@ export const elements: Record<string, Element> = {
 	ledon: {
 		id: 'ledon', label: 'ON', categorie: 'composant', titre: 'LED « ON »',
 		resume: 'Allumée : la carte est alimentée.',
-		points: ['Si elle est éteinte alors que la carte est branchée, vérifie le câble ou l’alimentation.'],
+		points: ['Si elle est éteinte alors que la carte est branchée, vérifiez le câble ou l’alimentation.'],
 	},
 	usbchip: {
 		id: 'usbchip', label: 'ATmega16U2', categorie: 'composant', titre: 'Convertisseur USB-série (ATmega16U2)',

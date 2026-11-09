@@ -13,7 +13,7 @@ const { lecon, lecons, suivante, accueilParcours } = Astro.props;
 
 <section class="validation" data-href={lecon.href} data-label={lecon.label} data-suivante={suivante?.href ?? ''} data-accueil={accueilParcours} data-lecons={JSON.stringify(lecons.map((l) => l.href))}>
 	<div class="entete">
-		<strong>Ta progression</strong>
+		<strong>Votre progression</strong>
 		<span class="compteur"></span>
 	</div>
 	<div class="barre" aria-hidden="true"><span class="remplissage"></span></div>
@@ -50,7 +50,7 @@ const { lecon, lecons, suivante, accueilParcours } = Astro.props;
 			remplissage.style.width = `${pourcent}%`;
 			etat.textContent = estValidee
 				? '✔ Leçon validée.'
-				: 'Quand tu as compris cette leçon, valide-la pour passer à la suivante.';
+				: 'Quand vous avez compris cette leçon, validez-la pour passer à la suivante.';
 			boutonBasculer.textContent = estValidee ? 'Annuler la validation' : 'Marquer comme terminée';
 
 			if (suivante) {
