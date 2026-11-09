@@ -94,7 +94,9 @@ export default defineConfig({
 							],
 						},
 					],
+					
 				},
+				{ label: 'Examen Blanc', slug: 'examen-blanc' },
 				{ label: 'Mon parcours', link: '/mon-parcours/' },
 				{ label: 'Mes réponses', link: '/mes-reponses/' },
 			],
