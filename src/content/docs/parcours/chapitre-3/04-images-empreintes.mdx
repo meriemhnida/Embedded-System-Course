@@ -3,6 +3,7 @@ title: "Images et empreintes : caméra et capteurs biométriques"
 description: "Chapitre 3 — tromper un réseau de neurones de vision, cloner une empreinte digitale : cible, principe, effet, défenses et exemples publiés."
 ---
 
+import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectif de la page]
@@ -10,6 +11,8 @@ Comprendre que deux capteurs peuvent fonctionner **parfaitement** et fournir pou
 :::
 
 ## Caméra : tromper la vision
+
+<SchemaAttaque type="camera" />
 
 - **Cible.** Les caméras de vision embarquée (aide à la conduite, robots, drones) et leurs réseaux de neurones.
 - **Principe.** Deux voies : des autocollants calculés pour tromper le classifieur (on modifie l'objet réel), ou une lumière projetée qui fait apparaître un faux objet dans l'image (on ajoute un objet fantôme).
@@ -26,6 +29,8 @@ Un véhicule lit un panneau STOP sur lequel on a collé des autocollants, et le 
 </Question>
 
 ## Empreintes digitales : un doigt cloné
+
+<SchemaAttaque type="empreinte" />
 
 - **Cible.** Les capteurs d'empreintes (capacitifs, optiques, ultrasoniques) des smartphones, des ordinateurs, des cadenas et des clés USB.
 - **Principe.** Obtenir l'empreinte (moulage du doigt, fuite de données ou trace laissée sur du verre), puis fabriquer une réplique qui trompe le capteur.

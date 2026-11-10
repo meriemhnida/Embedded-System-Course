@@ -3,6 +3,7 @@ title: "Son et vibrations : microphone, IMU et ultrasons"
 description: "Chapitre 3 — commandes vocales inaudibles, résonance des capteurs MEMS et faux échos ultrasonores : cible, principe, effet, défenses et exemples publiés."
 ---
 
+import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectif de la page]
@@ -10,6 +11,8 @@ Comprendre comment le **son** et les **vibrations** peuvent servir à falsifier 
 :::
 
 ## Microphone : des ordres inaudibles
+
+<SchemaAttaque type="micro" />
 
 - **Cible.** Les microphones MEMS des assistants vocaux, des téléphones et des objets connectés.
 - **Principe.** Une commande vocale est portée par un ultrason inaudible. La non-linéarité du microphone et de l'amplificateur la ramène dans la bande audible, **avant** le convertisseur analogique-numérique. Une variante utilise un laser modulé.
@@ -25,6 +28,8 @@ Dans un objet connecté commandé à la voix (enceinte, serrure, thermostat), qu
 
 ## IMU : la résonance des MEMS
 
+<SchemaAttaque type="imu" />
+
 - **Cible.** Les accéléromètres et gyroscopes MEMS des drones, des véhicules, des smartphones et des objets portés.
 - **Principe.** Un son à la fréquence de résonance de la structure MEMS la fait vibrer. La variation de capacité devient une tension, amplifiée et filtrée comme une vraie mesure.
 - **Effet.** Un mouvement fantôme : drone déstabilisé, estimation d'attitude fausse, comptage de pas truqué, commandes de véhicule perturbées.
@@ -36,6 +41,8 @@ Le filtre et le convertisseur reçoivent une **vraie tension** : l'attaque est i
 :::
 
 ## Ultrasons : de faux échos
+
+<SchemaAttaque type="ultrasons" />
 
 - **Cible.** Les capteurs de distance à ultrasons : aide au stationnement, robots, drones, mesure de niveau.
 - **Principe.** Le capteur mesure le temps d'aller-retour d'une salve ultrasonore. L'attaquant émet de faux échos (usurpation) ou un bruit qui noie l'écho réel (brouillage).

@@ -1,0 +1,286 @@
+---
+// Schéma d'une attaque sur un capteur.
+// Sept attaques utilisent les panneaux de la figure d'origine (Xu et al., EuroS&P 2023, fig. 2), reproduits avec leur
+// référence ; les empreintes digitales, absentes de cette figure, ont un schéma dessiné en SVG qui suit le thème.
+// Utilisation : <SchemaAttaque type="gps" />
+interface Props {
+	type: 'gps' | 'lidar' | 'micro' | 'camera' | 'imu' | 'ultrasons' | 'radar' | 'empreinte';
+}
+const { type } = Astro.props;
+
+const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
+
+// Panneaux de la figure d'origine : fichier, dimensions, largeur d'affichage maximale, lettre du panneau, description.
+const panneaux = {
+	gps: {
+		w: 667, h: 687, max: 500, panneau: 'a',
+		alt: 'Schéma de l’usurpation GPS : un système d’usurpation (simulateur ou radio logicielle) émet un faux signal vers le récepteur GPS d’un drone, qui ne s’accroche plus aux signaux des vrais satellites.',
+	},
+	lidar: {
+		w: 910, h: 687, max: 640, panneau: 'b',
+		alt: 'Schéma de l’attaque sur un LiDAR : une photodiode capte l’impulsion, un composant de retard et un laser d’attaque renvoient un faux écho, qui crée de faux points 3D ou déforme un objet réel.',
+	},
+	micro: {
+		w: 745, h: 531, max: 560, panneau: 'c',
+		alt: 'Schéma de l’attaque sur un microphone : une commande vocale portée par un ultrason inaudible traverse le microphone MEMS, l’amplificateur et le filtre passe-bas ; la non-linéarité la ramène dans la bande audible avant le convertisseur.',
+	},
+	camera: {
+		w: 667, h: 456, max: 520, panneau: 'd',
+		alt: 'Schéma de l’attaque sur une caméra : deux voies, des autocollants collés sur un panneau STOP, ou une lumière projetée qui modifie ce que voit la caméra.',
+	},
+	imu: {
+		w: 910, h: 456, max: 640, panneau: 'e',
+		alt: 'Schéma de l’attaque sur une centrale inertiale : un son à la fréquence de résonance fait vibrer l’accéléromètre et le gyroscope MEMS ; la variation de capacité devient une tension, amplifiée, filtrée et numérisée comme une vraie mesure.',
+	},
+	radar: {
+		w: 711, h: 298, max: 560, panneau: 'f',
+		alt: 'Schéma de l’attaque sur un radar millimétrique : le véhicule victime émet une onde normale vers le véhicule qui précède, tandis qu’un émetteur d’attaque envoie une fausse onde.',
+	},
+	ultrasons: {
+		w: 711, h: 220, max: 560, panneau: 'f',
+		alt: 'Schéma de l’attaque sur un capteur à ultrasons : un émetteur d’attaque envoie de fausses ondes ultrasonores vers le capteur du véhicule.',
+	},
+} as const;
+const panneau = type === 'empreinte' ? undefined : panneaux[type];
+
+type Texte = string | string[];
+const liste = (t?: Texte): string[] => (t === undefined ? [] : Array.isArray(t) ? t : [t]);
+
+// Rectangle avec un titre (gras) et des lignes secondaires (grises), centrés.
+const box = (x: number, y: number, w: number, h: number, c: 'n' | 'a' | 'e', titres: Texte, subs?: Texte) => {
+	const t = liste(titres);
+	const s = liste(subs);
+	const total = t.length * 17 + s.length * 15;
+	let ty = y + (h - total) / 2 + 13;
+	const cx = x + w / 2;
+	let out = `<rect class="sa-box sa-box--${c}" x="${x}" y="${y}" width="${w}" height="${h}" rx="8"/>`;
+	for (const l of t) {
+		out += `<text class="sa-tx" x="${cx}" y="${ty}" text-anchor="middle">${l}</text>`;
+		ty += 17;
+	}
+	ty -= 2;
+	for (const l of s) {
+		out += `<text class="sa-tx sa-tx--s" x="${cx}" y="${ty}" text-anchor="middle">${l}</text>`;
+		ty += 15;
+	}
+	return out;
+};
+const arr = (x1: number, y1: number, x2: number, y2: number, k: 'n' | 'a' = 'n', dash = false) =>
+	`<line class="sa-lin sa-lin--${k}${dash ? ' sa-lin--p' : ''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#sa-m${k}-${type})"/>`;
+const chemin = (d: string, k: 'n' | 'a' = 'n', dash = false) =>
+	`<path class="sa-lin sa-lin--${k}${dash ? ' sa-lin--p' : ''}" d="${d}" marker-end="url(#sa-m${k}-${type})"/>`;
+const lab = (x: number, y: number, texte: string, k: 'g' | 'a' = 'g', ancre: 'start' | 'middle' | 'end' = 'middle') =>
+	`<text class="sa-tx sa-tx--s${k === 'a' ? ' sa-tx--a' : ''}" x="${x}" y="${y}" text-anchor="${ancre}">${texte}</text>`;
+
+const defs = `<defs>
+<marker id="sa-mn-${type}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="sa-mk--n" d="M0 0L10 5L0 10z"/></marker>
+<marker id="sa-ma-${type}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="sa-mk--a" d="M0 0L10 5L0 10z"/></marker>
+</defs>`;
+
+const schemas = {
+	empreinte: {
+		h: 235,
+		effet: true,
+		titre: 'Empreintes digitales : trois façons d’obtenir l’empreinte, puis une réplique qui trompe le capteur',
+		corps:
+			box(5, 22, 150, 46, 'a', 'Moulage du doigt') +
+			box(5, 96, 150, 46, 'a', 'Fuite de données') +
+			box(5, 170, 150, 46, 'a', 'Trace sur du verre') +
+			arr(155, 45, 193, 105, 'a') +
+			arr(155, 119, 193, 119, 'a') +
+			arr(155, 193, 193, 133, 'a') +
+			box(195, 82, 100, 74, 'a', 'Réplique', ['de l’empreinte']) +
+			arr(295, 119, 323, 119, 'a') +
+			box(325, 82, 105, 74, 'n', ['Capteur', 'd’empreintes']) +
+			arr(430, 119, 453, 119) +
+			box(455, 82, 100, 74, 'e', ['Appareil', 'déverrouillé']) +
+			lab(378, 176, 'capacitif · optique ·', 'g') +
+			lab(378, 192, 'ultrasonique', 'g') +
+			lab(5, 14, 'Trois façons d’obtenir l’empreinte', 'g', 'start'),
+	},
+} as const;
+
+const svg = type === 'empreinte' ? schemas.empreinte : undefined;
+const contenu = svg ? defs + svg.corps : '';
+---
+
+<figure class="schema">
+	{
+		panneau && (
+			<img
+				class="schema__img"
+				src={`${base}/chapitre-3/schemas/${type}.png`}
+				width={panneau.w}
+				height={panneau.h}
+				style={`max-width:${panneau.max}px`}
+				alt={panneau.alt}
+				loading="lazy"
+				decoding="async"
+			/>
+		)
+	}
+	{
+		svg && (
+			<>
+				<svg viewBox={`0 0 560 ${svg.h}`} role="img" aria-label={svg.titre} xmlns="http://www.w3.org/2000/svg">
+					<title>{svg.titre}</title>
+					<Fragment set:html={contenu} />
+				</svg>
+				<ul class="schema__legende" aria-hidden="true">
+					<li class="schema__legende-n">Fonctionnement normal</li>
+					<li class="schema__legende-a">Attaquant, signal falsifié</li>
+					<li class="schema__legende-e">Ce que perçoit le système</li>
+				</ul>
+			</>
+		)
+	}
+	<figcaption class="schema__source">
+		{
+			panneau ? (
+				<>
+					Schéma : Y. Xu, X. Han, G. Deng, J. Li, Y. Liu et T. Zhang, « SoK: Rethinking Sensor Spoofing Attacks against Robotic Vehicles from a
+					Systematic View », <em>IEEE European Symposium on Security and Privacy (EuroS&amp;P)</em>, 2023, p. 1082-1100, fig. 2, panneau ({panneau.panneau}) de la
+					version arXiv:2205.04662. Légendes d’origine en anglais.
+				</>
+			) : (
+				<>
+					Schéma original, d’après C. Rascagneres et V. Ventura, « Fingerprint cloning: Myth or reality? », <em>Cisco Talos</em>, 8 avril 2020.
+				</>
+			)
+		}
+	</figcaption>
+</figure>
+
+<style>
+	.schema {
+		margin: 1.25rem 0;
+	}
+	.schema svg {
+		display: block;
+		width: 100%;
+		max-width: 40rem;
+		height: auto;
+		margin-inline: auto;
+	}
+	.schema__legende {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.4rem 1.1rem;
+		margin: 0.5rem 0 0;
+		padding: 0;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.schema__legende li {
+		margin: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.schema__legende li::before {
+		content: '';
+		width: 0.9rem;
+		height: 0.9rem;
+		border-radius: 0.2rem;
+		border: 2px solid;
+	}
+	.schema__legende-n::before {
+		background: var(--cadre-bleu-fond);
+		border-color: var(--cadre-bleu-bord);
+	}
+	.schema__legende-a::before {
+		background: var(--cadre-rouge-fond);
+		border-color: var(--cadre-rouge-bord);
+		border-style: dashed;
+	}
+	.schema__legende-e::before {
+		background: var(--cadre-jaune-fond);
+		border-color: var(--cadre-jaune-bord);
+	}
+	.schema__img {
+		display: block;
+		width: 100%;
+		height: auto;
+		margin-inline: auto;
+		padding: 0.5rem;
+		box-sizing: border-box;
+		background: #fff;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 0.5rem;
+	}
+	.schema__source {
+		max-width: 40rem;
+		margin: 0.5rem auto 0;
+		text-align: center;
+		font-size: var(--sl-text-xs);
+		line-height: 1.45;
+		color: var(--sl-color-gray-3);
+	}
+</style>
+
+<style is:global>
+	.sa-box {
+		stroke-width: 2;
+	}
+	.sa-box--n {
+		fill: var(--cadre-bleu-fond);
+		stroke: var(--cadre-bleu-bord);
+	}
+	.sa-box--a {
+		fill: var(--cadre-rouge-fond);
+		stroke: var(--cadre-rouge-bord);
+		stroke-dasharray: 7 4;
+	}
+	.sa-box--e {
+		fill: var(--cadre-jaune-fond);
+		stroke: var(--cadre-jaune-bord);
+	}
+	.sa-grp {
+		fill: none;
+		stroke: var(--cadre-rouge-bord);
+		stroke-width: 2;
+		stroke-dasharray: 2 6;
+		stroke-linecap: round;
+	}
+	.sa-brk {
+		fill: none;
+		stroke: var(--cadre-rouge-bord);
+		stroke-width: 2;
+	}
+	.sa-tx {
+		font-family: inherit;
+		font-size: 15px;
+		font-weight: 600;
+		fill: var(--sl-color-white);
+	}
+	.sa-tx--s {
+		font-size: 12.5px;
+		font-weight: 400;
+		fill: var(--sl-color-gray-2);
+	}
+	.sa-tx--a {
+		fill: var(--cadre-rouge-titre);
+		font-weight: 600;
+	}
+	.sa-lin {
+		fill: none;
+		stroke-width: 2.2;
+	}
+	.sa-lin--n {
+		stroke: var(--sl-color-gray-3);
+	}
+	.sa-lin--a {
+		stroke: var(--cadre-rouge-bord);
+	}
+	.sa-lin--p {
+		stroke-dasharray: 6 5;
+	}
+	.sa-mk--n {
+		fill: var(--sl-color-gray-3);
+	}
+	.sa-mk--a {
+		fill: var(--cadre-rouge-bord);
+	}
+</style>

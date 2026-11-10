@@ -3,6 +3,7 @@ title: "Position et distance : GPS, LiDAR et radar"
 description: "Chapitre 3 — usurpation GPS, obstacles fantômes sur un LiDAR et faux véhicule sur un radar millimétrique : cible, principe, effet, défenses et exemples publiés."
 ---
 
+import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectif de la page]
@@ -10,6 +11,8 @@ Comprendre comment trois capteurs qui mesurent une **position** ou une **distanc
 :::
 
 ## Usurpation GPS : une position falsifiée
+
+<SchemaAttaque type="gps" />
 
 - **Cible.** Les récepteurs GNSS des drones, des véhicules, des objets connectés et des horloges de synchronisation.
 - **Principe.** Un simulateur ou une radio logicielle (SDR) émet de faux signaux de satellites, un peu plus puissants que les vrais. Le récepteur s'y accroche.
@@ -27,6 +30,8 @@ Un drone reçoit un GPS dont la position « saute » de plusieurs centaines de m
 
 ## LiDAR : des points fantômes
 
+<SchemaAttaque type="lidar" />
+
 - **Cible.** Les LiDAR des véhicules autonomes, des drones et des robots mobiles.
 - **Principe.** Le LiDAR déduit la distance du temps de retour d'une impulsion laser. L'attaquant renvoie vers lui des impulsions synchronisées, avec un retard choisi : c'est un **relais** qui rejoue le signal avec un décalage.
 - **Effet.** Des obstacles fantômes qui provoquent un freinage inutile, ou un objet réel effacé du nuage de points 3D.
@@ -38,6 +43,8 @@ La distance perçue par un LiDAR se calcule à partir du temps de vol de l'impul
 </Question>
 
 ## Radar millimétrique : un faux véhicule
+
+<SchemaAttaque type="radar" />
 
 - **Cible.** Les radars à ondes millimétriques (FMCW) du régulateur de vitesse adaptatif et du freinage d'urgence.
 - **Principe.** Le radar émet un signal dont la fréquence varie et déduit la distance et la vitesse de l'écho. Un attaquant renvoie un faux écho décalé pour simuler un autre véhicule.
