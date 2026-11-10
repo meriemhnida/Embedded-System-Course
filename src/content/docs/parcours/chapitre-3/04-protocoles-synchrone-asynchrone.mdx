@@ -4,7 +4,6 @@ description: "Comprendre pourquoi les GPIO ne suffisent pas et ce qui distingue 
 ---
 
 import LectureDesBits from '../../../../components/LectureDesBits.astro';
-import Question from '../../../../components/Question.astro';
 
 :::note[Objectifs]
 À la fin de cette page, vous serez capables de :
@@ -54,27 +53,10 @@ C'est comme si l'on disait : « On va parler à raison d'un mot toutes les 2 sec
 
 <LectureDesBits mode="asynchrone" />
 
-<Question id="ch3-proto-q1" label="Q4.1">
-Pourquoi les broches GPIO utilisées seules ne suffisent-elles pas pour communiquer avec un capteur de température, un écran ou un module GPS ?
-</Question>
-
-<Question id="ch3-proto-q2" label="Q4.2">
-Quelle est la différence essentielle entre une communication **synchrone** et une communication **asynchrone** ? Appuyez-vous sur l'exemple des deux personnes.
-</Question>
-
-<Question id="ch3-proto-q3" label="Q4.3">
-Qu'est-ce que le **baud rate** ? Pourquoi l'émetteur et le récepteur doivent-ils s'accorder sur sa valeur avant de communiquer ?
-</Question>
-
-<Question id="ch3-proto-q4" label="Q4.4">
-Classez **I2C**, **SPI** et **UART** en protocoles synchrones et asynchrones. Combien de fils chacun utilise-t-il ?
-</Question>
-
 ## Critères de validation
 
 - [ ] Je peux expliquer pourquoi on a besoin de protocoles de communication.
 - [ ] Je peux distinguer communication synchrone et asynchrone.
-- [ ] Les questions Q4.1 à Q4.4 ont une réponse.
 
 :::note[Prochaine étape]
 Validez cette page, puis passez à la communication synchrone, avec [l'I2C](/Embedded-System-Course/parcours/chapitre-3/05-synchrone-i2c/).

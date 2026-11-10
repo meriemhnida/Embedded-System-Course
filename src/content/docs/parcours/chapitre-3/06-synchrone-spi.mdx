@@ -4,7 +4,6 @@ description: "Le bus SPI : quatre fils (MOSI, MISO, SCK, CS), le rôle de chacun
 ---
 
 import BusProtocole from '../../../../components/BusProtocole.astro';
-import Question from '../../../../components/Question.astro';
 
 :::note[Objectifs]
 À la fin de cette page, vous serez capables de :
@@ -59,27 +58,10 @@ Vous pouvez les retrouver sur [le schéma interactif des broches](/Embedded-Syst
 | **MCP3008** | convertisseur analogique-numérique |
 | **OLED SPI** | afficheur graphique |
 
-<Question id="ch3-spi-q1" label="Q6.1">
-Donnez la signification de **MOSI**, **MISO** et **SCLK** et la direction des données sur chacun de ces fils.
-</Question>
-
-<Question id="ch3-spi-q2" label="Q6.2">
-À quoi servent les fils **CE0** et **CE1** ? Que se passe-t-il si l'on veut raccorder un troisième périphérique ?
-</Question>
-
-<Question id="ch3-spi-q3" label="Q6.3">
-Citez deux **avantages** et deux **limites** du SPI. Comparez-le à l'I2C.
-</Question>
-
-<Question id="ch3-spi-q4" label="Q6.4">
-Sur quelles broches GPIO se trouvent MOSI, MISO, SCLK, CE0 et CE1 du bus **SPI0** ?
-</Question>
-
 ## Critères de validation
 
 - [ ] Je peux décrire le câblage SPI et le rôle des quatre fils.
 - [ ] Je peux expliquer comment le Pi sélectionne un périphérique.
-- [ ] Les questions Q6.1 à Q6.4 ont une réponse.
 
 :::note[Prochaine étape]
 Validez cette page, puis passez à la communication asynchrone, avec [l'UART](/Embedded-System-Course/parcours/chapitre-3/07-asynchrone-uart/).

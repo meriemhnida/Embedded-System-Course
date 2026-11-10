@@ -4,7 +4,6 @@ description: "Explorer les 40 broches du Raspberry Pi 5 : alimentation 3,3 V et 
 ---
 
 import RaspberryGpio from '../../../../components/RaspberryGpio.astro';
-import Question from '../../../../components/Question.astro';
 
 :::note[Objectifs]
 À la fin de cette page, vous serez capables de :
@@ -97,32 +96,11 @@ Le choix « WiringPi » du schéma ci-dessus affiche cette numérotation. La tab
 
 </details>
 
-<Question id="ch3-gpio-q1" label="Q3.1">
-Quelles sont les deux tensions que peut prendre une broche GPIO utilisée comme entrée/sortie numérique ? Donnez un exemple d'usage en **entrée** et un exemple en **sortie**.
-</Question>
-
-<Question id="ch3-gpio-q2" label="Q3.2">
-Quelles broches du connecteur fournissent le **3,3 V**, le **5 V** et la **masse** ? Combien y a-t-il de broches de masse ?
-</Question>
-
-<Question id="ch3-gpio-q3" label="Q3.3">
-Pourquoi les GPIO ne suffisent-ils pas pour communiquer avec un capteur de température, un écran ou un module GPS ?
-</Question>
-
-<Question id="ch3-gpio-q4" label="Q3.4">
-Qu'est-ce que **WiringPi** ? Quel est le numéro WiringPi de la broche **GPIO 17** ? Et celui de la broche physique **12** ?
-</Question>
-
-<Question id="ch3-gpio-q5" label="Q3.5">
-Quels GPIO sont réservés à l'**I2C principal**, et quels GPIO au **SPI0** ? À quoi sert l'**I2C0** (GPIO 0 et 1) ?
-</Question>
-
 ## Critères de validation
 
 - [ ] Je sais repérer l'alimentation 3,3 V, l'alimentation 5 V et la masse sur le connecteur.
 - [ ] Je sais expliquer ce qu'est un GPIO et à quoi servent INPUT et OUTPUT.
 - [ ] Je sais dire quelles broches servent à l'I2C, au SPI, à l'UART et à la PWM.
-- [ ] Les questions Q3.1 à Q3.5 ont une réponse.
 
 :::note[Prochaine étape]
 Validez cette page, puis passez à [la communication synchrone ou asynchrone](/Embedded-System-Course/parcours/chapitre-3/04-protocoles-synchrone-asynchrone/).

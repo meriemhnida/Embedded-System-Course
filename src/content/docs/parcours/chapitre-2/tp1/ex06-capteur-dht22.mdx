@@ -141,10 +141,6 @@ Lancez la simulation. Cliquez sur le capteur pendant la simulation : des curseur
 Pourquoi la broche de données du DHT22 est-elle reliée à une broche **numérique** plutôt qu'à une broche analogique ?
 </Question>
 
-<Question id="tp2-q1.2" label="Q6.6">
-Dans Wokwi, la broche de données du DHT22 s'appelle **SDA**, comme une ligne du bus I²C. Le DHT22 utilise-t-il pour autant le bus I²C ? Justifiez à partir du câblage et de la documentation.
-</Question>
-
 <Question id="tp2-q1.3" label="Q6.7">
 Que renvoie `isnan()` ? Modifiez temporairement `DHTPIN` à **3** (aucun capteur sur cette broche) : qu'affiche le moniteur série, et à quel rythme ? Remettez ensuite `DHTPIN` à 2.
 </Question>
@@ -179,7 +175,7 @@ Réexécutez le programme, puis **enregistrez ce projet** : l'exercice 8 le réu
 - [ ] Le moniteur série affiche la température et l'humidité toutes les 2 secondes.
 - [ ] Les valeurs suivent les réglages faits en cliquant sur le capteur.
 - [ ] L'acquisition est isolée dans la fonction `readSensorData()`.
-- [ ] Les questions Q6.1 à Q6.7 ont une réponse justifiée.
+- [ ] Les questions Q6.1 à Q6.5 et Q6.7 ont une réponse justifiée.
 
 :::note[Prochaine étape]
 Validez cette page, puis passez à l'[exercice 7 : plaque de prototypage et LED RVB](/Embedded-System-Course/parcours/chapitre-2/tp1/ex07-led-rvb/).

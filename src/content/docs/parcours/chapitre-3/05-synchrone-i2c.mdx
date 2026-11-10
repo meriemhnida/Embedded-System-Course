@@ -4,7 +4,6 @@ description: "Le bus I2C : deux fils (SDA, SCL), les GPIO 2 et 3 du Raspberry Pi
 ---
 
 import BusProtocole from '../../../../components/BusProtocole.astro';
-import Question from '../../../../components/Question.astro';
 
 :::note[Objectifs]
 À la fin de cette page, vous serez capables de :
@@ -53,27 +52,10 @@ Vous pouvez les retrouver sur [le schéma interactif des broches](/Embedded-Syst
 
 Le cours cite aussi, parmi les types de périphériques I2C : température / humidité, qualité de l'air, accéléromètre / gyroscope, luminosité, horloge temps réel, magnétomètre et écran LCD.
 
-<Question id="ch3-i2c-q1" label="Q5.1">
-Combien de fils utilise l'**I2C** ? Quel est le rôle de chacun ?
-</Question>
-
-<Question id="ch3-i2c-q2" label="Q5.2">
-Sur quelles broches GPIO se trouve le bus I2C principal du Raspberry Pi ? À quoi servent les GPIO 0 et 1 ?
-</Question>
-
-<Question id="ch3-i2c-q3" label="Q5.3">
-Citez un **avantage** et une **limite** de l'I2C.
-</Question>
-
-<Question id="ch3-i2c-q4" label="Q5.4">
-Citez deux composants I2C et dites ce que chacun mesure ou commande.
-</Question>
-
 ## Critères de validation
 
 - [ ] Je peux décrire le câblage I2C et le rôle de SDA et SCL.
 - [ ] Je sais retrouver les broches I2C sur le connecteur.
-- [ ] Les questions Q5.1 à Q5.4 ont une réponse.
 
 :::note[Prochaine étape]
 Validez cette page, puis passez à [la communication SPI](/Embedded-System-Course/parcours/chapitre-3/06-synchrone-spi/).
