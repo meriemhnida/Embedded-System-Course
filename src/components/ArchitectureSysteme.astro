@@ -1,0 +1,252 @@
+---
+// Architecture type d'un système embarqué : capteur, carte de traitement, actionneur, avec sous chaque élément
+// et chaque liaison ce qui peut être attaqué, puis les deux éléments extérieurs à la chaîne : l'accès distant
+// (réseau, supervision, mises à jour) et la barrière de sûreté physique.
+const elements = [
+	{
+		titre: 'Capteur',
+		detail: 'DHT22, GPS, caméra, IMU…',
+		menaces: ['grandeur physique falsifiée', 'faux capteur sur le bus', 'calibration modifiée'],
+	},
+	{
+		titre: 'Carte de traitement',
+		detail: 'ESP32, Raspberry Pi, microcontrôleur',
+		menaces: ['firmware ou mise à jour falsifiés', 'clés et mots de passe extraits', 'service réseau ou port de débogage exposé'],
+	},
+	{
+		titre: 'Actionneur',
+		detail: 'moteur, relais, vanne, serrure, buzzer',
+		menaces: ['consigne falsifiée', 'faux contrôleur', 'droits de commande trop larges'],
+	},
+] as const;
+
+const liaisons = [
+	{ nom: 'Mesures', canaux: 'I²C, SPI, UART, CAN, Wi-Fi', menace: 'messages écoutés, modifiés ou rejoués' },
+	{ nom: 'Commandes', canaux: 'GPIO, UART, CAN, Wi-Fi, MQTT', menace: 'messages écoutés, modifiés ou rejoués' },
+] as const;
+---
+
+<figure class="archi">
+	<div class="archi__chaine">
+		{
+			elements.map((e, i) => (
+				<>
+					<div class="archi__element" style={`--col:${i * 2 + 1}`}>
+						<p class="archi__boite">
+							<strong>{e.titre}</strong>
+							<span>{e.detail}</span>
+						</p>
+						<ul class="archi__menaces" aria-label={`Menaces sur : ${e.titre}`}>
+							{e.menaces.map((m) => (
+								<li>{m}</li>
+							))}
+						</ul>
+					</div>
+					{i < liaisons.length && (
+						<div class="archi__lien" style={`--col:${i * 2 + 2}`}>
+							<p class="archi__fleche">
+								<span class="archi__nom">{liaisons[i].nom}</span>
+								<span class="archi__trait" aria-hidden="true">
+									→
+								</span>
+								<span class="archi__canaux">{liaisons[i].canaux}</span>
+							</p>
+							<p class="archi__menace-lien">{liaisons[i].menace}</p>
+						</div>
+					)}
+				</>
+			))
+		}
+	</div>
+	<div class="archi__bandes">
+		<p class="archi__bande archi__bande--acces">
+			<strong>Accès distant</strong>
+			Wi-Fi, Internet, supervision, mises à jour à distance (OTA), relié à la carte
+		</p>
+		<p class="archi__bande archi__bande--surete">
+			<strong>Barrière de sûreté</strong>
+			arrêt d'urgence, coupure de puissance, état sûr, indépendants du logiciel
+		</p>
+	</div>
+	<figcaption>
+		Chaque élément, chaque liaison et chaque accès extérieur est une surface d'attaque. Une attaque sur la carte peut atteindre à la fois les
+		capteurs et les actionneurs qu'elle pilote.
+	</figcaption>
+</figure>
+
+<style>
+	.archi {
+		margin: 1.5rem 0;
+	}
+	.archi__chaine {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr) 7rem minmax(0, 1fr);
+		grid-template-rows: auto auto;
+		column-gap: 0.4rem;
+		row-gap: 0.5rem;
+		align-items: start;
+	}
+	/* sur grand écran, les boîtes partagent la première ligne de la grille (même hauteur) et les menaces la seconde */
+	.archi__element,
+	.archi__lien {
+		display: contents;
+	}
+	.archi__boite,
+	.archi__fleche {
+		grid-column: var(--col);
+		grid-row: 1;
+	}
+	.archi__menaces,
+	.archi__menace-lien {
+		grid-column: var(--col);
+		grid-row: 2;
+	}
+	.archi__boite {
+		margin: 0;
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.2rem;
+		padding: 0.55rem 0.7rem;
+		text-align: center;
+		border: 2px solid var(--cadre-bleu-bord);
+		border-radius: 0.6rem;
+		background: var(--cadre-bleu-fond);
+	}
+	.archi__boite strong {
+		font-size: var(--sl-text-sm);
+	}
+	.archi__boite span {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.archi__menaces {
+		list-style: none;
+		margin: 0;
+		padding: 0.5rem 0.6rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		border: 2px dashed var(--cadre-rouge-bord);
+		border-radius: 0.6rem;
+		background: var(--cadre-rouge-fond);
+	}
+	.archi__menaces li {
+		margin: 0;
+		padding-inline-start: 1rem;
+		position: relative;
+		font-size: var(--sl-text-xs);
+		color: var(--cadre-rouge-titre);
+		line-height: 1.35;
+	}
+	.archi__menaces li::before {
+		content: '⚡';
+		position: absolute;
+		inset-inline-start: 0;
+		font-size: 0.7rem;
+	}
+	.archi__fleche {
+		margin: 0;
+		align-self: stretch;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		line-height: 1.2;
+	}
+	.archi__nom {
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+	}
+	.archi__trait {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--sl-color-gray-3);
+		line-height: 1;
+	}
+	.archi__canaux {
+		font-size: 0.7rem;
+		color: var(--sl-color-gray-3);
+	}
+	.archi__menace-lien {
+		margin: 0;
+		text-align: center;
+		padding: 0.5rem 0.4rem;
+		font-size: var(--sl-text-xs);
+		line-height: 1.35;
+		color: var(--cadre-rouge-titre);
+		border: 2px dashed var(--cadre-rouge-bord);
+		border-radius: 0.6rem;
+		background: var(--cadre-rouge-fond);
+	}
+	.archi__bandes {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.6rem;
+		margin-top: 0.8rem;
+	}
+	.archi__bande {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		padding: 0.5rem 0.8rem;
+		border: 2px solid;
+		border-radius: 0.6rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+	.archi__bande strong {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-white);
+	}
+	.archi__bande--acces {
+		border-style: dashed;
+		border-color: var(--cadre-rouge-bord);
+		background: var(--cadre-rouge-fond);
+	}
+	.archi__bande--surete {
+		border-color: var(--cadre-vert-bord);
+		background: var(--cadre-vert-fond);
+	}
+	figcaption {
+		margin-top: 0.6rem;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	@media (max-width: 50rem) {
+		.archi__chaine {
+			grid-template-columns: 1fr;
+			grid-template-rows: none;
+			row-gap: 0.6rem;
+		}
+		.archi__element,
+		.archi__lien {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+		.archi__boite,
+		.archi__fleche,
+		.archi__menaces,
+		.archi__menace-lien {
+			grid-column: auto;
+			grid-row: auto;
+		}
+		.archi__fleche {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 0.5rem;
+		}
+		.archi__trait {
+			transform: rotate(90deg);
+		}
+		.archi__bandes {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

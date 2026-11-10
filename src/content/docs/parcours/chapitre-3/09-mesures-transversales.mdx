@@ -1,0 +1,136 @@
+---
+title: "Les mesures de sécurité transversales"
+description: "Chapitre 3 — authentification, intégrité des mises à jour, protection des communications, validation des commandes, état sûr, surveillance, et dix priorités pour un système embarqué."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Après avoir classé les menaces avec STRIDE, retenir les **mesures qui reviennent partout** : elles protègent à la fois le capteur, la carte et l'actionneur. Pour finir, savoir **par quoi commencer**.
+:::
+
+## Authentification et autorisation
+
+Chaque élément doit posséder une **identité unique**. Il faut éviter les mots de passe identiques d'un équipement à l'autre, ou intégrés dans le firmware. L'accès à la télémétrie ne doit pas donner automatiquement le droit de modifier une configuration ou de commander un actionneur.
+
+On sépare au minimum cinq niveaux de droits :
+
+- la lecture des mesures ;
+- la modification de la configuration ;
+- la maintenance et la mise à jour ;
+- la commande des actionneurs ;
+- l'administration complète du système.
+
+## Intégrité du logiciel et des mises à jour
+
+Une mise à jour ne doit être acceptée que si elle provient d'une source autorisée et si sa signature ou son certificat est valide. Le NIST recommande de limiter l'installation de logiciels aux entités autorisées et de vérifier les mises à jour au moyen de signatures numériques, de sommes de contrôle ou de certificats ([NIST, Software Update](https://pages.nist.gov/IoT-Device-Cybersecurity-Requirement-Catalogs/technical/update/)).
+
+**Pour une carte ESP32**, on envisage :
+
+- le **Secure Boot** (démarrage sécurisé : la carte n'exécute que du code dont la signature est valide) ;
+- le **chiffrement de la mémoire Flash**. Espressif recommande d'utiliser les deux **ensemble** : sans chiffrement de la Flash, un attaquant pourrait remplacer le contenu de la mémoire après la vérification de l'image ([Espressif, Secure Boot](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/security/secure-boot-v1.html)) ;
+- un firmware signé et une mise à jour OTA authentifiée ;
+- la désactivation de JTAG et des interfaces de débogage en production ;
+- la protection de la clé privée de signature.
+
+**Pour un Raspberry Pi**, il faut aussi protéger le système d'exploitation, la carte SD ou le support USB, le service SSH, les applications Python, les brokers MQTT et les scripts lancés automatiquement. La documentation de Raspberry Pi traite notamment des comptes et des permissions des utilisateurs, des mises à jour, du durcissement de SSH et du pare-feu ([Raspberry Pi, Security overview](https://www.raspberrypi.com/documentation/security/security.html)).
+
+## Protection des communications
+
+Les communications entre le capteur, la carte et l'actionneur doivent assurer :
+
+1. l'**authentification** de l'émetteur ;
+2. l'**intégrité** du message ou de la commande ;
+3. la **confidentialité**, lorsque les données sont sensibles ;
+4. la **fraîcheur** : une commande enregistrée puis renvoyée plus tard (une attaque par **rejeu**) doit être refusée.
+
+On utilise TLS ou DTLS lorsque le protocole le permet, des certificats par équipement, des compteurs de séquence, des *nonces* (nombres à usage unique) ou des horodatages avec expiration.
+
+## Validation des commandes
+
+La carte ne doit jamais transmettre directement une commande reçue sans l'avoir vérifiée. Elle contrôle :
+
+- l'identité de l'émetteur ;
+- le format et le type de la commande ;
+- les limites physiques ;
+- la vitesse maximale de changement ;
+- la cohérence avec l'état du système ;
+- les conditions d'autorisation ;
+- l'expiration de la commande.
+
+Par exemple, une consigne de vitesse est refusée si elle dépasse la limite mécanique, si elle arrive en dehors d'une séquence autorisée ou si le système est en mode maintenance.
+
+<Question id="ch3-q3.17" label="Q3.17" lignes={9}>
+Le contrôleur de température de l'exercice 11 enverra ses mesures à un système de supervision et recevra de lui de nouveaux seuils d'alarme. Pour chacun de ces deux flux, indiquez parmi l'authentification, l'intégrité, la confidentialité et la fraîcheur celles dont vous avez besoin, avec un mécanisme pour chacune. Quelles vérifications la carte doit-elle faire avant d'appliquer un nouveau seuil reçu ?
+</Question>
+
+## État sûr et sûreté physique
+
+La sécurité ne doit pas dépendre uniquement du logiciel. Pour un actionneur critique, on prévoit :
+
+- un arrêt d'urgence indépendant ;
+- une coupure matérielle de la puissance ;
+- un relais de sécurité ;
+- une limitation de courant ou de vitesse ;
+- un état par défaut sûr ;
+- un mode manuel local ;
+- un watchdog matériel ;
+- une séparation entre la commande normale et la commande de sécurité.
+
+C'est la couche « sûreté physique » du schéma de la page [Une sécurité à plusieurs couches](/Embedded-System-Course/parcours/chapitre-3/06-couches/).
+
+:::caution[Le choix de l'état sûr dépend du procédé]
+Pour une vanne, l'état sûr peut être « fermée » ou « ouverte » selon le risque. Pour un moteur, c'est souvent l'arrêt, mais un arrêt brutal n'est pas toujours sûr mécaniquement.
+:::
+
+## Surveillance et détection
+
+On surveille en particulier :
+
+- les mesures impossibles ou incohérentes ;
+- un changement inhabituel de calibration ;
+- une fréquence anormale de commandes ;
+- les commandes provenant d'une adresse inconnue ;
+- les redémarrages répétés ;
+- l'échec de la vérification du firmware ;
+- le passage inattendu en mode maintenance ;
+- la perte de communication avec un capteur ou un actionneur ;
+- l'activation simultanée de commandes incompatibles.
+
+Les commandes et les événements importants sont enregistrés dans des journaux protégés. La surveillance ne doit toutefois pas devenir une nouvelle source de déni de service : les journaux doivent être **limités, tournants** et protégés contre le remplissage du stockage.
+
+## Les dix priorités
+
+Pour un prototype comme pour un système embarqué réel, les mesures prioritaires sont :
+
+1. **Ne jamais exposer directement l'interface de commande sur Internet.**
+2. **Authentifier les cartes, les capteurs et les actionneurs.**
+3. **Signer et vérifier les firmwares et les mises à jour.**
+4. **Chiffrer les communications** qui contiennent des commandes ou des données sensibles.
+5. **Valider toutes les consignes** avant de les transmettre à un actionneur.
+6. **Prévoir un état sûr** indépendant du réseau et du logiciel principal.
+7. **Désactiver ou protéger les interfaces** JTAG, UART, SSH et Web inutiles.
+8. **Journaliser les changements importants** et surveiller les comportements anormaux.
+9. **Segmenter le réseau** de commande du réseau bureautique ou d'Internet.
+10. **Tester séparément** les scénarios de cybersécurité et les scénarios de sécurité physique.
+
+:::tip[Ce qui prime]
+Une attaque sur la carte peut compromettre simultanément les capteurs et plusieurs actionneurs. Dans un système qui agit sur le monde physique, la confidentialité est importante, mais **l'intégrité des commandes, la disponibilité et le passage en état sûr** sont généralement les propriétés les plus critiques.
+:::
+
+<Question id="ch3-q3.18" label="Q3.18" lignes={10}>
+Que doit faire votre contrôleur de température (alarme par LED et buzzer) si la liaison avec la supervision est coupée, ou si le capteur DHT22 ne répond plus ? Définissez l'état sûr et expliquez pourquoi il ne doit pas dépendre du réseau. Puis, parmi les dix priorités, indiquez celles qui sont déjà satisfaites, celles qui ne s'appliquent pas, et choisissez les trois que vous traiteriez en premier en vous appuyant sur la criticité (question Q3.15).
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais pourquoi chaque élément a besoin d'une identité unique et de droits séparés (lecture, configuration, maintenance, commande, administration).
+- [ ] Je sais expliquer pourquoi une mise à jour doit être signée et vérifiée avant d'être installée.
+- [ ] Je sais citer les quatre propriétés d'une communication protégée, dont la fraîcheur.
+- [ ] Je sais ce que la carte doit vérifier avant de transmettre une commande à un actionneur.
+- [ ] Je sais définir un état sûr indépendant du logiciel principal.
+- [ ] Les questions Q3.17 et Q3.18 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis consultez [l'essentiel à retenir et les références](/Embedded-System-Course/parcours/chapitre-3/10-retenir-references/) du chapitre.
+:::

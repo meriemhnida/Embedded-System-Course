@@ -1,6 +1,6 @@
 ---
 title: "À retenir et références"
-description: "Chapitre 3 — les trois idées à retenir sur les attaques de capteurs, la marche à suivre pour votre projet et les références publiées."
+description: "Chapitre 3 — les idées à retenir sur les menaces, les attaques de capteurs et la méthode STRIDE, la marche à suivre pour votre projet et les références publiées."
 ---
 
 ## À retenir
@@ -8,16 +8,26 @@ description: "Chapitre 3 — les trois idées à retenir sur les attaques de cap
 1. **Un capteur mesure ce qu'il reçoit** : il ne sait pas si le signal est authentique.
 2. **Le chiffrement des messages ne protège pas** une mesure falsifiée avant la numérisation.
 3. **La parade est une architecture** : redondance, plausibilité, repli sûr et tests.
+4. **STRIDE sert à ne rien oublier** : pour chaque élément de la chaîne capteur, carte, actionneur et pour chaque liaison, on examine les six familles de menaces.
+5. **Une carte compromise met tout en danger** : elle peut atteindre à la fois les capteurs et plusieurs actionneurs. Dans un système qui agit sur le monde physique, l'intégrité des commandes, la disponibilité et le passage en état sûr sont généralement les propriétés les plus critiques.
+6. **STRIDE ne remplace pas l'analyse de sûreté** : pour les conséquences physiques, on la complète par une AMDEC ou une analyse STPA.
 
 ## Pour votre projet
 
 1. Pour chaque capteur de votre montage, demandez-vous : que se passe-t-il si sa mesure est **fausse, mais plausible** ?
 2. Notez le risque dans votre analyse STRIDE, avec sa criticité (vraisemblance × gravité), et traitez en premier les plus élevées.
 3. Prévoyez dans le programme un **contrôle de plausibilité** et un **état de repli sûr**.
+4. Appliquez les six familles STRIDE à chaque élément (capteur, carte, actionneur) et à chaque liaison, puis passez en revue les [dix priorités](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) : notez celles qui sont déjà satisfaites et celles qu'il reste à traiter.
 
 ## Références
 
-Les attaques du chapitre sont décrites dans les publications suivantes. Pour la lecture complémentaire, commencez par celle du capteur qui vous intéresse.
+La méthode STRIDE et les mesures de sécurité s'appuient sur les documentations suivantes. Les attaques du chapitre sont décrites dans les publications qui viennent ensuite : pour la lecture complémentaire, commencez par celle du capteur qui vous intéresse.
+
+**Méthode STRIDE et mesures de sécurité**
+- Microsoft, [« Microsoft Threat Modeling Tool threats »](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats), Microsoft Learn : les six catégories de menaces STRIDE.
+- Espressif, [« Secure Boot »](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/security/secure-boot-v1.html), ESP-IDF Programming Guide (ESP32) : démarrage sécurisé et chiffrement de la mémoire Flash.
+- Raspberry Pi Ltd, [« Security overview »](https://www.raspberrypi.com/documentation/security/security.html), Raspberry Pi Documentation : comptes, mises à jour, SSH, pare-feu.
+- NIST, [« Software Update »](https://pages.nist.gov/IoT-Device-Cybersecurity-Requirement-Catalogs/technical/update/), IoT Device Cybersecurity Requirement Catalogs : exigences sur les mises à jour des objets connectés.
 
 **Schémas des attaques** (GPS, LiDAR, microphone, caméra, IMU, ultrasons, radar)
 - Xu, Han, Deng, Li, Liu et Zhang, « SoK: Rethinking Sensor Spoofing Attacks against Robotic Vehicles from a Systematic View », IEEE EuroS&P, 2023, p. 1082-1100, fig. 2 (arXiv:2205.04662). Cette figure est reprise dans Xing, Li, Li et Han, « Towards Robust and Secure Embodied AI: A Survey on Vulnerabilities and Attacks », arXiv:2502.13175, 2025, fig. 4.

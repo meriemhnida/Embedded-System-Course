@@ -1,0 +1,131 @@
+---
+title: "La méthode STRIDE"
+description: "Chapitre 3 — identifier les biens à protéger, classer les menaces avec la méthode STRIDE sur une chaîne capteur, carte, actionneur, évaluer leur criticité et les appliquer aux attaques sur les capteurs."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de la page]
+Avant d'écrire du code de sécurité, **identifier ce qu'il faut protéger** et **contre quoi**. La méthode STRIDE donne une grille pour ne pas oublier de famille de menaces, et la criticité pour décider par quoi commencer. La page [Les menaces de sécurité et la méthode STRIDE en bref](/Embedded-System-Course/parcours/chapitre-3/01-menaces-et-stride/) en donne une première présentation.
+:::
+
+## Les biens à protéger
+
+Une analyse de risques commence par la liste des **biens** :
+
+- les **biens essentiels** sont ce qui a de la valeur pour l'utilisateur ou l'exploitant : la **fonction d'alarme**, la **configuration** (les seuils), les **données** transmises à un système de supervision ;
+- les **biens supports** sont les éléments matériels et logiciels sur lesquels ils reposent : la carte, le capteur, la liaison série, la mémoire, le câblage, le boîtier.
+
+Pour chaque bien essentiel, on se demande ce qui serait grave : qu'il devienne **indisponible**, qu'il soit **altéré**, ou qu'il soit **divulgué**. C'est le triptyque **disponibilité, intégrité, confidentialité**.
+
+## La méthode STRIDE
+
+STRIDE classe les menaces en six familles. Chacune s'oppose à une propriété de sécurité. Microsoft utilise ce modèle pour catégoriser les menaces ([documentation Microsoft](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats)).
+
+| Famille | Menace | Propriété visée | Contrôles types |
+|---|---|---|---|
+| **S**poofing | Usurper l'identité d'un utilisateur, d'un composant ou d'une source de mesure | Authentification | Certificats, clés uniques, authentification mutuelle, double authentification pour l'administration |
+| **T**ampering | Altérer des données, un programme, un matériel | Intégrité | Signatures, MAC, Secure Boot, validation des commandes, contrôle de la configuration |
+| **R**epudiation | Nier avoir réalisé une action, faute de trace | Traçabilité | Journaux d'audit, horodatage, identités individuelles, stockage protégé |
+| **I**nformation disclosure | Divulguer une information protégée | Confidentialité | Chiffrement, contrôle d'accès, permissions minimales, protection des secrets |
+| **D**enial of service | Rendre le service indisponible | Disponibilité | Watchdog, redondance, filtrage, limitation de débit, mode dégradé |
+| **E**levation of privilege | Obtenir des droits que l'on ne devrait pas avoir | Autorisation | Moindre privilège, séparation des droits de lecture, de configuration et de commande, isolation des services |
+
+Deux exemples tirés du chapitre : l'**usurpation GPS** relève de *Spoofing* (une fausse source se fait passer pour les satellites), et le **brouillage** relève de *Denial of service* (la mesure n'est plus disponible).
+
+<Question id="ch3-q3.12" label="Q3.12" lignes={10}>
+Classez les huit attaques du chapitre (GPS, LiDAR, microphone, caméra, IMU, ultrasons, radar, empreintes) dans une ou plusieurs familles STRIDE, en distinguant au besoin l'usurpation du brouillage. Justifiez chaque classement en une phrase et indiquez la propriété de sécurité visée.
+</Question>
+
+## STRIDE sur la chaîne capteur, carte, actionneur
+
+Une chaîne embarquée comporte trois éléments : un **capteur**, une **carte de traitement** (ESP32, Raspberry Pi ou microcontrôleur) et un **actionneur**. On applique les six familles à **chacun**. Les tableaux suivants donnent pour chaque combinaison une menace type et les mesures usuelles. Ce sont des points de départ : un système réel a aussi ses propres menaces.
+
+:::note[Sigles de cette section]
+**MAC** : code d'authentification de message. **OTA** : mise à jour à distance (*over the air*). **JTAG** et **UART** : interfaces de débogage et de communication série de la carte. **GPIO** : broches d'entrée-sortie de la carte. **Watchdog** : circuit qui redémarre ou met en sécurité le système s'il cesse de répondre.
+:::
+
+### Le capteur
+
+| Famille | Exemple de menace | Mesures de sécurité |
+|---|---|---|
+| **S** | Un faux capteur se fait passer pour le capteur réel sur le bus (I²C, SPI, UART, CAN) ou sur le réseau (Wi-Fi, MQTT). | Authentifier les équipements (identifiant unique, certificat ou clé), contrôler l'identité du capteur avant d'accepter ses mesures. |
+| **T** | Les valeurs mesurées sont modifiées pendant leur transmission ou dans la mémoire de la carte. | Intégrité des messages (MAC, signature), compteur de séquence, contrôle de plausibilité, redondance de capteurs. |
+| **R** | On ne peut pas savoir qui a modifié la calibration ou remplacé une mesure. | Journaliser les changements de configuration et de calibration, avec horodatage fiable et identifiant de l'opérateur ; protéger les journaux. |
+| **I** | Fuite de mesures sensibles : localisation, état d'une installation, images, données biométriques. | Chiffrement en transit et au repos, limitation des données collectées, contrôle d'accès, débogage désactivé, aucune donnée sensible dans les journaux. |
+| **D** | Brouillage radio, saturation du bus, débranchement, court-circuit, envoi massif de requêtes. | Détection de perte de communication, temporisation, watchdog, capteur redondant, canal de secours, limitation de débit, passage en état sûr. |
+| **E** | Un simple accès à la télémétrie permet de modifier la calibration ou le firmware du capteur. | Séparer les droits de lecture et d'écriture, protéger l'interface de maintenance, désactiver les commandes inutiles, firmware signé. |
+
+### La carte de traitement
+
+| Famille | Exemple de menace | Mesures de sécurité |
+|---|---|---|
+| **S** | Un attaquant se fait passer pour la carte, pour le serveur ou pour l'opérateur qui envoie les commandes. | Identité cryptographique unique par carte, authentification mutuelle, clés SSH, mots de passe uniques, suppression des comptes par défaut. |
+| **T** | Modification du firmware, du système de fichiers, du programme de contrôle ou d'une mise à jour OTA. | Secure Boot, firmware signé, chiffrement de la mémoire Flash ou du disque, vérification d'intégrité, mises à jour authentifiées. |
+| **R** | Un opérateur nie avoir modifié un seuil, un programme ou une consigne. | Journaux d'audit protégés, avec horodatage et identifiant de l'utilisateur ; centralisation des journaux et protection contre leur suppression. |
+| **I** | Extraction de clés Wi-Fi, de certificats, de mots de passe, du firmware ou de fichiers SSH. | Chiffrement des secrets, stockage sécurisé des clés, permissions minimales, aucun secret dans le code source, JTAG et UART désactivés en production. |
+| **D** | Saturation du processeur ou de la mémoire, plantage d'un service, redémarrages en boucle, brouillage Wi-Fi. | Réduire les services exposés, pare-feu, segmentation du réseau, limites de ressources, watchdog, supervision, mode dégradé local. |
+| **E** | Une faille dans une application Web, un service MQTT, SSH ou un script Python donne les droits administrateur et le contrôle des GPIO. | Mises à jour régulières, séparation des comptes, services exécutés avec des droits minimaux, isolation des processus, accès aux GPIO contrôlé. |
+
+### L'actionneur
+
+| Famille | Exemple de menace | Mesures de sécurité |
+|---|---|---|
+| **S** | Un faux contrôleur envoie des commandes à un moteur, un relais, une serrure ou une vanne. | Authentifier la source des commandes (certificat ou clé par équipement), filtrer selon l'identité, vérifier que l'actionneur appartient bien au système attendu. |
+| **T** | Modification d'une consigne : vitesse, position, durée d'activation, angle ou état marche/arrêt. | Signature ou MAC des commandes, validation des limites, cohérence entre la consigne et l'état réel, double validation des actions critiques, limitation de la fréquence des commandes. |
+| **R** | Il est impossible de prouver quelle commande a activé un moteur ou ouvert une vanne. | Journaliser la commande, son émetteur, l'heure, la consigne et le résultat observé ; protéger les journaux. |
+| **I** | L'état de l'actionneur révèle une information sensible : présence d'une personne, activité d'une machine. | Chiffrer les retours d'état, limiter les utilisateurs autorisés, réduire les données exposées. |
+| **D** | L'actionneur ne reçoit plus les commandes, reste bloqué, redémarre sans cesse ou reçoit trop de commandes. | État sûr en cas de perte de communication, watchdog local, arrêt indépendant, limitation de débit, commande manuelle d'urgence. |
+| **E** | Un utilisateur autorisé à lire l'état de l'actionneur obtient le droit de l'activer. | Séparer les permissions de lecture, de configuration et de commande ; autorisation renforcée pour les fonctions critiques ; contrôle des modes maintenance et automatique. |
+
+:::tip[Où se placent les huit attaques du chapitre ?]
+Sur la ligne du **capteur**, mais elles agissent sur la grandeur physique elle-même : elles falsifient la mesure (*Tampering*) ou la noient (*Denial of service*). Dans la ligne « T » du capteur, l'authentification et l'intégrité des messages n'y suffisent pas, puisque la mesure est déjà fausse quand elle est numérisée ; la redondance des capteurs et le contrôle de plausibilité restent efficaces, d'où l'importance des [six réflexes de défense](/Embedded-System-Course/parcours/chapitre-3/07-se-defendre/).
+:::
+
+## Appliquer STRIDE à votre contrôleur
+
+Pour les questions suivantes, placez-vous dans ce contexte : le contrôleur de température de l'exercice 11 est installé dans une armoire accessible au personnel de maintenance, et son propriétaire envisage de le relier à un système de supervision.
+
+<Question id="ch3-q3.13" label="Q3.13" lignes={7}>
+Pour chacun des **trois biens essentiels** (fonction d'alarme, seuils, données transmises), indiquez la propriété la plus critique (disponibilité, intégrité ou confidentialité) et justifiez en une phrase. Précisez ensuite les biens supports sur lesquels chacun repose.
+</Question>
+
+<Question id="ch3-q3.14" label="Q3.14" lignes={10}>
+Pour **chaque famille STRIDE**, décrivez une menace réaliste qui pèse sur votre contrôleur. Vous pouvez vous inspirer des tableaux ci-dessus en les adaptant à votre montage. Si une famille ne s'applique pas à votre montage actuel, dites pourquoi. Pour chaque menace, indiquez la défense que vous prévoiriez, ou dites qu'il s'agit d'un **risque résiduel**.
+</Question>
+
+## Évaluer la criticité
+
+La **criticité** d'un risque combine sa **vraisemblance** (de 1, peu probable, à 4, quasi certain) et sa **gravité** (de 1, négligeable, à 4, critique) : criticité = vraisemblance × gravité. On traite d'abord les risques dont la criticité est la plus élevée.
+
+| Gravité ↓ / Vraisemblance → | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| **4 critique** | 4 | 8 | 12 | 16 |
+| **3 grave** | 3 | 6 | 9 | 12 |
+| **2 significative** | 2 | 4 | 6 | 8 |
+| **1 négligeable** | 1 | 2 | 3 | 4 |
+
+<Question id="ch3-q3.15" label="Q3.15" lignes={7}>
+Choisissez **trois menaces** de la question Q3.14. Pour chacune, estimez la vraisemblance et la gravité **avant** et **après** application de votre défense, calculez les criticités et classez-les. Justifiez vos estimations.
+</Question>
+
+## Et si la mesure est fausse ?
+
+Ajoutez systématiquement cette question à votre analyse, pour **chaque capteur** : que se passe-t-il si sa mesure est fausse, mais plausible ?
+
+<Question id="ch3-q3.16" label="Q3.16" lignes={8}>
+Pour chaque capteur ou entrée de votre montage (DHT22, bouton-poussoir, interrupteur °C/°F), décrivez la conséquence d'une mesure fausse mais plausible. Quel **contrôle de plausibilité** et quel **état de repli sûr** ajouteriez-vous au programme ? Évaluez la criticité du risque correspondant.
+</Question>
+
+## Critères de validation
+
+- [ ] Les biens essentiels, leurs biens supports et leurs propriétés critiques sont identifiés et justifiés.
+- [ ] Les attaques du chapitre sont classées dans les familles STRIDE.
+- [ ] Je sais appliquer les six familles à chacun des trois éléments d'une chaîne capteur, carte, actionneur.
+- [ ] Les six familles sont examinées pour le contrôleur, chacune par une menace ou une justification.
+- [ ] Trois risques sont évalués avant et après traitement, avec une criticité calculée.
+- [ ] Les questions Q3.12 à Q3.16 ont une réponse justifiée.
+
+:::note[Prochaine étape]
+Validez cette page, puis découvrez les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/), qui protègent à la fois le capteur, la carte et l'actionneur.
+:::
