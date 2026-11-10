@@ -1,0 +1,329 @@
+---
+import { broches, familles } from '../data/raspberry-gpio';
+
+const couleur = Object.fromEntries(familles.map((f) => [f.id, f.couleur]));
+const colonne = (n: number) => Math.floor((n - 1) / 2);
+const cx = (n: number) => 60 + colonne(n) * 42;
+const cy = (n: number) => (n % 2 === 0 ? 118 : 150);
+const texte = (b: (typeof broches)[number]) => (b.gpio !== undefined ? String(b.gpio) : b.court);
+const libelle = (b: (typeof broches)[number]) => (b.gpio !== undefined ? `GPIO ${b.gpio}${b.court ? ` · ${b.court}` : ''}` : b.court);
+const lignes = Array.from({ length: 20 }, (_, i) => [broches[2 * i], broches[2 * i + 1]]);
+---
+
+<div class="gpio">
+	<div class="legende" role="group" aria-label="Filtrer par fonction">
+		{familles.map((f) => (
+			<button type="button" class="filtre" data-fam={f.id} aria-pressed="false">
+				<span class="pastille" style={`background:${f.couleur}`}></span>{f.nom}
+			</button>
+		))}
+	</div>
+
+	<fieldset class="modes">
+		<legend>Numéro affiché sur les broches</legend>
+		<label><input type="radio" name="mode-gpio" value="gpio" checked /> GPIO</label>
+		<label><input type="radio" name="mode-gpio" value="wpi" /> WiringPi</label>
+		<label><input type="radio" name="mode-gpio" value="phys" /> Broche (1 à 40)</label>
+	</fieldset>
+
+	<div class="scene">
+		<svg viewBox="0 0 920 230" role="group" aria-label="Connecteur GPIO du Raspberry Pi 5 : 40 broches sur deux rangées. Cliquez sur une broche pour obtenir son explication.">
+			<rect class="corps" x="28" y="92" width="864" height="84" rx="6"></rect>
+			{broches.map((b) => {
+				const c = couleur[b.familles[0]];
+				const haut = b.n % 2 === 0;
+				return (
+					<g class="el pin" data-n={b.n} data-fams={b.familles.join(' ')} tabindex="0" role="button" aria-label={`Broche ${b.n}, ${b.fonction}`} style={`--c:${c}`}>
+						<rect class="hit" x={cx(b.n) - 21} y={haut ? 76 : 134} width="42" height="32"></rect>
+						{b.n === 1 ? (
+							<rect class="rond" x={cx(b.n) - 16} y={cy(b.n) - 16} width="32" height="32" rx="3" fill={c}></rect>
+						) : (
+							<circle class="rond" cx={cx(b.n)} cy={cy(b.n)} r="16" fill={c}></circle>
+						)}
+						<text class="num" x={cx(b.n)} y={cy(b.n) + 4} text-anchor="middle">{texte(b)}</text>
+						{b.court && b.gpio !== undefined && (
+							<text class="fn" x={cx(b.n)} y={haut ? 86 : 196} text-anchor="middle" fill={c}>{b.court}</text>
+						)}
+					</g>
+				);
+			})}
+			<text class="repere" x="32" y="40">Broche 2</text>
+			<text class="repere" x="32" y="218">Broche 1</text>
+			<text class="repere" x="888" y="40" text-anchor="end">Broche 40</text>
+			<text class="repere" x="888" y="218" text-anchor="end">Broche 39</text>
+		</svg>
+		<div class="info-bulle" role="tooltip" hidden></div>
+	</div>
+
+	<details class="vertical" open>
+		<summary>Liste des 40 broches</summary>
+		<div class="grille" role="group" aria-label="Liste des broches, deux colonnes comme sur la carte">
+			{lignes.map(([g, d]) => (
+				<>
+					<button type="button" class="ligne gauche" data-n={g.n} data-fams={g.familles.join(' ')} style={`--c:${couleur[g.familles[0]]}`}>
+						<span class="lib">{libelle(g)}</span><span class="n">{g.n}</span>
+					</button>
+					<button type="button" class="ligne droite" data-n={d.n} data-fams={d.familles.join(' ')} style={`--c:${couleur[d.familles[0]]}`}>
+						<span class="n">{d.n}</span><span class="lib">{libelle(d)}</span>
+					</button>
+				</>
+			))}
+		</div>
+	</details>
+
+	<div class="panneau" aria-live="polite">
+		<p class="invite"><strong>Cliquez sur une broche</strong>, sur le schéma ou dans la liste, pour afficher son explication.</p>
+		<div class="contenu" hidden>
+			<div class="entete">
+				<span class="badges"></span>
+				<h3 class="titre"></h3>
+			</div>
+			<p class="resume"></p>
+			<dl class="fiche"></dl>
+			<ul class="roles"></ul>
+			<p class="autres" hidden></p>
+			<p class="liens" hidden></p>
+		</div>
+		<div class="nav">
+			<button type="button" class="prec">← Broche précédente</button>
+			<span class="compteur"></span>
+			<button type="button" class="suiv">Broche suivante →</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { broches, familles, roles } from '../data/raspberry-gpio';
+
+	const fam = Object.fromEntries(familles.map((f) => [f.id, f]));
+
+	document.querySelectorAll<HTMLElement>('.gpio').forEach((racine) => {
+		const scene = racine.querySelector<HTMLElement>('.scene')!;
+		const bulle = racine.querySelector<HTMLElement>('.info-bulle')!;
+		const panneau = racine.querySelector<HTMLElement>('.panneau')!;
+		const contenu = panneau.querySelector<HTMLElement>('.contenu')!;
+		const invite = panneau.querySelector<HTMLElement>('.invite')!;
+		const compteur = panneau.querySelector<HTMLElement>('.compteur')!;
+		const noeuds = Array.from(racine.querySelectorAll<SVGGElement>('.pin'));
+		const lignes = Array.from(racine.querySelectorAll<HTMLButtonElement>('.ligne'));
+		let courant = 0;
+		let filtre: string | null = null;
+		let mode: 'gpio' | 'wpi' | 'phys' = 'gpio';
+
+		const numero = (n: number) => {
+			const b = broches[n - 1];
+			if (mode === 'phys') return String(b.n);
+			if (mode === 'wpi') return b.wpi !== undefined ? String(b.wpi) : b.court;
+			return b.gpio !== undefined ? String(b.gpio) : b.court;
+		};
+		const libelle = (n: number) => {
+			const b = broches[n - 1];
+			const num = mode === 'phys' ? b.n : mode === 'wpi' ? b.wpi : b.gpio;
+			if (b.gpio === undefined) return b.court;
+			const prefixe = mode === 'wpi' ? 'WiringPi' : mode === 'phys' ? 'Broche' : 'GPIO';
+			return `${prefixe} ${num}${b.court ? ` · ${b.court}` : ''}`;
+		};
+		const rafraichir = () => {
+			noeuds.forEach((g) => { g.querySelector('.num')!.textContent = numero(Number(g.dataset.n)); });
+			lignes.forEach((l) => { l.querySelector('.lib')!.textContent = libelle(Number(l.dataset.n)); });
+		};
+
+		const afficherBulle = (g: Element) => {
+			const b = broches[Number((g as HTMLElement).dataset.n) - 1];
+			bulle.replaceChildren();
+			const t = document.createElement('strong');
+			t.textContent = `Broche ${b.n}`;
+			const r = document.createElement('span');
+			r.textContent = b.fonction;
+			const c = document.createElement('em');
+			c.textContent = 'Cliquez pour en savoir plus';
+			bulle.append(t, r, c);
+			bulle.hidden = false;
+			const s = scene.getBoundingClientRect();
+			const box = g.getBoundingClientRect();
+			const lb = bulle.offsetWidth;
+			let gauche = box.left + box.width / 2 - s.left - lb / 2;
+			gauche = Math.max(4, Math.min(gauche, s.width - lb - 4));
+			bulle.style.left = `${gauche}px`;
+			bulle.style.top = `${box.bottom - s.top + 8}px`;
+		};
+		const cacherBulle = () => { bulle.hidden = true; };
+
+		const ajouter = (parent: Element, balise: string, texte: string, classe?: string) => {
+			const e = document.createElement(balise);
+			e.textContent = texte;
+			if (classe) e.className = classe;
+			parent.append(e);
+			return e;
+		};
+
+		const choisir = (n: number) => {
+			const b = broches[n - 1];
+			if (!b) return;
+			courant = n;
+			noeuds.forEach((g) => g.classList.toggle('sel', Number(g.dataset.n) === n));
+			lignes.forEach((l) => l.setAttribute('aria-pressed', String(Number(l.dataset.n) === n)));
+			invite.hidden = true;
+			contenu.hidden = false;
+
+			const badges = contenu.querySelector<HTMLElement>('.badges')!;
+			badges.replaceChildren();
+			b.familles.forEach((f) => {
+				const s = ajouter(badges, 'span', fam[f].nom, 'badge');
+				s.style.background = fam[f].couleur;
+			});
+			contenu.querySelector('.titre')!.textContent = b.gpio !== undefined ? `Broche ${b.n} · GPIO ${b.gpio}` : `Broche ${b.n} · ${b.court}`;
+			contenu.querySelector('.resume')!.textContent = b.fonction;
+
+			const fiche = contenu.querySelector<HTMLElement>('.fiche')!;
+			fiche.replaceChildren();
+			const ligne = (k: string, v: string) => { ajouter(fiche, 'dt', k); ajouter(fiche, 'dd', v); };
+			ligne('Broche', `${b.n} (${b.n % 2 === 0 ? 'rangée du haut' : 'rangée du bas'})`);
+			if (b.gpio !== undefined) ligne('Numéro GPIO', String(b.gpio));
+			if (b.wpi !== undefined) ligne('Numéro WiringPi', String(b.wpi));
+
+			const liste = contenu.querySelector<HTMLElement>('.roles')!;
+			liste.replaceChildren();
+			const vus = new Set<string>();
+			const liens: { texte: string; href: string }[] = [];
+			b.familles.forEach((f) => {
+				roles[f].texte.forEach((t) => { if (!vus.has(t)) { vus.add(t); ajouter(liste, 'li', t); } });
+				const l = roles[f].lien;
+				if (l && !liens.some((x) => x.href === l.href)) liens.push(l);
+			});
+
+			const autres = contenu.querySelector<HTMLElement>('.autres')!;
+			autres.hidden = !b.autres?.length;
+			autres.replaceChildren();
+			if (b.autres?.length) {
+				ajouter(autres, 'strong', 'Autres fonctions indiquées sur les schémas du cours : ');
+				autres.append(b.autres.join(' ; ') + '.');
+			}
+
+			const pl = contenu.querySelector<HTMLElement>('.liens')!;
+			pl.hidden = !liens.length;
+			pl.replaceChildren();
+			liens.forEach((l, i) => {
+				if (i) pl.append(' · ');
+				const a = document.createElement('a');
+				a.href = l.href;
+				a.textContent = `${l.texte} →`;
+				pl.append(a);
+			});
+			compteur.textContent = `${n} / 40`;
+		};
+
+		noeuds.forEach((g) => {
+			const n = Number(g.dataset.n);
+			g.addEventListener('pointerenter', (ev) => { if ((ev as PointerEvent).pointerType !== 'touch') afficherBulle(g); });
+			g.addEventListener('pointerleave', cacherBulle);
+			g.addEventListener('focus', () => afficherBulle(g));
+			g.addEventListener('blur', cacherBulle);
+			g.addEventListener('click', (ev) => { choisir(n); if ((ev as PointerEvent).pointerType === 'touch') cacherBulle(); else afficherBulle(g); });
+			g.addEventListener('keydown', (ev) => {
+				const k = (ev as KeyboardEvent).key;
+				if (k === 'Enter' || k === ' ') { ev.preventDefault(); choisir(n); }
+			});
+		});
+		lignes.forEach((l) => l.addEventListener('click', () => { choisir(Number(l.dataset.n)); cacherBulle(); }));
+
+		panneau.querySelector('.prec')!.addEventListener('click', () => choisir(courant <= 1 ? 40 : courant - 1));
+		panneau.querySelector('.suiv')!.addEventListener('click', () => choisir(courant >= 40 ? 1 : courant + 1));
+
+		racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((b) => {
+			b.addEventListener('click', () => {
+				filtre = filtre === b.dataset.fam ? null : b.dataset.fam!;
+				racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.fam === filtre)));
+				[...noeuds, ...lignes].forEach((e) => {
+					const membres = (e.dataset.fams ?? '').split(' ');
+					e.classList.toggle('estompe', !!filtre && !membres.includes(filtre));
+				});
+			});
+		});
+		racine.querySelectorAll<HTMLInputElement>('input[name="mode-gpio"]').forEach((r) => {
+			r.addEventListener('change', () => { mode = r.value as typeof mode; rafraichir(); });
+		});
+	});
+</script>
+
+<style>
+	.gpio { margin-block: 1.5rem; }
+	.legende { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.filtre {
+		display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; margin: 0;
+		padding: 0.25rem 0.65rem; font-size: 0.8rem;
+		border: 1px solid var(--sl-color-gray-4); border-radius: 999px;
+		background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.filtre[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); }
+	.pastille { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; }
+
+	.modes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 1rem; border: 0; padding: 0; margin: 0 0 0.75rem; font-size: var(--sl-text-sm); }
+	.modes legend { float: left; padding: 0; margin-right: 1rem; font-weight: 600; }
+	.modes label { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; margin: 0; }
+	.modes input { margin: 0; }
+
+	.scene { position: relative; }
+	svg { width: 100%; height: auto; display: block; border-radius: 0.75rem; background: #f1f5f9; border: 1px solid var(--sl-color-gray-5); }
+	.corps { fill: #0b2a3a; }
+	.hit { fill: transparent; }
+	.num { font: 700 13px sans-serif; fill: #ffffff; pointer-events: none; }
+	.fn { font: 700 12.5px sans-serif; pointer-events: none; }
+	.repere { font: 600 13px sans-serif; fill: #475569; }
+	.el { cursor: pointer; outline: none; transition: opacity 0.2s; }
+	.el:focus-visible .hit { stroke: #1d4ed8; stroke-width: 2; stroke-dasharray: 5 4; }
+	.el:hover .rond, .el:focus-visible .rond { stroke: #fde047; stroke-width: 4; }
+	.sel .rond { stroke: #fde047; stroke-width: 4; animation: pulse 1.1s ease-in-out infinite; }
+	.estompe { opacity: 0.15; }
+	@keyframes pulse { 50% { filter: drop-shadow(0 0 7px #fde047) brightness(1.25); } }
+	@media (prefers-reduced-motion: reduce) { .sel .rond { animation: none !important; } }
+
+	.info-bulle {
+		position: absolute; z-index: 5; max-width: 17rem; pointer-events: none;
+		padding: 0.5rem 0.7rem; border-radius: 0.5rem; font-size: 0.82rem; line-height: 1.35;
+		background: var(--sl-color-black); color: var(--sl-color-white);
+		border: 1px solid var(--sl-color-gray-3); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		display: flex; flex-direction: column; gap: 0.15rem;
+	}
+	.info-bulle[hidden] { display: none; }
+	.info-bulle em { color: var(--sl-color-accent-high); font-size: 0.75rem; }
+
+	.vertical { margin-top: 0.8rem; }
+	.vertical summary { cursor: pointer; font-weight: 600; font-size: var(--sl-text-sm); }
+	.grille { display: grid; grid-template-columns: 1fr 1fr; gap: 0.2rem 0.5rem; margin-top: 0.5rem; max-width: 36rem; }
+	.ligne {
+		display: flex; align-items: center; gap: 0.5rem; margin: 0; cursor: pointer; transition: opacity 0.2s;
+		padding: 0.15rem 0.5rem; font-size: 0.8rem; border-radius: 0.35rem;
+		border: 1px solid var(--sl-color-gray-4); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.ligne.gauche { justify-content: flex-end; border-right: 6px solid var(--c); text-align: right; }
+	.ligne.droite { justify-content: flex-start; border-left: 6px solid var(--c); text-align: left; }
+	.ligne .n { font-weight: 700; min-width: 1.4rem; text-align: center; }
+	.ligne[aria-pressed='true'] { outline: 2px solid var(--sl-color-accent); }
+
+	.panneau {
+		margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-bleu-bord); background: var(--cadre-bleu-fond);
+	}
+	.invite { margin: 0; }
+	.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+	.badges { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; }
+	.badges :global(.badge) { color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; }
+	.titre { margin: 0; font-size: 1.25rem; }
+	.resume { font-weight: 600; margin: 0.5rem 0; }
+	.fiche { display: grid; grid-template-columns: max-content 1fr; gap: 0.15rem 1rem; margin: 0 0 0.6rem; font-size: var(--sl-text-sm); }
+	.fiche :global(dt) { font-weight: 700; margin: 0; }
+	.fiche :global(dd) { margin: 0; }
+	.roles { margin: 0 0 0.6rem 1.2rem; }
+	.roles :global(li) { margin: 0.2rem 0; }
+	.autres, .liens { margin: 0.4rem 0 0; font-size: var(--sl-text-sm); }
+	.liens { font-weight: 600; }
+	.contenu[hidden], .invite[hidden], .autres[hidden], .liens[hidden] { display: none; }
+	.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
+	.nav button {
+		margin: 0; cursor: pointer; padding: 0.4rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.nav .suiv { background: var(--sl-color-accent); color: var(--sl-color-black); border-color: var(--sl-color-accent); }
+	.compteur { font-size: 0.85rem; opacity: 0.8; }
+</style>

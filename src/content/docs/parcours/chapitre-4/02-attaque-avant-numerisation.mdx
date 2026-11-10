@@ -1,6 +1,6 @@
 ---
 title: "L’attaque se joue avant la numérisation"
-description: "Chapitre 3 — comment un attaquant falsifie la grandeur physique mesurée par un capteur, la différence entre usurpation et brouillage, et panorama des huit attaques étudiées."
+description: "Chapitre 4 — comment un attaquant falsifie la grandeur physique mesurée par un capteur, la différence entre usurpation et brouillage, et panorama des huit attaques étudiées."
 ---
 
 import ChaineMesure from '../../../../components/ChaineMesure.astro';
@@ -24,7 +24,7 @@ Toute la sécurité « classique » (chiffrement, authentification, signatures) 
 Le capteur fonctionne, le convertisseur fonctionne, le logiciel est exempt de bogue : la mesure est pourtant fausse, parce que le phénomène a été falsifié avant d'être mesuré. Le logiciel l'accepte comme vraie.
 :::
 
-<Question id="ch3-q3.1" label="Q3.1" lignes={5}>
+<Question id="ch3-q3.1" label="Q4.1" lignes={5}>
 Placez le capteur DHT22 de votre contrôleur de température (exercice 11) sur la chaîne de mesure ci-dessus. Qu'est-ce qu'un attaquant pourrait falsifier **avant** que la mesure atteigne le programme ? Un chiffrement du lien série protégerait-il contre cette falsification ? Justifiez.
 </Question>
 
@@ -38,9 +38,9 @@ Il existe deux grandes façons de perturber un capteur.
 | **Ce que délivre le capteur** | Une valeur **fausse mais plausible**. | Aucune mesure exploitable. |
 | **Visibilité** | Rien n'indique une panne : le système décide sur de fausses informations. | La défaillance est visible : un mode dégradé est possible. |
 
-Dans la grille STRIDE de la [page précédente](/Embedded-System-Course/parcours/chapitre-3/01-menaces-et-stride/), une usurpation relève de *Spoofing* ou de *Tampering* (la mesure fournie est falsifiée), et le brouillage de *Denial of service* (la mesure n'est plus disponible).
+Dans la grille STRIDE de la [page précédente](/Embedded-System-Course/parcours/chapitre-4/01-menaces-et-stride/), une usurpation relève de *Spoofing* ou de *Tampering* (la mesure fournie est falsifiée), et le brouillage de *Denial of service* (la mesure n'est plus disponible).
 
-<Question id="ch3-q3.2" label="Q3.2" lignes={6}>
+<Question id="ch3-q3.2" label="Q4.2" lignes={6}>
 Un drone suit sa trajectoire grâce à son récepteur GPS. Lequel des deux, usurpation ou brouillage, est le plus dangereux pour lui ? Pourquoi ? Quel comportement un système bien conçu adopterait-il dans l'autre cas ?
 </Question>
 
@@ -50,22 +50,22 @@ Les trois pages suivantes détaillent huit attaques. Elles suivent toujours la m
 
 | Capteur | Grandeur falsifiée | Effet typique | Page |
 |---|---|---|---|
-| GPS (récepteur GNSS) | signaux de satellites | position ou heure fausses | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/03-position-distance/) |
-| LiDAR | impulsions laser | obstacles fantômes ou effacés | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/03-position-distance/) |
-| Radar millimétrique | écho radar | faux véhicule | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/03-position-distance/) |
-| Microphone | son (ultrasons, lumière) | commandes vocales inaudibles | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-3/04-son-vibrations/) |
-| IMU (accéléromètre, gyroscope) | vibration à la résonance | mouvement fantôme | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-3/04-son-vibrations/) |
-| Capteur à ultrasons | écho ultrasonore | faux obstacle | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-3/04-son-vibrations/) |
-| Caméra | image (autocollant, lumière) | objet mal reconnu ou fantôme | [Images et empreintes](/Embedded-System-Course/parcours/chapitre-3/05-images-empreintes/) |
-| Capteur d'empreintes | réplique d'empreinte | appareil déverrouillé | [Images et empreintes](/Embedded-System-Course/parcours/chapitre-3/05-images-empreintes/) |
+| GPS (récepteur GNSS) | signaux de satellites | position ou heure fausses | [Position et distance](/Embedded-System-Course/parcours/chapitre-4/03-position-distance/) |
+| LiDAR | impulsions laser | obstacles fantômes ou effacés | [Position et distance](/Embedded-System-Course/parcours/chapitre-4/03-position-distance/) |
+| Radar millimétrique | écho radar | faux véhicule | [Position et distance](/Embedded-System-Course/parcours/chapitre-4/03-position-distance/) |
+| Microphone | son (ultrasons, lumière) | commandes vocales inaudibles | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-4/04-son-vibrations/) |
+| IMU (accéléromètre, gyroscope) | vibration à la résonance | mouvement fantôme | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-4/04-son-vibrations/) |
+| Capteur à ultrasons | écho ultrasonore | faux obstacle | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-4/04-son-vibrations/) |
+| Caméra | image (autocollant, lumière) | objet mal reconnu ou fantôme | [Images et empreintes](/Embedded-System-Course/parcours/chapitre-4/05-images-empreintes/) |
+| Capteur d'empreintes | réplique d'empreinte | appareil déverrouillé | [Images et empreintes](/Embedded-System-Course/parcours/chapitre-4/05-images-empreintes/) |
 
 ## Critères de validation
 
 - [ ] Je sais situer un capteur sur la chaîne de mesure et dire où agit une attaque sur la grandeur physique.
 - [ ] Je sais expliquer pourquoi le chiffrement ne suffit pas contre cette attaque.
 - [ ] Je sais distinguer l'usurpation du brouillage.
-- [ ] Les questions Q3.1 et Q3.2 ont une réponse justifiée.
+- [ ] Les questions Q4.1 et Q4.2 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis étudiez les attaques sur la [position et la distance](/Embedded-System-Course/parcours/chapitre-3/03-position-distance/) : GPS, LiDAR et radar.
+Validez cette page, puis étudiez les attaques sur la [position et la distance](/Embedded-System-Course/parcours/chapitre-4/03-position-distance/) : GPS, LiDAR et radar.
 :::

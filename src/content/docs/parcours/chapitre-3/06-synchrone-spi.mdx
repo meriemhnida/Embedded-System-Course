@@ -1,0 +1,86 @@
+---
+title: "Communication synchrone : SPI"
+description: "Le bus SPI : quatre fils (MOSI, MISO, SCK, CS), le rôle de chacun, la sélection d'un périphérique, avantages, limites et exemples."
+---
+
+import BusProtocole from '../../../../components/BusProtocole.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- décrire le bus **SPI** : les quatre fils et le rôle de chacun ;
+- expliquer comment le Pi **choisit** le périphérique avec lequel il parle ;
+- comparer le SPI à l'I2C : vitesse et nombre de fils.
+:::
+
+## Fiche SPI
+
+**SPI** signifie *Serial Peripheral Interface*.
+
+| | |
+|---|---|
+| **Nombre de fils** | 4 (MOSI, MISO, SCK, CS) |
+| **Type** | communication série **synchrone** |
+| **Avantages** | très rapide, stable |
+| **Limites** | plus de fils, une broche CS par périphérique |
+
+Le SPI est **plus rapide** que l'I2C, mais il utilise **plus de fils** (4 fils).
+
+## Le câblage
+
+Trois fils sont **partagés** par tous les périphériques ; chaque périphérique a en plus **son propre fil de sélection** (CS, *Chip Select*). Dans la figure, le Pi choisit tour à tour le premier, puis le second périphérique : seul celui dont la ligne CS est activée communique.
+
+<BusProtocole type="spi" />
+
+| Fil | Signification | Rôle |
+|---|---|---|
+| **MOSI** | *Master Out Slave In* | Le Pi **envoie** des données vers le périphérique |
+| **MISO** | *Master In Slave Out* | Le périphérique **envoie** des données vers le Pi |
+| **SCLK** | *Serial Clock* | Le Pi **génère l'horloge** pour synchroniser les bits |
+| **CE0 / CE1** | *Chip Enable / Chip Select* | Le Pi dit « **je parle à TOI** » à un périphérique spécifique |
+
+Le fil d'horloge est noté SCK dans la fiche et SCLK dans le détail des fils : c'est le même signal.
+
+## Les broches SPI du Raspberry Pi
+
+| Bus | MOSI | MISO | SCLK | Sélection |
+|---|---|---|---|---|
+| **SPI0** | GPIO 10 (broche 19) | GPIO 9 (broche 21) | GPIO 11 (broche 23) | CE0 : GPIO 8 (broche 24) · CE1 : GPIO 7 (broche 26) |
+| **SPI1** | GPIO 20 (broche 38) | GPIO 19 (broche 35) | GPIO 21 (broche 40) | CE0 : GPIO 18 (broche 12) · CE1 : GPIO 17 (broche 11) · CE2 : GPIO 16 (broche 36) |
+
+Vous pouvez les retrouver sur [le schéma interactif des broches](/Embedded-System-Course/parcours/chapitre-3/03-broches-gpio/) en cliquant sur le filtre « SPI ».
+
+## Exemples de capteurs et d'actionneurs
+
+| Composant | Rôle |
+|---|---|
+| **MAX31855** | thermocouple |
+| **NRF24L01** | module radio sans fil |
+| **MCP3008** | convertisseur analogique-numérique |
+| **OLED SPI** | afficheur graphique |
+
+<Question id="ch3-spi-q1" label="Q6.1">
+Donnez la signification de **MOSI**, **MISO** et **SCLK** et la direction des données sur chacun de ces fils.
+</Question>
+
+<Question id="ch3-spi-q2" label="Q6.2">
+À quoi servent les fils **CE0** et **CE1** ? Que se passe-t-il si l'on veut raccorder un troisième périphérique ?
+</Question>
+
+<Question id="ch3-spi-q3" label="Q6.3">
+Citez deux **avantages** et deux **limites** du SPI. Comparez-le à l'I2C.
+</Question>
+
+<Question id="ch3-spi-q4" label="Q6.4">
+Sur quelles broches GPIO se trouvent MOSI, MISO, SCLK, CE0 et CE1 du bus **SPI0** ?
+</Question>
+
+## Critères de validation
+
+- [ ] Je peux décrire le câblage SPI et le rôle des quatre fils.
+- [ ] Je peux expliquer comment le Pi sélectionne un périphérique.
+- [ ] Les questions Q6.1 à Q6.4 ont une réponse.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à la communication asynchrone, avec [l'UART](/Embedded-System-Course/parcours/chapitre-3/07-asynchrone-uart/).
+:::

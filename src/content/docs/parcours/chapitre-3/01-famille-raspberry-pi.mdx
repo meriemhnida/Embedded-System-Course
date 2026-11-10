@@ -1,0 +1,62 @@
+---
+title: La famille Raspberry Pi
+description: "Découvrir la Raspberry Pi Pico, la Pico W et MicroPython, puis le Raspberry Pi 5 : ses caractéristiques et son rôle dans le cours."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- expliquer ce qu'est **MicroPython** et pourquoi on l'utilise sur un microcontrôleur ;
+- présenter la **Raspberry Pi Pico W** ;
+- citer les caractéristiques principales du **Raspberry Pi 5**.
+:::
+
+## Pi Pico, Pi Pico W et MicroPython
+
+Dans l'écosystème de la **Raspberry Pi Pico**, une alternative au langage C est **MicroPython**.
+
+**MicroPython** est une version spécifique de Python, adaptée pour fonctionner dans un environnement particulier : les **microcontrôleurs**. C'est une implémentation du langage de programmation Python, optimisée pour les microcontrôleurs : elle offre la puissance et la simplicité de Python (un langage de haut niveau), tout en restant adaptée à des ressources limitées.
+
+:::tip[En une phrase]
+MicroPython, c'est un **langage de haut niveau porté sur microcontrôleur**.
+:::
+
+### La Raspberry Pi Pico W
+
+La **Pico W** est une carte de développement **compacte** qui intègre une **connectivité WiFi** et repose sur le microcontrôleur **RP2040**.
+
+## Le Raspberry Pi 5
+
+Le **Raspberry Pi 5** (2023) est équipé :
+
+- d'un processeur **quadricœur Cortex-A76** cadencé à **2,4 GHz** ;
+- d'un **GPU VideoCore VII** ;
+- d'une prise en charge du **PCIe** ;
+- de **2, 4, 8 ou 16 Go** de RAM, selon le modèle.
+
+Le prochain **Raspberry Pi 6** est prévu pour fin 2026 – début 2027.
+
+La suite de ce chapitre est consacrée à la carte Raspberry Pi 5 : ses composants, ses broches GPIO, puis les protocoles de communication I2C, SPI et UART.
+
+<Question id="ch3-famille-q1" label="Q1.1">
+Qu'est-ce que **MicroPython** ? Pourquoi dit-on que c'est « un langage de haut niveau porté sur microcontrôleur » ?
+</Question>
+
+<Question id="ch3-famille-q2" label="Q1.2">
+Quelle est la particularité de la **Pico W** par rapport à une carte sans connectivité, et sur quel microcontrôleur repose-t-elle ?
+</Question>
+
+<Question id="ch3-famille-q3" label="Q1.3">
+Donnez les caractéristiques du **Raspberry Pi 5** : processeur, GPU, interface prise en charge et quantités de mémoire disponibles.
+</Question>
+
+## Critères de validation
+
+- [ ] Je peux expliquer ce qu'est MicroPython.
+- [ ] Je peux présenter la Pico W et le Raspberry Pi 5.
+- [ ] Les questions Q1.1 à Q1.3 ont une réponse.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à [la carte Raspberry Pi 5](/Embedded-System-Course/parcours/chapitre-3/02-carte-raspberry-pi-5/) pour en explorer les composants.
+:::

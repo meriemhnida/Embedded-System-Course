@@ -1,6 +1,6 @@
 ---
 title: "Les mesures de sécurité transversales"
-description: "Chapitre 3 — authentification, intégrité des mises à jour, protection des communications, validation des commandes, état sûr, surveillance, et dix priorités pour un système embarqué."
+description: "Chapitre 4 — authentification, intégrité des mises à jour, protection des communications, validation des commandes, état sûr, surveillance, et dix priorités pour un système embarqué."
 ---
 
 import Question from '../../../../components/Question.astro';
@@ -60,7 +60,7 @@ La carte ne doit jamais transmettre directement une commande reçue sans l'avoir
 
 Par exemple, une consigne de vitesse est refusée si elle dépasse la limite mécanique, si elle arrive en dehors d'une séquence autorisée ou si le système est en mode maintenance.
 
-<Question id="ch3-q3.17" label="Q3.17" lignes={9}>
+<Question id="ch3-q3.17" label="Q4.17" lignes={9}>
 Le contrôleur de température de l'exercice 11 enverra ses mesures à un système de supervision et recevra de lui de nouveaux seuils d'alarme. Pour chacun de ces deux flux, indiquez parmi l'authentification, l'intégrité, la confidentialité et la fraîcheur celles dont vous avez besoin, avec un mécanisme pour chacune. Quelles vérifications la carte doit-elle faire avant d'appliquer un nouveau seuil reçu ?
 </Question>
 
@@ -77,7 +77,7 @@ La sécurité ne doit pas dépendre uniquement du logiciel. Pour un actionneur c
 - un watchdog matériel ;
 - une séparation entre la commande normale et la commande de sécurité.
 
-C'est la couche « sûreté physique » du schéma de la page [Une sécurité à plusieurs couches](/Embedded-System-Course/parcours/chapitre-3/06-couches/).
+C'est la couche « sûreté physique » du schéma de la page [Une sécurité à plusieurs couches](/Embedded-System-Course/parcours/chapitre-4/06-couches/).
 
 :::caution[Le choix de l'état sûr dépend du procédé]
 Pour une vanne, l'état sûr peut être « fermée » ou « ouverte » selon le risque. Pour un moteur, c'est souvent l'arrêt, mais un arrêt brutal n'est pas toujours sûr mécaniquement.
@@ -118,8 +118,8 @@ Pour un prototype comme pour un système embarqué réel, les mesures prioritair
 Une attaque sur la carte peut compromettre simultanément les capteurs et plusieurs actionneurs. Dans un système qui agit sur le monde physique, la confidentialité est importante, mais **l'intégrité des commandes, la disponibilité et le passage en état sûr** sont généralement les propriétés les plus critiques.
 :::
 
-<Question id="ch3-q3.18" label="Q3.18" lignes={10}>
-Que doit faire votre contrôleur de température (alarme par LED et buzzer) si la liaison avec la supervision est coupée, ou si le capteur DHT22 ne répond plus ? Définissez l'état sûr et expliquez pourquoi il ne doit pas dépendre du réseau. Puis, parmi les dix priorités, indiquez celles qui sont déjà satisfaites, celles qui ne s'appliquent pas, et choisissez les trois que vous traiteriez en premier en vous appuyant sur la criticité (question Q3.15).
+<Question id="ch3-q3.18" label="Q4.18" lignes={10}>
+Que doit faire votre contrôleur de température (alarme par LED et buzzer) si la liaison avec la supervision est coupée, ou si le capteur DHT22 ne répond plus ? Définissez l'état sûr et expliquez pourquoi il ne doit pas dépendre du réseau. Puis, parmi les dix priorités, indiquez celles qui sont déjà satisfaites, celles qui ne s'appliquent pas, et choisissez les trois que vous traiteriez en premier en vous appuyant sur la criticité (question Q4.15).
 </Question>
 
 ## Critères de validation
@@ -129,8 +129,8 @@ Que doit faire votre contrôleur de température (alarme par LED et buzzer) si l
 - [ ] Je sais citer les quatre propriétés d'une communication protégée, dont la fraîcheur.
 - [ ] Je sais ce que la carte doit vérifier avant de transmettre une commande à un actionneur.
 - [ ] Je sais définir un état sûr indépendant du logiciel principal.
-- [ ] Les questions Q3.17 et Q3.18 ont une réponse justifiée.
+- [ ] Les questions Q4.17 et Q4.18 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis consultez [l'essentiel à retenir et les références](/Embedded-System-Course/parcours/chapitre-3/10-retenir-references/) du chapitre.
+Validez cette page, puis consultez [l'essentiel à retenir et les références](/Embedded-System-Course/parcours/chapitre-4/10-retenir-references/) du chapitre.
 :::

@@ -1,0 +1,99 @@
+---
+title: "Communication asynchrone : UART"
+description: "La liaison UART : deux fils (TX, RX), signaux TXD, RXD, RTS et CTS, avantages, limites et exemples de périphériques."
+---
+
+import BusProtocole from '../../../../components/BusProtocole.astro';
+import LectureDesBits from '../../../../components/LectureDesBits.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- décrire la liaison **UART** : deux fils, communication asynchrone ;
+- relier correctement **TX** et **RX** entre deux appareils ;
+- citer ses avantages, sa limite et des exemples de périphériques.
+:::
+
+## Fiche UART
+
+**UART** signifie *Universal Asynchronous Receiver/Transmitter*. C'est un protocole simple qui permet l'échange de données texte ou binaires entre **deux appareils** via **2 fils**.
+
+| | |
+|---|---|
+| **Nombre de fils** | 2 (TX, RX) |
+| **Type** | communication série **asynchrone** |
+| **Avantages** | simple à mettre en place, très courant |
+| **Limites** | un seul périphérique à la fois |
+
+- **TX** (*Transmit*) : envoie des données ;
+- **RX** (*Receive*) : reçoit des données.
+
+## Le câblage
+
+Le **TX** d'un appareil est relié au **RX** de l'autre, et inversement. Il n'y a **aucun fil d'horloge** : les deux appareils se sont mis d'accord à l'avance sur la vitesse de transmission (le *baud rate*, par exemple 9600 ou 115200 bauds).
+
+<BusProtocole type="uart" />
+
+Voici comment le récepteur lit les bits **sans horloge**, au rythme convenu à l'avance :
+
+<LectureDesBits mode="asynchrone" />
+
+## Les signaux de l'UART
+
+| Signal | Nom complet | Direction | Rôle | Utilisation |
+|---|---|---|---|---|
+| **TXD** | Transmit Data | Sortie → | Émission de données | Envoie les bits de données vers l'appareil distant |
+| **RXD** | Receive Data | Entrée ← | Réception de données | Reçoit les bits de données depuis l'appareil distant |
+| **RTS** | Request To Send | Sortie → | Demande d'émission | Indique « Je suis prêt à envoyer des données » |
+| **CTS** | Clear To Send | Entrée ← | Autorisation d'émission | Répond « OK, tu peux m'envoyer des données » |
+
+Sur le connecteur du Raspberry Pi, l'UART principal utilise **GPIO 14 (TXD, broche 8)** et **GPIO 15 (RXD, broche 10)**. D'autres broches portent aussi des fonctions UART (TXD, RXD, RTS, CTS) : le [schéma interactif des broches](/Embedded-System-Course/parcours/chapitre-3/03-broches-gpio/) les indique dans l'encadré « Autres fonctions ».
+
+La carte possède aussi un **port série** dédié, repérable sur [le schéma de la carte](/Embedded-System-Course/parcours/chapitre-3/02-carte-raspberry-pi-5/).
+
+## À quoi sert l'UART ?
+
+| Type | Fonction |
+|---|---|
+| GPS | Envoie position, altitude, vitesse |
+| Microcontrôleur externe | Communication entre microcontrôleurs |
+| Capteur de CO₂ | Mesure la concentration de CO₂ |
+| Lecteur RFID | Lecture de cartes |
+| Module GSM / 4G | Envoie SMS, Internet, appels |
+| Écran série | Interface graphique via UART |
+| Module Bluetooth | Communication sans fil série |
+
+## Exemples de capteurs et d'actionneurs
+
+| Composant | Rôle |
+|---|---|
+| **GPS NEO-6M** | module GPS |
+| **HC-05 / HC-06** | module Bluetooth |
+| **MH-Z19** | capteur de CO₂ |
+| **SIM800L** | module GSM |
+
+<Question id="ch3-uart-q1" label="Q7.1">
+Combien de fils utilise l'**UART** ? Comment relie-t-on le Raspberry Pi à un périphérique (qui est relié à quoi) ?
+</Question>
+
+<Question id="ch3-uart-q2" label="Q7.2">
+Pourquoi parle-t-on de communication **asynchrone** ? Que doivent convenir les deux appareils avant d'échanger des données ?
+</Question>
+
+<Question id="ch3-uart-q3" label="Q7.3">
+Expliquez le rôle des signaux **RTS** et **CTS**. Dans quel sens va chacun ?
+</Question>
+
+<Question id="ch3-uart-q4" label="Q7.4">
+Citez un **avantage** et une **limite** de l'UART, puis trois périphériques qui s'y raccordent.
+</Question>
+
+## Critères de validation
+
+- [ ] Je peux décrire le câblage UART (TX ↔ RX) et expliquer l'absence d'horloge.
+- [ ] Je connais le rôle de TXD, RXD, RTS et CTS.
+- [ ] Les questions Q7.1 à Q7.4 ont une réponse.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à [la comparaison des trois protocoles](/Embedded-System-Course/parcours/chapitre-3/08-comparer-protocoles/).
+:::

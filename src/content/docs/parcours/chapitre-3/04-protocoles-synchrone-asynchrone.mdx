@@ -1,0 +1,81 @@
+---
+title: Communication synchrone ou asynchrone ?
+description: "Comprendre pourquoi les GPIO ne suffisent pas et ce qui distingue une communication synchrone (SPI, I2C) d'une communication asynchrone (UART)."
+---
+
+import LectureDesBits from '../../../../components/LectureDesBits.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- expliquer pourquoi le Raspberry Pi a besoin de **protocoles de communication** ;
+- distinguer une communication **synchrone** d'une communication **asynchrone** ;
+- classer **I2C**, **SPI** et **UART** dans la bonne famille.
+:::
+
+## Pourquoi des protocoles de communication ?
+
+Les protocoles permettent de **communiquer efficacement avec des périphériques complexes** sans gérer chaque bit à la main.
+
+Les GPIO ne sont, en réalité, que des entrées/sorties numériques simples : elles sont soit à **0 volt** (état bas), soit à **3,3 volts** (état haut). C'est parfait pour allumer une LED ou détecter qu'un bouton est pressé, mais pas assez puissant pour communiquer efficacement avec des composants plus intelligents, comme un capteur de température, un écran ou un module GPS.
+
+:::tip[À retenir]
+Il faut des **protocoles de communication** pour communiquer efficacement et rapidement avec les périphériques : capteurs, actionneurs, cartes externes, etc. Sur le Raspberry Pi, ce sont **I2C**, **SPI** et **UART**.
+:::
+
+| Protocole | Famille | Fils |
+|---|---|---|
+| **I2C** | synchrone | 2 : SDA, SCL |
+| **SPI** | synchrone | 4 : MOSI, MISO, SCK, CS |
+| **UART** | asynchrone | 2 : TX, RX |
+
+## Deux façons de se mettre d'accord
+
+| | Communication **synchrone** (SPI, I2C) | Communication **asynchrone** (UART) |
+|---|---|---|
+| **Ce qui règle le rythme** | une **ligne d'horloge partagée** (SCLK pour le SPI, SCL pour l'I2C) | un rythme **convenu à l'avance** : le **baud rate** (par exemple 9600 ou 115200 bauds) |
+| **Qui est synchronisé ?** | l'émetteur et le récepteur, par le signal d'horloge | l'émetteur et le récepteur doivent s'accorder **avant** de communiquer sur la vitesse de transmission |
+| **Quand lit-on un bit ?** | exactement quand l'horloge change d'état (front montant ou descendant) | au rythme convenu |
+| **Fils** | une ligne d'horloge en plus de la ou des lignes de données | seulement 2 fils : **TX** (transmission) et **RX** (réception) |
+
+### Communication synchrone : l'horloge donne le tempo
+
+Chaque bit est lu **au bon moment**, exactement quand l'horloge change d'état (front montant ou descendant). Dans la figure ci-dessous, le récepteur lit la ligne de données au **front montant** de l'horloge.
+
+C'est comme deux personnes qui **tapent dans leurs mains en rythme** : « On dit une lettre à chaque claquement ».
+
+<LectureDesBits mode="synchrone" />
+
+### Communication asynchrone : un rythme convenu à l'avance
+
+Il n'y a **pas de fil d'horloge**. Les deux appareils se sont mis d'accord à l'avance sur la vitesse de transmission : c'est le **baud rate**, par exemple 9600 ou 115200 bauds.
+
+C'est comme si l'on disait : « On va parler à raison d'un mot toutes les 2 secondes ».
+
+<LectureDesBits mode="asynchrone" />
+
+<Question id="ch3-proto-q1" label="Q4.1">
+Pourquoi les broches GPIO utilisées seules ne suffisent-elles pas pour communiquer avec un capteur de température, un écran ou un module GPS ?
+</Question>
+
+<Question id="ch3-proto-q2" label="Q4.2">
+Quelle est la différence essentielle entre une communication **synchrone** et une communication **asynchrone** ? Appuyez-vous sur l'exemple des deux personnes.
+</Question>
+
+<Question id="ch3-proto-q3" label="Q4.3">
+Qu'est-ce que le **baud rate** ? Pourquoi l'émetteur et le récepteur doivent-ils s'accorder sur sa valeur avant de communiquer ?
+</Question>
+
+<Question id="ch3-proto-q4" label="Q4.4">
+Classez **I2C**, **SPI** et **UART** en protocoles synchrones et asynchrones. Combien de fils chacun utilise-t-il ?
+</Question>
+
+## Critères de validation
+
+- [ ] Je peux expliquer pourquoi on a besoin de protocoles de communication.
+- [ ] Je peux distinguer communication synchrone et asynchrone.
+- [ ] Les questions Q4.1 à Q4.4 ont une réponse.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à la communication synchrone, avec [l'I2C](/Embedded-System-Course/parcours/chapitre-3/05-synchrone-i2c/).
+:::

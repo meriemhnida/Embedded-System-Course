@@ -1,6 +1,6 @@
 ---
 title: "Images et empreintes : caméra et capteurs biométriques"
-description: "Chapitre 3 — tromper un réseau de neurones de vision, cloner une empreinte digitale : cible, principe, effet, défenses et exemples publiés."
+description: "Chapitre 4 — tromper un réseau de neurones de vision, cloner une empreinte digitale : cible, principe, effet, défenses et exemples publiés."
 ---
 
 import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
@@ -24,7 +24,7 @@ Comprendre que deux capteurs peuvent fonctionner **parfaitement** et fournir pou
 Le capteur fonctionne parfaitement : c'est l'**interprétation** par le réseau de neurones qui est trompée. D'où l'intérêt de la fusion de capteurs : un second capteur, d'une autre nature, ne se laisse pas tromper de la même façon.
 :::
 
-<Question id="ch3-q3.7" label="Q3.7" lignes={6}>
+<Question id="ch3-q3.7" label="Q4.7" lignes={6}>
 Un véhicule lit un panneau STOP sur lequel on a collé des autocollants, et le classe comme une limitation de vitesse. Quelles informations d'un autre capteur ou d'une autre source (carte, position, radar, images précédentes) permettraient de remettre en cause cette lecture ? Quel comportement de repli adopter en cas de doute ?
 </Question>
 
@@ -44,7 +44,7 @@ Ces essais, à raison de vingt tentatives par appareil, montrent qu'un tel capte
 
 Le capteur mesure un motif physique, sans savoir s'il est vivant : cela rejoint le message de tout le chapitre. Et contrairement à un mot de passe, **une empreinte ne se révoque pas**.
 
-<Question id="ch3-q3.8" label="Q3.8" lignes={7}>
+<Question id="ch3-q3.8" label="Q4.8" lignes={7}>
 Un mot de passe compromis se change ; une empreinte digitale compromise ne se change pas. Quelles conséquences en tirez-vous pour la conception d'un système d'authentification qui utilise une empreinte ? Citez trois mesures à prévoir (par exemple la détection du vivant, la limitation des essais, un second facteur).
 </Question>
 
@@ -53,8 +53,8 @@ Un mot de passe compromis se change ; une empreinte digitale compromise ne se ch
 - [ ] Je sais expliquer la différence entre modifier un objet réel et projeter un objet fantôme devant une caméra.
 - [ ] Je sais dire pourquoi un capteur « qui fonctionne » peut quand même fournir une information fausse.
 - [ ] Je sais citer trois défenses pour un capteur d'empreintes.
-- [ ] Les questions Q3.7 et Q3.8 ont une réponse justifiée.
+- [ ] Les questions Q4.7 et Q4.8 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis voyez comment la sécurité se répartit sur [plusieurs couches](/Embedded-System-Course/parcours/chapitre-3/06-couches/) d'un système embarqué.
+Validez cette page, puis voyez comment la sécurité se répartit sur [plusieurs couches](/Embedded-System-Course/parcours/chapitre-4/06-couches/) d'un système embarqué.
 :::

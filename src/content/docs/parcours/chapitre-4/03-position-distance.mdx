@@ -1,6 +1,6 @@
 ---
 title: "Position et distance : GPS, LiDAR et radar"
-description: "Chapitre 3 — usurpation GPS, obstacles fantômes sur un LiDAR et faux véhicule sur un radar millimétrique : cible, principe, effet, défenses et exemples publiés."
+description: "Chapitre 4 — usurpation GPS, obstacles fantômes sur un LiDAR et faux véhicule sur un radar millimétrique : cible, principe, effet, défenses et exemples publiés."
 ---
 
 import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
@@ -39,7 +39,7 @@ Elle se lit ainsi : heure 12 h 35 min 19 s UTC, latitude 48° 07,038′ nord, lo
 Contrairement au brouillage, le récepteur garde ici un « fix » valide : il ne signale aucune panne. Deux conséquences sont à retenir : la **navigation** (dérive progressive) et la **synchronisation** (horodatage, réseaux, journaux).
 :::
 
-<Question id="ch3-q3.3" label="Q3.3" lignes={6}>
+<Question id="ch3-q3.3" label="Q4.3" lignes={6}>
 Un drone reçoit un GPS dont la position « saute » de plusieurs centaines de mètres en une seconde, sans aucune alerte du récepteur. Quels autres capteurs permettraient de détecter l'anomalie ? Quelle règle de plausibilité écririez-vous dans le programme, et que ferait le drone une fois l'anomalie détectée ?
 </Question>
 
@@ -60,7 +60,7 @@ Un drone reçoit un GPS dont la position « saute » de plusieurs centaines de m
 - **Défense.** Fusion avec la caméra et le radar, contrôle de cohérence du nuage de points, filtrage des points aberrants, instants d'émission aléatoires.
 - **Exemple publié.** Cao et al., « Adversarial Sensor Attack on LiDAR-based Perception in Autonomous Driving », ACM CCS, 2019.
 
-<Question id="ch3-q3.4" label="Q3.4" lignes={6}>
+<Question id="ch3-q3.4" label="Q4.4" lignes={6}>
 La distance perçue par un LiDAR se calcule à partir du temps de vol de l'impulsion (aller-retour à la vitesse de la lumière). Écrivez la relation entre la distance et le temps de retour, puis expliquez en une phrase pourquoi un retard ajouté par un relais change la distance perçue. Pourquoi des instants d'émission aléatoires compliquent-ils cette attaque ?
 </Question>
 
@@ -91,8 +91,8 @@ Comme pour les ultrasons (page suivante), l'écho n'est pas authentifié : un fa
 - [ ] Je sais dire, pour chacun des trois capteurs, ce qu'il mesure et ce qu'il fournit en sortie.
 - [ ] Je sais relier la distance perçue par un LiDAR ou un radar à un temps de retour.
 - [ ] Je sais citer au moins deux défenses pour chacun des trois capteurs.
-- [ ] Les questions Q3.3 et Q3.4 ont une réponse justifiée.
+- [ ] Les questions Q4.3 et Q4.4 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis passez aux attaques par le [son et les vibrations](/Embedded-System-Course/parcours/chapitre-3/04-son-vibrations/) : microphone, IMU et ultrasons.
+Validez cette page, puis passez aux attaques par le [son et les vibrations](/Embedded-System-Course/parcours/chapitre-4/04-son-vibrations/) : microphone, IMU et ultrasons.
 :::

@@ -1,6 +1,6 @@
 ---
 title: "Son et vibrations : microphone, IMU et ultrasons"
-description: "Chapitre 3 — commandes vocales inaudibles, résonance des capteurs MEMS et faux échos ultrasonores : cible, principe, effet, défenses et exemples publiés."
+description: "Chapitre 4 — commandes vocales inaudibles, résonance des capteurs MEMS et faux échos ultrasonores : cible, principe, effet, défenses et exemples publiés."
 ---
 
 import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
@@ -22,7 +22,7 @@ Comprendre comment le **son** et les **vibrations** peuvent servir à falsifier 
 
 La chaîne est : microphone MEMS, amplificateur, filtre passe-bas, convertisseur. La défaillance vient d'un défaut **analogique** (la non-linéarité) que le logiciel ne peut pas voir.
 
-<Question id="ch3-q3.5" label="Q3.5" lignes={6}>
+<Question id="ch3-q3.5" label="Q4.5" lignes={6}>
 Dans un objet connecté commandé à la voix (enceinte, serrure, thermostat), quelles actions sensibles devraient exiger une **confirmation physique** de l'utilisateur ? Justifiez votre choix par la gravité des conséquences d'une commande exécutée à son insu.
 </Question>
 
@@ -54,7 +54,7 @@ Le filtre et le convertisseur reçoivent une **vraie tension** : l'attaque est i
 Le capteur n'**authentifie** pas l'écho : tout signal ultrasonore reçu au bon moment est accepté. C'est le cas des capteurs courants de type HC-SR04, souvent utilisés en TP. Les deux modes d'attaque, usurpation et brouillage, y apparaissent.
 :::
 
-<Question id="ch3-q3.6" label="Q3.6" lignes={7}>
+<Question id="ch3-q3.6" label="Q4.6" lignes={7}>
 Un robot s'arrête devant les obstacles détectés par un capteur à ultrasons de type HC-SR04. Décrivez la conséquence d'un faux écho, puis celle d'un brouillage. Proposez deux défenses, dont une purement logicielle (par exemple un filtre médian sur plusieurs mesures), et dites ce que chacune ne protège pas.
 </Question>
 
@@ -63,8 +63,8 @@ Un robot s'arrête devant les obstacles détectés par un capteur à ultrasons d
 - [ ] Je sais expliquer pourquoi une attaque sur la partie analogique est invisible pour le logiciel.
 - [ ] Je sais citer une défense matérielle et une défense logicielle pour chacun des trois capteurs.
 - [ ] Je sais dire pourquoi l'absence d'authentification de l'écho rend les ultrasons vulnérables.
-- [ ] Les questions Q3.5 et Q3.6 ont une réponse justifiée.
+- [ ] Les questions Q4.5 et Q4.6 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis étudiez les attaques sur la [vision et la biométrie](/Embedded-System-Course/parcours/chapitre-3/05-images-empreintes/).
+Validez cette page, puis étudiez les attaques sur la [vision et la biométrie](/Embedded-System-Course/parcours/chapitre-4/05-images-empreintes/).
 :::

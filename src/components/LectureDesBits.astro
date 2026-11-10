@@ -1,0 +1,186 @@
+---
+// Comment le récepteur sait-il quand lire chaque bit ?
+//  - mode « synchrone » : une ligne d'horloge partagée ; chaque bit est lu au front montant ;
+//  - mode « asynchrone » : pas d'horloge ; le récepteur lit à un rythme convenu à l'avance (baud rate).
+interface Props {
+	mode: 'synchrone' | 'asynchrone';
+}
+const { mode } = Astro.props;
+const sync = mode === 'synchrone';
+
+const bits = [1, 0, 1, 1, 0, 0, 1, 0];
+const x0 = 120;
+const pas = 78;
+const hautDonnee = 150;
+const basDonnee = 190;
+const hautH = 50;
+const basH = 90;
+
+// Données : le niveau change au début de chaque bit
+let donnee = `M${x0} ${bits[0] ? hautDonnee : basDonnee}`;
+bits.forEach((b, k) => {
+	const x = x0 + k * pas;
+	const y = b ? hautDonnee : basDonnee;
+	donnee += ` V${y} H${x + pas}`;
+});
+// Horloge : bas puis haut ; front montant au milieu de chaque bit
+let horloge = `M${x0} ${basH}`;
+bits.forEach((_, k) => {
+	const x = x0 + k * pas;
+	horloge += ` H${x + pas / 2} V${hautH} H${x + pas} V${basH}`;
+});
+horloge = horloge.replace(/ V90$/, '');
+const titre = sync
+	? 'Transmission synchrone : une ligne d’horloge indique à quel moment lire chaque bit.'
+	: 'Transmission asynchrone : pas d’horloge, le récepteur lit à un rythme convenu à l’avance.';
+---
+
+<figure class={`lb lb--${mode}`} data-mode={mode} data-bits={JSON.stringify(bits)} data-x0={x0} data-pas={pas}>
+	<svg class="lb__svg" viewBox="0 0 760 310" role="img" aria-label={titre}>
+		<rect class="lb__fond" x="0" y="0" width="760" height="310"></rect>
+
+		<!-- colonnes de bits (la colonne lue est colorée) -->
+		{bits.map((b, k) => (
+			<rect class="lb__col" data-k={k} x={x0 + k * pas} y="28" width={pas} height="190"></rect>
+		))}
+		{bits.map((_, k) => (
+			<line class="lb__sep" x1={x0 + k * pas} x2={x0 + k * pas} y1="28" y2="218"></line>
+		))}
+		<line class="lb__sep" x1={x0 + 8 * pas} x2={x0 + 8 * pas} y1="28" y2="218"></line>
+
+		{sync && (
+			<>
+				<text class="lb__t lb__t--nom" x={x0 - 12} y="76" text-anchor="end">Horloge</text>
+				<text class="lb__t lb__t--sous" x={x0 - 12} y="92" text-anchor="end">SCLK / SCL</text>
+				<path class="lb__trace lb__trace--horloge" d={horloge}></path>
+			</>
+		)}
+		<text class="lb__t lb__t--nom" x={x0 - 12} y="170" text-anchor="end">Données</text>
+		<text class="lb__t lb__t--sous" x={x0 - 12} y="186" text-anchor="end">{sync ? 'MOSI / SDA' : 'TX → RX'}</text>
+		<path class="lb__trace lb__trace--donnee" d={donnee}></path>
+		{bits.map((b, k) => (
+			<text class="lb__t lb__t--bit" x={x0 + k * pas + pas / 2} y="136" text-anchor="middle">{b}</text>
+		))}
+
+		<!-- curseur : instant de lecture -->
+		<g class="lb__curseur" aria-hidden="true">
+			<line x1="0" x2="0" y1={sync ? 34 : 120} y2="214"></line>
+			<circle cx="0" cy={170} r="7"></circle>
+			<text class="lb__t lb__t--lecture" x="0" y="20" text-anchor="middle">{sync ? 'front montant : lecture' : 'lecture au rythme convenu'}</text>
+		</g>
+
+		<!-- registre du récepteur -->
+		<text class="lb__t lb__t--nom" x={x0 - 12} y="266" text-anchor="end">Récepteur</text>
+		<text class="lb__t lb__t--sous" x={x0 - 12} y="282" text-anchor="end">bits lus</text>
+		{bits.map((b, k) => (
+			<g class="lb__case" data-k={k}>
+				<rect x={x0 + k * pas + 8} y="244" width={pas - 16} height="44" rx="6"></rect>
+				<text class="lb__t lb__t--lu" x={x0 + k * pas + pas / 2} y="274" text-anchor="middle">{b}</text>
+			</g>
+		))}
+	</svg>
+
+	<p class="lb__etat" aria-live="polite">Appuyez sur « Pas à pas » ou « Lecture » pour suivre la transmission bit par bit.</p>
+
+	<p class="lb__controles">
+		<button type="button" class="lb__btn lb__btn--lecture" aria-pressed="false">Lecture automatique</button>
+		<button type="button" class="lb__btn lb__btn--pas">Pas à pas →</button>
+		<button type="button" class="lb__btn lb__btn--raz">Recommencer</button>
+	</p>
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.lb').forEach((fig) => {
+		const bits: number[] = JSON.parse(fig.dataset.bits!);
+		const sync = fig.dataset.mode === 'synchrone';
+		const x0 = Number(fig.dataset.x0);
+		const pas = Number(fig.dataset.pas);
+		const curseur = fig.querySelector<SVGGElement>('.lb__curseur')!;
+		const cols = Array.from(fig.querySelectorAll<SVGRectElement>('.lb__col'));
+		const cases = Array.from(fig.querySelectorAll<SVGGElement>('.lb__case'));
+		const etat = fig.querySelector<HTMLElement>('.lb__etat')!;
+		const lecture = fig.querySelector<HTMLButtonElement>('.lb__btn--lecture')!;
+		let lus = 0;
+		let minuteur: number | undefined;
+
+		const afficher = () => {
+			const k = Math.max(lus - 1, 0);
+			// front montant au milieu du bit (synchrone) ; au rythme convenu, au milieu du bit aussi (asynchrone)
+			const xc = x0 + k * pas + pas / 2;
+			curseur.style.transform = `translateX(${xc}px)`;
+			// l'étiquette reste dans le cadre pour les derniers bits
+			const lab = curseur.querySelector('.lb__t--lecture')!;
+			lab.setAttribute('text-anchor', xc > 560 ? 'end' : 'middle');
+			lab.setAttribute('x', xc > 560 ? '36' : '0');
+			curseur.style.opacity = lus === 0 ? '0' : '1';
+			curseur.querySelector('circle')!.setAttribute('cy', String(bits[k] ? 150 : 190));
+			cols.forEach((c, i) => c.classList.toggle('lb__col--lue', i === lus - 1));
+			cases.forEach((c, i) => c.classList.toggle('lb__case--lue', i < lus));
+			if (lus === 0) etat.textContent = 'Appuyez sur « Pas à pas » ou « Lecture automatique » pour suivre la transmission bit par bit.';
+			else if (lus < bits.length) etat.textContent = `Bit ${lus} lu : ${bits[lus - 1]}. ${sync ? 'L’horloge vient de passer à l’état haut : le récepteur lit la ligne de données.' : 'Le récepteur lit au rythme convenu à l’avance.'}`;
+			else etat.textContent = `Les ${bits.length} bits ont été lus : ${bits.join('')}. Le récepteur a reconstitué la donnée.`;
+		};
+		const arreter = () => {
+			if (minuteur !== undefined) window.clearInterval(minuteur);
+			minuteur = undefined;
+			lecture.setAttribute('aria-pressed', 'false');
+			lecture.textContent = 'Lecture automatique';
+		};
+		const suivant = () => {
+			lus = lus >= bits.length ? 0 : lus + 1;
+			afficher();
+		};
+		fig.querySelector('.lb__btn--pas')!.addEventListener('click', () => { arreter(); suivant(); });
+		fig.querySelector('.lb__btn--raz')!.addEventListener('click', () => { arreter(); lus = 0; afficher(); });
+		lecture.addEventListener('click', () => {
+			if (minuteur !== undefined) { arreter(); return; }
+			lecture.setAttribute('aria-pressed', 'true');
+			lecture.textContent = 'Mettre en pause';
+			if (lus >= bits.length) lus = 0;
+			suivant();
+			minuteur = window.setInterval(() => {
+				if (lus >= bits.length + 2) lus = 0; // petite pause sur le résultat, puis on recommence
+				else lus += 1;
+				afficher();
+			}, 1000);
+		});
+		afficher();
+	});
+</script>
+
+<style>
+	.lb { margin: 1.5rem auto; max-width: 42rem; }
+	.lb__svg { display: block; width: 100%; height: auto; border: 1px solid var(--sl-color-hairline); border-radius: 0.6rem; background: #f4f5f6; }
+	.lb__fond { fill: #f4f5f6; }
+	.lb__t { font-family: inherit; fill: #0f172a; }
+	.lb__t--nom { font-size: 15px; font-weight: 700; }
+	.lb__t--sous { font-size: 11.5px; fill: #475569; }
+	.lb__t--bit { font-size: 16px; font-weight: 700; fill: #1e3a8a; }
+	.lb__t--lecture { font-size: 12.5px; font-weight: 700; fill: #b45309; }
+	.lb__t--lu { font-size: 22px; font-weight: 800; fill: #ffffff; opacity: 0; transition: opacity 0.25s; }
+
+	.lb__col { fill: transparent; transition: fill 0.25s; }
+	.lb__col--lue { fill: #fde68a; }
+	.lb__sep { stroke: #cbd5e1; stroke-width: 1.5; stroke-dasharray: 4 5; }
+	.lb__trace { fill: none; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+	.lb__trace--horloge { stroke: #d97706; }
+	.lb__trace--donnee { stroke: #2563eb; }
+
+	.lb__curseur { transition: transform 0.45s ease, opacity 0.25s; opacity: 0; }
+	.lb__curseur line { stroke: #b45309; stroke-width: 2.5; }
+	.lb__curseur circle { fill: #b45309; stroke: #ffffff; stroke-width: 2; }
+
+	.lb__case rect { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.5; transition: fill 0.25s; }
+	.lb__case--lue rect { fill: #2563eb; stroke: #1e3a8a; }
+	.lb__case--lue .lb__t--lu { opacity: 1; }
+
+	.lb__etat { margin: 0.7rem 0 0; min-height: 2.8em; font-size: var(--sl-text-sm); }
+	.lb__controles { margin: 0.4rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+	.lb__btn { margin: 0; cursor: pointer; padding: 0.35rem 0.9rem; border-radius: 0.4rem; font-size: var(--sl-text-sm); font-weight: 600; border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+	.lb__btn--pas { background: var(--sl-color-accent); color: var(--sl-color-black); }
+
+	@media (prefers-reduced-motion: reduce) {
+		.lb__curseur, .lb__col, .lb__case rect, .lb__t--lu { transition: none; }
+		.lb__btn--lecture { display: none; }
+	}
+</style>

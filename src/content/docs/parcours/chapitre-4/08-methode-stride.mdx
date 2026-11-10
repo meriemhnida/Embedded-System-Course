@@ -1,12 +1,12 @@
 ---
 title: "La méthode STRIDE"
-description: "Chapitre 3 — identifier les biens à protéger, classer les menaces avec la méthode STRIDE sur une chaîne capteur, carte, actionneur, évaluer leur criticité et les appliquer aux attaques sur les capteurs."
+description: "Chapitre 4 — identifier les biens à protéger, classer les menaces avec la méthode STRIDE sur une chaîne capteur, carte, actionneur, évaluer leur criticité et les appliquer aux attaques sur les capteurs."
 ---
 
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectif de la page]
-Avant d'écrire du code de sécurité, **identifier ce qu'il faut protéger** et **contre quoi**. La méthode STRIDE donne une grille pour ne pas oublier de famille de menaces, et la criticité pour décider par quoi commencer. La page [Les menaces de sécurité et la méthode STRIDE en bref](/Embedded-System-Course/parcours/chapitre-3/01-menaces-et-stride/) en donne une première présentation.
+Avant d'écrire du code de sécurité, **identifier ce qu'il faut protéger** et **contre quoi**. La méthode STRIDE donne une grille pour ne pas oublier de famille de menaces, et la criticité pour décider par quoi commencer. La page [Les menaces de sécurité et la méthode STRIDE en bref](/Embedded-System-Course/parcours/chapitre-4/01-menaces-et-stride/) en donne une première présentation.
 :::
 
 ## Les biens à protéger
@@ -33,7 +33,7 @@ STRIDE classe les menaces en six familles. Chacune s'oppose à une propriété d
 
 Deux exemples tirés du chapitre : l'**usurpation GPS** relève de *Spoofing* (une fausse source se fait passer pour les satellites), et le **brouillage** relève de *Denial of service* (la mesure n'est plus disponible).
 
-<Question id="ch3-q3.12" label="Q3.12" lignes={10}>
+<Question id="ch3-q3.12" label="Q4.12" lignes={10}>
 Classez les huit attaques du chapitre (GPS, LiDAR, microphone, caméra, IMU, ultrasons, radar, empreintes) dans une ou plusieurs familles STRIDE, en distinguant au besoin l'usurpation du brouillage. Justifiez chaque classement en une phrase et indiquez la propriété de sécurité visée.
 </Question>
 
@@ -79,18 +79,18 @@ Une chaîne embarquée comporte trois éléments : un **capteur**, une **carte d
 | **E** | Un utilisateur autorisé à lire l'état de l'actionneur obtient le droit de l'activer. | Séparer les permissions de lecture, de configuration et de commande ; autorisation renforcée pour les fonctions critiques ; contrôle des modes maintenance et automatique. |
 
 :::tip[Où se placent les huit attaques du chapitre ?]
-Sur la ligne du **capteur**, mais elles agissent sur la grandeur physique elle-même : elles falsifient la mesure (*Tampering*) ou la noient (*Denial of service*). Dans la ligne « T » du capteur, l'authentification et l'intégrité des messages n'y suffisent pas, puisque la mesure est déjà fausse quand elle est numérisée ; la redondance des capteurs et le contrôle de plausibilité restent efficaces, d'où l'importance des [six réflexes de défense](/Embedded-System-Course/parcours/chapitre-3/07-se-defendre/).
+Sur la ligne du **capteur**, mais elles agissent sur la grandeur physique elle-même : elles falsifient la mesure (*Tampering*) ou la noient (*Denial of service*). Dans la ligne « T » du capteur, l'authentification et l'intégrité des messages n'y suffisent pas, puisque la mesure est déjà fausse quand elle est numérisée ; la redondance des capteurs et le contrôle de plausibilité restent efficaces, d'où l'importance des [six réflexes de défense](/Embedded-System-Course/parcours/chapitre-4/07-se-defendre/).
 :::
 
 ## Appliquer STRIDE à votre contrôleur
 
 Pour les questions suivantes, placez-vous dans ce contexte : le contrôleur de température de l'exercice 11 est installé dans une armoire accessible au personnel de maintenance, et son propriétaire envisage de le relier à un système de supervision.
 
-<Question id="ch3-q3.13" label="Q3.13" lignes={7}>
+<Question id="ch3-q3.13" label="Q4.13" lignes={7}>
 Pour chacun des **trois biens essentiels** (fonction d'alarme, seuils, données transmises), indiquez la propriété la plus critique (disponibilité, intégrité ou confidentialité) et justifiez en une phrase. Précisez ensuite les biens supports sur lesquels chacun repose.
 </Question>
 
-<Question id="ch3-q3.14" label="Q3.14" lignes={10}>
+<Question id="ch3-q3.14" label="Q4.14" lignes={10}>
 Pour **chaque famille STRIDE**, décrivez une menace réaliste qui pèse sur votre contrôleur. Vous pouvez vous inspirer des tableaux ci-dessus en les adaptant à votre montage. Si une famille ne s'applique pas à votre montage actuel, dites pourquoi. Pour chaque menace, indiquez la défense que vous prévoiriez, ou dites qu'il s'agit d'un **risque résiduel**.
 </Question>
 
@@ -105,15 +105,15 @@ La **criticité** d'un risque combine sa **vraisemblance** (de 1, peu probable, 
 | **2 significative** | 2 | 4 | 6 | 8 |
 | **1 négligeable** | 1 | 2 | 3 | 4 |
 
-<Question id="ch3-q3.15" label="Q3.15" lignes={7}>
-Choisissez **trois menaces** de la question Q3.14. Pour chacune, estimez la vraisemblance et la gravité **avant** et **après** application de votre défense, calculez les criticités et classez-les. Justifiez vos estimations.
+<Question id="ch3-q3.15" label="Q4.15" lignes={7}>
+Choisissez **trois menaces** de la question Q4.14. Pour chacune, estimez la vraisemblance et la gravité **avant** et **après** application de votre défense, calculez les criticités et classez-les. Justifiez vos estimations.
 </Question>
 
 ## Et si la mesure est fausse ?
 
 Ajoutez systématiquement cette question à votre analyse, pour **chaque capteur** : que se passe-t-il si sa mesure est fausse, mais plausible ?
 
-<Question id="ch3-q3.16" label="Q3.16" lignes={8}>
+<Question id="ch3-q3.16" label="Q4.16" lignes={8}>
 Pour chaque capteur ou entrée de votre montage (DHT22, bouton-poussoir, interrupteur °C/°F), décrivez la conséquence d'une mesure fausse mais plausible. Quel **contrôle de plausibilité** et quel **état de repli sûr** ajouteriez-vous au programme ? Évaluez la criticité du risque correspondant.
 </Question>
 
@@ -124,8 +124,8 @@ Pour chaque capteur ou entrée de votre montage (DHT22, bouton-poussoir, interru
 - [ ] Je sais appliquer les six familles à chacun des trois éléments d'une chaîne capteur, carte, actionneur.
 - [ ] Les six familles sont examinées pour le contrôleur, chacune par une menace ou une justification.
 - [ ] Trois risques sont évalués avant et après traitement, avec une criticité calculée.
-- [ ] Les questions Q3.12 à Q3.16 ont une réponse justifiée.
+- [ ] Les questions Q4.12 à Q4.16 ont une réponse justifiée.
 
 :::note[Prochaine étape]
-Validez cette page, puis découvrez les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/), qui protègent à la fois le capteur, la carte et l'actionneur.
+Validez cette page, puis découvrez les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/), qui protègent à la fois le capteur, la carte et l'actionneur.
 :::

@@ -1,0 +1,227 @@
+---
+// Câblage animé d'un protocole de communication entre le Raspberry Pi et ses périphériques.
+// type : 'i2c' (2 fils partagés), 'spi' (4 fils + une broche CS par périphérique), 'uart' (2 fils croisés, sans horloge).
+interface Props {
+	type: 'i2c' | 'spi' | 'uart';
+}
+const { type } = Astro.props;
+
+const legendes = {
+	i2c: [
+		['sda', '<strong>SDA</strong> (GPIO 2) : transmet les <strong>données</strong>.'],
+		['scl', '<strong>SCL</strong> (GPIO 3) : envoie le <strong>signal d’horloge</strong> pour synchroniser la communication.'],
+	],
+	spi: [
+		['mosi', '<strong>MOSI</strong> (GPIO 10) : le Pi envoie des données vers le périphérique.'],
+		['miso', '<strong>MISO</strong> (GPIO 9) : le périphérique envoie des données vers le Pi.'],
+		['sclk', '<strong>SCLK</strong> (GPIO 11) : le Pi génère l’horloge pour synchroniser les bits.'],
+		['ce', '<strong>CE0 / CE1</strong> (GPIO 8 / 7) : le Pi dit « je parle à TOI » à un périphérique précis.'],
+	],
+	uart: [
+		['tx', '<strong>TXD</strong> (GPIO 14) : le Pi envoie des données ; il est relié au RX du périphérique.'],
+		['rx', '<strong>RXD</strong> (GPIO 15) : le Pi reçoit des données ; il est relié au TX du périphérique.'],
+	],
+}[type];
+
+const titres = {
+	i2c: 'Câblage I2C : deux fils partagés par plusieurs périphériques',
+	spi: 'Câblage SPI : trois fils partagés et une broche CS par périphérique',
+	uart: 'Câblage UART : deux fils croisés, sans fil d’horloge',
+}[type];
+
+const peripheriques = [
+	{ x: 225, nom: 'BMP280', l1: 'température,', l2: 'pression' },
+	{ x: 355, nom: 'MPU6050', l1: 'accéléromètre,', l2: 'gyroscope' },
+	{ x: 485, nom: 'BH1750', l1: 'capteur de', l2: 'luminosité' },
+	{ x: 615, nom: 'PCA9685', l1: 'contrôleur de', l2: 'servomoteurs' },
+];
+---
+
+<figure class={`bp bp--${type}`}>
+	<svg class="bp__svg" viewBox="0 0 760 320" role="img" aria-label={titres}>
+		<rect class="bp__fond" x="0" y="0" width="760" height="320"></rect>
+
+		<!-- Raspberry Pi -->
+		<rect class="bp__pi" x="20" y="20" width="170" height="280" rx="10"></rect>
+		<text class="bp__t bp__t--pi" x="105" y={type === 'spi' ? 84 : 52} text-anchor="middle">Raspberry Pi</text>
+
+		{type === 'i2c' && (
+			<>
+				<text class="bp__t bp__t--pin" x="180" y="104" text-anchor="end">SDA · GPIO 2</text>
+				<text class="bp__t bp__t--pin" x="180" y="154" text-anchor="end">SCL · GPIO 3</text>
+				<!-- fils partagés -->
+				<path class="bp__fil" d="M190 100 H735"></path>
+				<path class="bp__fil" d="M190 150 H735"></path>
+				{peripheriques.map((p) => (
+					<>
+						<path class="bp__fil" d={`M${p.x + 35} 100 V206`}></path>
+						<path class="bp__fil" d={`M${p.x + 85} 150 V206`}></path>
+						<circle class="bp__noeud" cx={p.x + 35} cy="100" r="4"></circle>
+						<circle class="bp__noeud" cx={p.x + 85} cy="150" r="4"></circle>
+						<rect class="bp__periph" x={p.x} y="206" width="120" height="86" rx="8"></rect>
+						<text class="bp__t bp__t--nom" x={p.x + 60} y="234" text-anchor="middle">{p.nom}</text>
+						<text class="bp__t bp__t--desc" x={p.x + 60} y="256" text-anchor="middle">{p.l1}</text>
+						<text class="bp__t bp__t--desc" x={p.x + 60} y="272" text-anchor="middle">{p.l2}</text>
+					</>
+				))}
+				<!-- signaux : même vitesse sur les deux fils, un bit = une période d'horloge -->
+				<path class="bp__flux bp__flux--donnee bp-anim" d="M190 100 H735"></path>
+				<path class="bp__flux bp__flux--horloge bp-anim" d="M190 150 H735"></path>
+				<text class="bp__t bp__t--fil" x="740" y="92" text-anchor="end" fill="#1d4ed8">SDA : données</text>
+				<text class="bp__t bp__t--fil" x="740" y="142" text-anchor="end" fill="#b45309">SCL : horloge</text>
+			</>
+		)}
+
+		{type === 'spi' && (
+			<>
+				<text class="bp__t bp__t--pin" x="180" y="44" text-anchor="end">CE0 · GPIO 8</text>
+				<text class="bp__t bp__t--pin" x="180" y="134" text-anchor="end">MOSI · GPIO 10</text>
+				<text class="bp__t bp__t--pin" x="180" y="164" text-anchor="end">MISO · GPIO 9</text>
+				<text class="bp__t bp__t--pin" x="180" y="194" text-anchor="end">SCLK · GPIO 11</text>
+				<text class="bp__t bp__t--pin" x="180" y="289" text-anchor="end">CE1 · GPIO 7</text>
+
+				<!-- bus partagé -->
+				<path class="bp__fil" d="M190 130 H495"></path>
+				<path class="bp__fil" d="M495 160 H190"></path>
+				<path class="bp__fil" d="M190 190 H495"></path>
+				<rect class="bp__bus" x="495" y="100" width="12" height="140" rx="4"></rect>
+				<path class="bp__fil bp__fil--epais" d="M507 120 H560"></path>
+				<path class="bp__fil bp__fil--epais" d="M507 220 H560"></path>
+				<text class="bp__t bp__t--fil" x="470" y="262" text-anchor="middle" fill="#475569">bus partagé</text>
+
+				<!-- périphériques -->
+				<rect class="bp__periph bp__periph--a" x="560" y="80" width="180" height="80" rx="8"></rect>
+				<rect class="bp__anneau bp__anneau--a bp-anim" x="556" y="76" width="188" height="88" rx="11"></rect>
+				<text class="bp__t bp__t--nom" x="650" y="116" text-anchor="middle">MAX31855</text>
+				<text class="bp__t bp__t--desc" x="650" y="136" text-anchor="middle">thermocouple</text>
+				<text class="bp__t bp__t--cs" x="634" y="98" text-anchor="end">CS</text>
+				<rect class="bp__periph bp__periph--b" x="560" y="180" width="180" height="80" rx="8"></rect>
+				<rect class="bp__anneau bp__anneau--b bp-anim" x="556" y="176" width="188" height="88" rx="11"></rect>
+				<text class="bp__t bp__t--nom" x="650" y="216" text-anchor="middle">NRF24L01</text>
+				<text class="bp__t bp__t--desc" x="650" y="236" text-anchor="middle">module radio sans fil</text>
+				<text class="bp__t bp__t--cs" x="634" y="250" text-anchor="end">CS</text>
+
+				<!-- sélection du périphérique : un fil CE par périphérique -->
+				<path class="bp__fil" d="M190 40 H646 V80"></path>
+				<path class="bp__fil" d="M190 285 H646 V260"></path>
+				<path class="bp__ce bp__ce--a bp-anim" d="M190 40 H646 V80"></path>
+				<path class="bp__ce bp__ce--b bp-anim" d="M190 285 H646 V260"></path>
+
+				<!-- signaux -->
+				<path class="bp__flux bp__flux--donnee bp-anim" d="M190 130 H495"></path>
+				<path class="bp__flux bp__flux--retour bp-anim" d="M495 160 H190"></path>
+				<path class="bp__flux bp__flux--horloge bp-anim" d="M190 190 H495"></path>
+				<path class="bp__flux bp__flux--donnee bp__flux--a bp-anim" d="M507 120 H560"></path>
+				<path class="bp__flux bp__flux--donnee bp__flux--b bp-anim" d="M507 220 H560"></path>
+			</>
+		)}
+
+		{type === 'uart' && (
+			<>
+				<text class="bp__t bp__t--pin" x="180" y="114" text-anchor="end">TXD · GPIO 14</text>
+				<text class="bp__t bp__t--pin" x="180" y="214" text-anchor="end">RXD · GPIO 15</text>
+				<rect class="bp__periph" x="570" y="80" width="170" height="160" rx="8"></rect>
+				<text class="bp__t bp__t--cs" x="582" y="114" text-anchor="start">TX</text>
+				<text class="bp__t bp__t--cs" x="582" y="214" text-anchor="start">RX</text>
+				<text class="bp__t bp__t--nom" x="665" y="166" text-anchor="middle">GPS NEO-6M</text>
+				<text class="bp__t bp__t--desc" x="665" y="186" text-anchor="middle">position, altitude, vitesse</text>
+				<!-- fils croisés : TX du Pi vers RX du périphérique et inversement -->
+				<path class="bp__fil" d="M190 110 H330 L430 210 H570"></path>
+				<path class="bp__fil" d="M190 210 H330 L430 110 H570"></path>
+				<path class="bp__flux bp__flux--tx bp-anim" d="M190 110 H330 L430 210 H570"></path>
+				<path class="bp__flux bp__flux--rx bp-anim" d="M570 110 H430 L330 210 H190"></path>
+				<text class="bp__t bp__t--fil" x="300" y="100" text-anchor="middle" fill="#6d28d9">Pi → périphérique</text>
+				<text class="bp__t bp__t--fil" x="300" y="236" text-anchor="middle" fill="#0f766e">périphérique → Pi</text>
+				<!-- pas d'horloge : un rythme convenu à l'avance -->
+				<rect class="bp__note" x="228" y="258" width="304" height="40" rx="8"></rect>
+				<text class="bp__t bp__t--note" x="380" y="275" text-anchor="middle">Aucun fil d’horloge : les deux appareils se sont</text>
+				<text class="bp__t bp__t--note" x="380" y="291" text-anchor="middle">mis d’accord sur la vitesse (baud rate)</text>
+				<rect class="bp__baud" x="30" y="236" width="150" height="26" rx="13"></rect>
+				<text class="bp__t bp__t--baud" x="105" y="254" text-anchor="middle">ex. 9600 bauds</text>
+				<rect class="bp__baud" x="585" y="256" width="140" height="26" rx="13"></rect>
+				<text class="bp__t bp__t--baud" x="655" y="274" text-anchor="middle">ex. 9600 bauds</text>
+			</>
+		)}
+	</svg>
+
+	<ul class="bp__legende">
+		{legendes.map(([k, html]) => <li class={`bp__l bp__l--${k}`} set:html={html} />)}
+	</ul>
+
+	<p class="bp__controles">
+		<button type="button" class="bp__pause" aria-pressed="false">Mettre l’animation en pause</button>
+	</p>
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.bp').forEach((fig) => {
+		const bouton = fig.querySelector<HTMLButtonElement>('.bp__pause');
+		if (!bouton) return;
+		bouton.addEventListener('click', () => {
+			const enPause = fig.classList.toggle('est-en-pause');
+			bouton.setAttribute('aria-pressed', String(enPause));
+			bouton.textContent = enPause ? 'Reprendre l’animation' : 'Mettre l’animation en pause';
+		});
+	});
+</script>
+
+<style>
+	.bp { margin: 1.5rem auto; max-width: 40rem; }
+	.bp__svg { display: block; width: 100%; height: auto; border: 1px solid var(--sl-color-hairline); border-radius: 0.6rem; background: #f4f5f6; }
+	.bp__fond { fill: #f4f5f6; }
+	.bp__t { font-family: inherit; fill: #0f172a; }
+	.bp__t--pi { font-size: 19px; font-weight: 700; fill: #ffffff; }
+	.bp__t--pin { font-size: 13px; font-weight: 600; fill: #ecfdf5; }
+	.bp__t--nom { font-size: 15px; font-weight: 700; }
+	.bp__t--desc { font-size: 12px; fill: #334155; }
+	.bp__t--cs { font-size: 12px; font-weight: 700; fill: #9d174d; }
+	.bp__t--fil { font-size: 13px; font-weight: 700; }
+	.bp__t--note { font-size: 12.5px; font-weight: 600; fill: #1e293b; }
+	.bp__t--baud { font-size: 12.5px; font-weight: 700; fill: #1e293b; }
+
+	.bp__pi { fill: #1f8f4e; stroke: #14532d; stroke-width: 3; }
+	.bp__periph { fill: #e2e8f0; stroke: #64748b; stroke-width: 2; }
+	.bp__bus { fill: #94a3b8; }
+	.bp__fil { fill: none; stroke: #94a3b8; stroke-width: 4; stroke-linejoin: round; }
+	.bp__fil--epais { stroke-width: 8; }
+	.bp__noeud { fill: #475569; }
+	.bp__note { fill: #fffbeb; stroke: #d97706; stroke-width: 1.5; stroke-dasharray: 5 4; }
+	.bp__baud { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+
+	/* signaux : un bit = 18 px ; l'horloge fait un aller-retour par bit, à la même vitesse que les données */
+	.bp__flux { fill: none; stroke-width: 5; stroke-linecap: butt; stroke-linejoin: round; }
+	.bp__flux--donnee, .bp__flux--tx { stroke: #2563eb; stroke-dasharray: 36 18 18 36 18 18; animation: bp-donnee 4.8s linear infinite; }
+	.bp__flux--tx { stroke: #7c3aed; }
+	.bp__flux--retour, .bp__flux--rx { stroke: #0f766e; stroke-dasharray: 18 18 36 18 18 36; animation: bp-donnee 4.8s linear infinite; }
+	.bp__flux--horloge { stroke: #d97706; stroke-dasharray: 9 9; animation: bp-horloge 0.6s linear infinite; }
+	@keyframes bp-donnee { to { stroke-dashoffset: -144; } }
+	@keyframes bp-horloge { to { stroke-dashoffset: -18; } }
+
+	/* SPI : le Pi choisit tour à tour un périphérique (cycle de 10 s) */
+	.bp__ce { fill: none; stroke: #db2777; stroke-width: 5; stroke-linejoin: round; }
+	.bp__anneau { fill: none; stroke: #db2777; stroke-width: 4; }
+	.bp__ce--a, .bp__anneau--a, .bp__flux--a { animation: bp-actif-a 10s linear infinite; }
+	.bp__ce--b, .bp__anneau--b, .bp__flux--b { animation: bp-actif-b 10s linear infinite; }
+	.bp__flux--a { animation: bp-actif-a 10s linear infinite, bp-donnee 4.8s linear infinite; }
+	.bp__flux--b { animation: bp-actif-b 10s linear infinite, bp-donnee 4.8s linear infinite; }
+	@keyframes bp-actif-a { 0%, 46% { opacity: 1; } 50%, 96% { opacity: 0; } 100% { opacity: 1; } }
+	@keyframes bp-actif-b { 0%, 46% { opacity: 0; } 50%, 96% { opacity: 1; } 100% { opacity: 0; } }
+
+	.bp.est-en-pause :global(.bp-anim) { animation-play-state: paused; }
+
+	.bp__legende { list-style: none; margin: 0.8rem 0 0; padding: 0; display: grid; gap: 0.35rem; font-size: var(--sl-text-sm); }
+	.bp__l { margin: 0; padding: 0.3rem 0.7rem; border-left: 5px solid #94a3b8; background: var(--sl-color-gray-6); border-radius: 0.3rem; }
+	.bp__l--sda, .bp__l--mosi { border-color: #2563eb; }
+	.bp__l--scl, .bp__l--sclk { border-color: #d97706; }
+	.bp__l--miso, .bp__l--rx { border-color: #0f766e; }
+	.bp__l--ce { border-color: #db2777; }
+	.bp__l--tx { border-color: #7c3aed; }
+	.bp__controles { margin: 0.6rem 0 0; text-align: center; }
+	.bp__pause { margin: 0; cursor: pointer; padding: 0.3rem 0.9rem; border-radius: 0.4rem; font-size: var(--sl-text-sm); border: 1px solid var(--sl-color-gray-4); background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+
+	@media (prefers-reduced-motion: reduce) {
+		.bp-anim { animation: none !important; }
+		.bp__ce--b, .bp__anneau--b, .bp__flux--b { opacity: 0.3; }
+		.bp__controles { display: none; }
+	}
+</style>

@@ -1,6 +1,6 @@
 ---
 title: "Les menaces de sécurité et la méthode STRIDE en bref"
-description: "Chapitre 3 — pourquoi un système embarqué est une cible, les propriétés à protéger, où agit un attaquant sur une chaîne capteur, carte, actionneur, et présentation brève de la méthode STRIDE."
+description: "Chapitre 4 — pourquoi un système embarqué est une cible, les propriétés à protéger, où agit un attaquant sur une chaîne capteur, carte, actionneur, et présentation brève de la méthode STRIDE."
 ---
 
 import ArchitectureSysteme from '../../../../components/ArchitectureSysteme.astro';
@@ -55,12 +55,12 @@ Une **surface d'attaque** est un endroit où un attaquant peut essayer d'agir. E
 
 | Surface | Ce qu'un attaquant peut chercher à faire | Défenses principales | Pour en savoir plus |
 |---|---|---|---|
-| **01 · Capteur** | Falsifier la grandeur physique, ou se faire passer pour le capteur. | Redondance, contrôle de plausibilité, authentification du capteur. | Pages [02 à 05](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/) et [07](/Embedded-System-Course/parcours/chapitre-3/07-se-defendre/) |
-| **02 · Carte** | Modifier le firmware, extraire des secrets, exploiter un service exposé. | Démarrage sécurisé (Secure Boot), firmware signé, moindre privilège, peu de services exposés. | Pages [08](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/) et [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
-| **03 · Actionneur** | Envoyer ou modifier une consigne, forcer un état dangereux. | Validation des commandes, état sûr, arrêt d'urgence indépendant du logiciel. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
-| **04 · Réseau et bus** | Écouter, modifier, rejouer ou bloquer des messages. | Authentification, intégrité, fraîcheur, chiffrement, segmentation du réseau. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
-| **05 · Débogage et maintenance** | Lire ou réécrire le programme, installer un firmware non autorisé. | Interfaces de débogage désactivées en production, mises à jour signées. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
-| **06 · Alimentation et boîtier** | Accéder physiquement à la carte, couper l'alimentation, provoquer un redémarrage ou une erreur de calcul. | Boîtier fermé et contrôlé, watchdog, alimentation protégée, état sûr en cas de coupure. | Pages [06](/Embedded-System-Course/parcours/chapitre-3/06-couches/) et [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+| **01 · Capteur** | Falsifier la grandeur physique, ou se faire passer pour le capteur. | Redondance, contrôle de plausibilité, authentification du capteur. | Pages [02 à 05](/Embedded-System-Course/parcours/chapitre-4/02-attaque-avant-numerisation/) et [07](/Embedded-System-Course/parcours/chapitre-4/07-se-defendre/) |
+| **02 · Carte** | Modifier le firmware, extraire des secrets, exploiter un service exposé. | Démarrage sécurisé (Secure Boot), firmware signé, moindre privilège, peu de services exposés. | Pages [08](/Embedded-System-Course/parcours/chapitre-4/08-methode-stride/) et [09](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/) |
+| **03 · Actionneur** | Envoyer ou modifier une consigne, forcer un état dangereux. | Validation des commandes, état sûr, arrêt d'urgence indépendant du logiciel. | Page [09](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/) |
+| **04 · Réseau et bus** | Écouter, modifier, rejouer ou bloquer des messages. | Authentification, intégrité, fraîcheur, chiffrement, segmentation du réseau. | Page [09](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/) |
+| **05 · Débogage et maintenance** | Lire ou réécrire le programme, installer un firmware non autorisé. | Interfaces de débogage désactivées en production, mises à jour signées. | Page [09](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/) |
+| **06 · Alimentation et boîtier** | Accéder physiquement à la carte, couper l'alimentation, provoquer un redémarrage ou une erreur de calcul. | Boîtier fermé et contrôlé, watchdog, alimentation protégée, état sûr en cas de coupure. | Pages [06](/Embedded-System-Course/parcours/chapitre-4/06-couches/) et [09](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/) |
 
 Les surfaces 04, 05 et 06 sont souvent oubliées : elles ne font pas partie du programme que vous écrivez, mais elles donnent accès à tout le reste.
 
@@ -76,7 +76,7 @@ Les surfaces indiquent **où** l'attaquant peut agir ; les menaces se rangent en
 | **Le matériel** | Accès aux ports de débogage de la carte, extraction du contenu de la mémoire. |
 | **L'exploitation** | Mots de passe par défaut, droits trop larges, absence de journaux, mises à jour jamais installées. |
 
-Les pages [L'attaque avant la numérisation](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/) à [Images et empreintes](/Embedded-System-Course/parcours/chapitre-3/05-images-empreintes/) détaillent la première ligne, la plus surprenante parce qu'elle échappe au chiffrement. Les autres lignes sont traitées dans [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/) et dans les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/).
+Les pages [L'attaque avant la numérisation](/Embedded-System-Course/parcours/chapitre-4/02-attaque-avant-numerisation/) à [Images et empreintes](/Embedded-System-Course/parcours/chapitre-4/05-images-empreintes/) détaillent la première ligne, la plus surprenante parce qu'elle échappe au chiffrement. Les autres lignes sont traitées dans [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-4/08-methode-stride/) et dans les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-4/09-mesures-transversales/).
 
 ## STRIDE en bref
 
@@ -91,10 +91,10 @@ Pour ne pas oublier de famille de menaces, on les classe avec la méthode **STRI
 | **D**enial of service, déni de service | Rendre le système indisponible | Disponibilité | Brouillage radio, saturation du bus. |
 | **E**levation of privilege, élévation de privilèges | Obtenir des droits que l'on ne devrait pas avoir | Autorisation | Un simple lecteur de télémétrie commande l'actionneur. |
 
-Le principe de la méthode est simple : pour **chaque élément** de la chaîne (capteur, carte, actionneur) et **chaque liaison**, on se demande si chacune des six familles s'applique. Vous la mettrez en pratique à la page [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/).
+Le principe de la méthode est simple : pour **chaque élément** de la chaîne (capteur, carte, actionneur) et **chaque liaison**, on se demande si chacune des six familles s'applique. Vous la mettrez en pratique à la page [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-4/08-methode-stride/).
 
 :::caution[STRIDE ne suffit pas pour la sûreté]
-STRIDE couvre principalement la **cybersécurité**. Pour un système qui commande un moteur, une vanne, un frein ou un robot, il faut aussi conduire une analyse de **sûreté de fonctionnement**, par exemple une **AMDEC** (analyse des modes de défaillance, de leurs effets et de leur criticité, *FMEA* en anglais) ou une analyse **STPA** (*System-Theoretic Process Analysis*), afin de traiter les conséquences physiques. La page sur les [couches](/Embedded-System-Course/parcours/chapitre-3/06-couches/) revient sur la différence entre sûreté et sécurité.
+STRIDE couvre principalement la **cybersécurité**. Pour un système qui commande un moteur, une vanne, un frein ou un robot, il faut aussi conduire une analyse de **sûreté de fonctionnement**, par exemple une **AMDEC** (analyse des modes de défaillance, de leurs effets et de leur criticité, *FMEA* en anglais) ou une analyse **STPA** (*System-Theoretic Process Analysis*), afin de traiter les conséquences physiques. La page sur les [couches](/Embedded-System-Course/parcours/chapitre-4/06-couches/) revient sur la différence entre sûreté et sécurité.
 :::
 
 ## Le plan du chapitre
@@ -112,5 +112,5 @@ STRIDE couvre principalement la **cybersécurité**. Pour un système qui comman
 - [ ] Je sais expliquer pourquoi STRIDE ne remplace pas une analyse de sûreté.
 
 :::note[Prochaine étape]
-Validez cette page, puis voyez pourquoi [l'attaque se joue avant la numérisation](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/).
+Validez cette page, puis voyez pourquoi [l'attaque se joue avant la numérisation](/Embedded-System-Course/parcours/chapitre-4/02-attaque-avant-numerisation/).
 :::

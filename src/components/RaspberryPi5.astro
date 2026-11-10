@@ -1,0 +1,429 @@
+---
+import { categories, elements, ordre } from '../data/raspberry-pi5';
+
+const couleur = Object.fromEntries(categories.map((c) => [c.id, c.couleur]));
+const col = (id: string) => couleur[elements[id].categorie];
+const cat = (id: string) => elements[id].categorie;
+const label = (id: string) => elements[id].label;
+
+// Les formes sont dessinées d'après la disposition de la carte telle qu'elle apparaît dans le cours
+// (diapositive « Comprendre la carte Raspberry ») : ces fonctions convertissent des repères de la
+// diapositive (px) en coordonnées du schéma.
+const X = (px: number) => +(150 + (px - 395) * 0.81).toFixed(1);
+const Y = (py: number) => +(80 + (py - 110) * 0.81).toFixed(1);
+const W = (n: number) => +(n * 0.81).toFixed(1);
+
+type Etiquette = { id: string; lignes: string[]; x: number; y: number; ancre: 'start' | 'middle' | 'end'; de: [number, number]; vers: [number, number][] };
+
+const etiquettes: Etiquette[] = [
+	{ id: 'gpio', lignes: ['Ports GPIO'], x: 390, y: 42, ancre: 'middle', de: [390, 50], vers: [[390, 84]] },
+	{ id: 'ventilateur', lignes: ['Ventilateur'], x: 652, y: 42, ancre: 'middle', de: [646, 50], vers: [[646, 76]] },
+	{ id: 'pcie', lignes: ['Bus PCIe'], x: 134, y: 277, ancre: 'end', de: [140, 272], vers: [[150, Y(347)]] },
+	{ id: 'bouton', lignes: ['Bouton Power'], x: 134, y: 362, ancre: 'end', de: [140, 357], vers: [[150, Y(452)]] },
+	{ id: 'led', lignes: ['Led d’état'], x: 134, y: 411, ancre: 'end', de: [140, 406], vers: [[150, Y(512)]] },
+	{ id: 'usb', lignes: ['Ports USB'], x: 826, y: 150, ancre: 'start', de: [820, 145], vers: [[X(1196), 145]] },
+	{ id: 'usb3', lignes: ['Ports USB 3'], x: 826, y: 289, ancre: 'start', de: [820, 284], vers: [[X(1196), 284]] },
+	{ id: 'ethernet', lignes: ['Ethernet', 'Gigabit'], x: 826, y: 424, ancre: 'start', de: [820, 428], vers: [[X(1196), 428]] },
+	{ id: 'usbc', lignes: ['USB-C', 'Alim.'], x: 205, y: 556, ancre: 'middle', de: [218, 540], vers: [[232, 514]] },
+	{ id: 'batterie', lignes: ['Connecteur batterie'], x: 300, y: 604, ancre: 'middle', de: [288, 590], vers: [[288, 474]] },
+	{ id: 'hdmi', lignes: ['Sortie vidéo', 'HDMI'], x: 392, y: 556, ancre: 'middle', de: [392, 540], vers: [[341, 514], [441, 514]] },
+	{ id: 'camlcd', lignes: ['Ports Caméra', 'afficheurs LCD'], x: 540, y: 556, ancre: 'middle', de: [540, 540], vers: [[512, 502], [557, 502]] },
+	{ id: 'poe', lignes: ['PoE'], x: 652, y: 556, ancre: 'middle', de: [650, 540], vers: [[626, 452]] },
+];
+
+---
+
+<div class="rpi" data-ordre={JSON.stringify(ordre)}>
+	<div class="legende" role="group" aria-label="Filtrer par type de composant">
+		{categories.map((c) => (
+			<button type="button" class="filtre" data-cat={c.id} aria-pressed="false">
+				<span class="pastille" style={`background:${c.couleur}`}></span>{c.nom}
+			</button>
+		))}
+	</div>
+
+	<div class="scene">
+		<svg viewBox="0 0 960 630" role="group" aria-label="Schéma interactif de la carte Raspberry Pi 5. Cliquez sur un composant pour obtenir son explication.">
+			<!-- Carte -->
+			<rect class="pcb" x={X(395)} y={Y(110)} width={W(783)} height={W(518)} rx="16"></rect>
+			{[[425, 140], [958, 140], [425, 590], [958, 590]].map(([cx, cy]) => (
+				<circle cx={X(cx)} cy={Y(cy)} r="14" fill="#facc15" stroke="#a16207" stroke-width="3"></circle>
+			))}
+			{[[425, 140], [958, 140], [425, 590], [958, 590]].map(([cx, cy]) => (
+				<circle cx={X(cx)} cy={Y(cy)} r="6" fill="#14532d"></circle>
+			))}
+			<text class="titre-carte" x={X(690)} y={Y(190)} text-anchor="middle">Raspberry Pi 5</text>
+
+			<!-- Ports GPIO -->
+			<g class="el" data-id="gpio" data-cat={cat('gpio')} tabindex="0" role="button" aria-label={label('gpio')}>
+				<rect class="hit" x={X(448)} y={Y(108)} width={W(487)} height={W(70)}></rect>
+				<rect class="corps" x={X(458)} y={Y(118)} width={W(467)} height={W(50)} rx="2" fill="#111827" stroke="#020617" stroke-width="2"></rect>
+				{Array.from({ length: 20 }, (_, i) => (
+					<>
+						<rect x={X(475 + i * 23) - 4} y={Y(133) - 4} width="8" height="8" fill="#fbbf24"></rect>
+						<rect x={X(475 + i * 23) - 4} y={Y(155) - 4} width="8" height="8" fill="#fbbf24"></rect>
+					</>
+				))}
+			</g>
+
+			<!-- Mémoire -->
+			<g class="el" data-id="memoire" data-cat={cat('memoire')} tabindex="0" role="button" aria-label={label('memoire')}>
+				<rect class="hit" x={X(620)} y={Y(205)} width={W(155)} height={W(120)}></rect>
+				<rect class="corps" x={X(630)} y={Y(215)} width={W(135)} height={W(100)} rx="3" fill="#1f2937" stroke="#020617" stroke-width="2"></rect>
+				<text class="etiq" x={X(697)} y={Y(270) + 5} text-anchor="middle" fill="#f1f5f9">Mémoire</text>
+			</g>
+
+			<!-- Southbridge -->
+			<g class="el" data-id="southbridge" data-cat={cat('southbridge')} tabindex="0" role="button" aria-label={label('southbridge')}>
+				<rect class="hit" x={X(865)} y={Y(238)} width={W(133)} height={W(137)}></rect>
+				<rect class="corps" x={X(875)} y={Y(248)} width={W(113)} height={W(117)} rx="3" fill="#1f2937" stroke="#020617" stroke-width="2"></rect>
+				<text class="etiq petit" x={X(931)} y={Y(306) + 4} text-anchor="middle" fill="#f1f5f9">Southbridge</text>
+			</g>
+
+			<!-- Ventilateur (connecteur) -->
+			<g class="el" data-id="ventilateur" data-cat={cat('ventilateur')} tabindex="0" role="button" aria-label={label('ventilateur')}>
+				<rect class="hit" x={X(980)} y={Y(98)} width={W(52)} height={W(72)}></rect>
+				<rect class="corps" x={X(990)} y={Y(108)} width={W(32)} height={W(52)} rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="2"></rect>
+				{[0, 1, 2].map((i) => <circle cx={X(1006)} cy={Y(120 + i * 15)} r="3" fill="#a16207"></circle>)}
+			</g>
+
+			<!-- Wifi / Bluetooth -->
+			<g class="el" data-id="wifi" data-cat={cat('wifi')} tabindex="0" role="button" aria-label={label('wifi')}>
+				<rect class="hit" x={X(445)} y={Y(162)} width={W(120)} height={W(140)}></rect>
+				<rect class="corps" x={X(455)} y={Y(172)} width={W(100)} height={W(120)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<text class="etiq petit" x={X(505)} y={Y(228)} text-anchor="middle" fill="#0f172a">WiFi /</text>
+				<text class="etiq petit" x={X(505)} y={Y(228) + 16} text-anchor="middle" fill="#0f172a">Bluetooth</text>
+			</g>
+
+			<!-- Microprocesseur -->
+			<g class="el" data-id="cpu" data-cat={cat('cpu')} tabindex="0" role="button" aria-label={label('cpu')}>
+				<rect class="hit" x={X(607)} y={Y(328)} width={W(178)} height={W(177)}></rect>
+				<rect class="corps" x={X(617)} y={Y(338)} width={W(158)} height={W(157)} rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(632)} y={Y(353)} width={W(128)} height={W(127)} rx="2" fill="none" stroke="#94a3b8" stroke-width="1.5"></rect>
+				<text class="etiq" x={X(696)} y={Y(416) + 4} text-anchor="middle" fill="#0f172a">Microprocesseur</text>
+			</g>
+
+			<!-- Bus PCIe -->
+			<g class="el" data-id="pcie" data-cat={cat('pcie')} tabindex="0" role="button" aria-label={label('pcie')}>
+				<rect class="hit" x={X(398)} y={Y(295)} width={W(54)} height={W(105)}></rect>
+				<rect class="corps" x={X(400)} y={Y(305)} width={W(42)} height={W(85)} rx="2" fill="#e5e7eb" stroke="#6b7280" stroke-width="2"></rect>
+				<rect x={X(405)} y={Y(315)} width={W(10)} height={W(65)} fill="#9ca3af"></rect>
+			</g>
+
+			<!-- Bouton Power -->
+			<g class="el" data-id="bouton" data-cat={cat('bouton')} tabindex="0" role="button" aria-label={label('bouton')}>
+				<rect class="hit" x={X(397)} y={Y(422)} width={W(40)} height={W(60)}></rect>
+				<rect class="corps" x={X(397)} y={Y(432)} width={W(28)} height={W(40)} rx="3" fill="#1f2937" stroke="#020617" stroke-width="2"></rect>
+				<circle cx={X(414)} cy={Y(452)} r="5" fill="#94a3b8"></circle>
+			</g>
+
+			<!-- Led d'état -->
+			<g class="el" data-id="led" data-cat={cat('led')} tabindex="0" role="button" aria-label={label('led')}>
+				<rect class="hit" x={X(397)} y={Y(494)} width={W(32)} height={W(36)}></rect>
+				<rect class="corps led-etat" x={X(399)} y={Y(502)} width={W(16)} height={W(22)} rx="2" fill="#22c55e" stroke="#14532d" stroke-width="2"></rect>
+			</g>
+
+			<!-- Ports USB (USB 2) -->
+			<g class="el" data-id="usb" data-cat={cat('usb')} tabindex="0" role="button" aria-label={label('usb')}>
+				<rect class="hit" x={X(1030)} y={Y(118)} width={W(190)} height={W(147)}></rect>
+				<rect class="corps" x={X(1040)} y={Y(128)} width={W(170)} height={W(127)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(1062)} y={Y(150)} width={W(135)} height={W(83)} fill="#111827"></rect>
+				<rect x={X(1072)} y={Y(184)} width={W(115)} height={W(16)} fill="#64748b"></rect>
+			</g>
+
+			<!-- Ports USB 3 -->
+			<g class="el" data-id="usb3" data-cat={cat('usb3')} tabindex="0" role="button" aria-label={label('usb3')}>
+				<rect class="hit" x={X(1030)} y={Y(290)} width={W(190)} height={W(145)}></rect>
+				<rect class="corps" x={X(1040)} y={Y(300)} width={W(170)} height={W(125)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(1062)} y={Y(322)} width={W(135)} height={W(81)} fill="#111827"></rect>
+				<rect x={X(1072)} y={Y(354)} width={W(115)} height={W(16)} fill="#2563eb"></rect>
+			</g>
+
+			<!-- Ethernet Gigabit -->
+			<g class="el" data-id="ethernet" data-cat={cat('ethernet')} tabindex="0" role="button" aria-label={label('ethernet')}>
+				<rect class="hit" x={X(1000)} y={Y(452)} width={W(220)} height={W(173)}></rect>
+				<rect class="corps" x={X(1010)} y={Y(462)} width={W(200)} height={W(153)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(1032)} y={Y(486)} width={W(165)} height={W(105)} fill="#111827"></rect>
+				{Array.from({ length: 8 }, (_, i) => <rect x={X(1048 + i * 17)} y={Y(494)} width="3" height={W(34)} fill="#fbbf24"></rect>)}
+			</g>
+
+			<!-- PoE -->
+			<g class="el" data-id="poe" data-cat={cat('poe')} tabindex="0" role="button" aria-label={label('poe')}>
+				<rect class="hit" x={X(925)} y={Y(490)} width={W(70)} height={W(85)}></rect>
+				<rect class="corps" x={X(935)} y={Y(500)} width={W(50)} height={W(65)} rx="2" fill="#111827" stroke="#020617" stroke-width="2"></rect>
+				{[[947, 516], [972, 516], [947, 548], [972, 548]].map(([cx, cy]) => <circle cx={X(cx)} cy={Y(cy)} r="4" fill="#fbbf24"></circle>)}
+			</g>
+
+			<!-- Ports caméra / afficheurs LCD -->
+			<g class="el" data-id="camlcd" data-cat={cat('camlcd')} tabindex="0" role="button" aria-label={label('camlcd')}>
+				<rect class="hit" x={X(815)} y={Y(465)} width={W(110)} height={W(170)}></rect>
+				<rect class="corps" x={X(825)} y={Y(475)} width={W(33)} height={W(153)} rx="2" fill="#d6b98a" stroke="#78350f" stroke-width="2"></rect>
+				<rect class="corps" x={X(880)} y={Y(475)} width={W(35)} height={W(153)} rx="2" fill="#d6b98a" stroke="#78350f" stroke-width="2"></rect>
+				<rect x={X(829)} y={Y(500)} width={W(25)} height={W(10)} fill="#78350f"></rect>
+				<rect x={X(884)} y={Y(500)} width={W(27)} height={W(10)} fill="#78350f"></rect>
+			</g>
+
+			<!-- Sorties vidéo HDMI -->
+			<g class="el" data-id="hdmi" data-cat={cat('hdmi')} tabindex="0" role="button" aria-label={label('hdmi')}>
+				<rect class="hit" x={X(590)} y={Y(555)} width={W(207)} height={W(100)}></rect>
+				<rect class="corps" x={X(600)} y={Y(565)} width={W(62)} height={W(78)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect class="corps" x={X(722)} y={Y(565)} width={W(65)} height={W(78)} rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(610)} y={Y(580)} width={W(42)} height={W(44)} fill="#111827"></rect>
+				<rect x={X(732)} y={Y(580)} width={W(45)} height={W(44)} fill="#111827"></rect>
+			</g>
+
+			<!-- Port série -->
+			<g class="el" data-id="serie" data-cat={cat('serie')} tabindex="0" role="button" aria-label={label('serie')}>
+				<rect class="hit" x={X(660)} y={Y(515)} width={W(52)} height={W(90)}></rect>
+				<rect class="corps" x={X(665)} y={Y(553)} width={W(41)} height={W(42)} rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="2"></rect>
+				{[0, 1, 2].map((i) => <circle cx={X(676 + i * 10)} cy={Y(574)} r="2.6" fill="#a16207"></circle>)}
+				<text class="etiq petit" x={X(686)} y={Y(540)} text-anchor="middle" fill="#ffffff">Port série</text>
+			</g>
+
+			<!-- Connecteur batterie -->
+			<g class="el" data-id="batterie" data-cat={cat('batterie')} tabindex="0" role="button" aria-label={label('batterie')}>
+				<rect class="hit" x={X(535)} y={Y(540)} width={W(60)} height={W(60)}></rect>
+				<rect class="corps" x={X(543)} y={Y(548)} width={W(45)} height={W(45)} rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="2"></rect>
+				<circle cx={X(555)} cy={Y(575)} r="3.4" fill="#a16207"></circle>
+				<circle cx={X(576)} cy={Y(575)} r="3.4" fill="#a16207"></circle>
+			</g>
+
+			<!-- USB-C : alimentation -->
+			<g class="el" data-id="usbc" data-cat={cat('usbc')} tabindex="0" role="button" aria-label={label('usbc')}>
+				<rect class="hit" x={X(445)} y={Y(555)} width={W(105)} height={W(100)}></rect>
+				<rect class="corps" x={X(455)} y={Y(565)} width={W(85)} height={W(77)} rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="2"></rect>
+				<rect x={X(467)} y={Y(580)} width={W(61)} height={W(34)} rx="10" fill="#111827"></rect>
+			</g>
+
+			<!-- Étiquettes et traits de repère -->
+			{etiquettes.map((e) => (
+				<g class="el etq" data-id={e.id} data-cat={cat(e.id)} aria-hidden="true" style={`--c:${col(e.id)}`}>
+					{e.vers.map(([vx, vy]) => (
+						<>
+							<line x1={e.de[0]} y1={e.de[1]} x2={vx} y2={vy} stroke={col(e.id)} stroke-width="2.4"></line>
+							<circle cx={vx} cy={vy} r="3.6" fill={col(e.id)}></circle>
+						</>
+					))}
+					<text class="lib" x={e.x} y={e.y} text-anchor={e.ancre} fill={col(e.id)}>
+						{e.lignes.map((l, i) => <tspan x={e.x} dy={i === 0 ? 0 : 19}>{l}</tspan>)}
+					</text>
+				</g>
+			))}
+		</svg>
+		<div class="info-bulle" role="tooltip" hidden></div>
+	</div>
+
+	<p class="aide">Sur téléphone, touchez un composant du schéma ou choisissez-le dans la liste ci-dessous.</p>
+	<ul class="liste" aria-label="Liste des composants">
+		{ordre.map((id) => (
+			<li>
+				<button type="button" data-id={id} style={`--c:${col(id)}`}>{label(id)}</button>
+			</li>
+		))}
+	</ul>
+
+	<div class="panneau" aria-live="polite">
+		<p class="invite"><strong>Cliquez sur un composant</strong> de la carte pour afficher son explication. Passez la souris dessus pour un aperçu rapide.</p>
+		<div class="contenu" hidden>
+			<div class="entete">
+				<span class="badge"></span>
+				<h3 class="titre"></h3>
+			</div>
+			<p class="resume"></p>
+			<ul class="points"></ul>
+			<p class="vide" hidden>Dans ce cours, ce composant est seulement identifié sur la carte.</p>
+			<p class="repere"></p>
+			<p class="lien" hidden><a href="#"></a></p>
+		</div>
+		<div class="nav">
+			<button type="button" class="prec">← Précédent</button>
+			<span class="compteur"></span>
+			<button type="button" class="suiv">Visite guidée : suivant →</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { categories, elements, ordre } from '../data/raspberry-pi5';
+
+	const nom = Object.fromEntries(categories.map((c) => [c.id, c]));
+
+	document.querySelectorAll<HTMLElement>('.rpi').forEach((racine) => {
+		const scene = racine.querySelector<HTMLElement>('.scene')!;
+		const bulle = racine.querySelector<HTMLElement>('.info-bulle')!;
+		const panneau = racine.querySelector<HTMLElement>('.panneau')!;
+		const contenu = panneau.querySelector<HTMLElement>('.contenu')!;
+		const invite = panneau.querySelector<HTMLElement>('.invite')!;
+		const compteur = panneau.querySelector<HTMLElement>('.compteur')!;
+		const noeuds = Array.from(racine.querySelectorAll<SVGGElement>('.el'));
+		const boutons = Array.from(racine.querySelectorAll<HTMLButtonElement>('.liste button'));
+		const parId = (id: string) => noeuds.filter((n) => n.dataset.id === id);
+		let courant: string | null = null;
+		let filtre: string | null = null;
+
+		const afficherBulle = (n: Element) => {
+			const e = elements[(n as HTMLElement).dataset.id!];
+			if (!e) return;
+			bulle.replaceChildren();
+			const t = document.createElement('strong');
+			t.textContent = e.titre;
+			const r = document.createElement('span');
+			r.textContent = e.resume;
+			const c = document.createElement('em');
+			c.textContent = 'Cliquez pour en savoir plus';
+			bulle.append(t, r, c);
+			bulle.hidden = false;
+			const s = scene.getBoundingClientRect();
+			const box = n.getBoundingClientRect();
+			const lb = bulle.offsetWidth;
+			let gauche = box.left + box.width / 2 - s.left - lb / 2;
+			gauche = Math.max(4, Math.min(gauche, s.width - lb - 4));
+			const dessous = box.top - s.top < 150 ? true : box.top - s.top < bulle.offsetHeight + 12;
+			bulle.style.left = `${gauche}px`;
+			bulle.style.top = dessous ? `${box.bottom - s.top + 8}px` : `${box.top - s.top - bulle.offsetHeight - 8}px`;
+		};
+		const cacherBulle = () => { bulle.hidden = true; };
+
+		const choisir = (id: string) => {
+			const e = elements[id];
+			if (!e) return;
+			courant = id;
+			noeuds.forEach((n) => n.classList.toggle('sel', n.dataset.id === id));
+			boutons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
+			racine.dataset.actif = id;
+			invite.hidden = true;
+			contenu.hidden = false;
+			const badge = contenu.querySelector<HTMLElement>('.badge')!;
+			badge.textContent = nom[e.categorie].nom;
+			badge.style.background = nom[e.categorie].couleur;
+			contenu.querySelector('.titre')!.textContent = e.titre;
+			contenu.querySelector('.resume')!.textContent = e.resume;
+			const liste = contenu.querySelector('.points')!;
+			liste.replaceChildren(...e.points.map((p) => { const li = document.createElement('li'); li.textContent = p; return li; }));
+			contenu.querySelector<HTMLElement>('.vide')!.hidden = e.points.length > 0;
+			const repere = contenu.querySelector<HTMLElement>('.repere')!;
+			repere.replaceChildren();
+			const fort = document.createElement('strong');
+			fort.textContent = 'Où le repérer : ';
+			repere.append(fort, e.repere);
+			const lien = contenu.querySelector<HTMLElement>('.lien')!;
+			lien.hidden = !e.lien;
+			if (e.lien) {
+				const a = lien.querySelector('a')!;
+				a.textContent = `${e.lien.texte} →`;
+				a.setAttribute('href', e.lien.href);
+			}
+			const i = ordre.indexOf(id);
+			compteur.textContent = i >= 0 ? `${i + 1} / ${ordre.length}` : '';
+		};
+
+		noeuds.forEach((n) => {
+			const id = n.dataset.id!;
+			n.addEventListener('pointerenter', (ev) => { if ((ev as PointerEvent).pointerType === 'touch') return; parId(id).forEach((x) => x.classList.add('surv')); afficherBulle(n); });
+			n.addEventListener('pointerleave', () => { parId(id).forEach((x) => x.classList.remove('surv')); cacherBulle(); });
+			n.addEventListener('focus', () => afficherBulle(n));
+			n.addEventListener('blur', cacherBulle);
+			n.addEventListener('click', (ev) => { choisir(id); if ((ev as PointerEvent).pointerType === 'touch') cacherBulle(); else afficherBulle(n); });
+			n.addEventListener('keydown', (ev) => {
+				const k = (ev as KeyboardEvent).key;
+				if (k === 'Enter' || k === ' ') { ev.preventDefault(); choisir(id); }
+			});
+		});
+		boutons.forEach((b) => b.addEventListener('click', () => { choisir(b.dataset.id!); cacherBulle(); }));
+
+		const pas = (d: number) => {
+			const i = courant ? ordre.indexOf(courant) : d > 0 ? -1 : 0;
+			choisir(ordre[(i + d + ordre.length) % ordre.length]);
+			cacherBulle();
+		};
+		panneau.querySelector('.prec')!.addEventListener('click', () => pas(-1));
+		panneau.querySelector('.suiv')!.addEventListener('click', () => pas(1));
+
+		racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((b) => {
+			b.addEventListener('click', () => {
+				filtre = filtre === b.dataset.cat ? null : b.dataset.cat!;
+				racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cat === filtre)));
+				noeuds.forEach((n) => n.classList.toggle('estompe', !!filtre && n.dataset.cat !== filtre));
+				boutons.forEach((b2) => b2.parentElement!.classList.toggle('estompe', !!filtre && elements[b2.dataset.id!].categorie !== filtre));
+			});
+		});
+	});
+</script>
+
+<style>
+	.rpi { margin-block: 1.5rem; }
+	.legende { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.filtre {
+		display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; margin: 0;
+		padding: 0.25rem 0.65rem; font-size: 0.8rem;
+		border: 1px solid var(--sl-color-gray-4); border-radius: 999px;
+		background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.filtre[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); }
+	.pastille { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; }
+
+	.scene { position: relative; }
+	svg { width: 100%; height: auto; display: block; border-radius: 0.75rem; background: #f1f5f9; border: 1px solid var(--sl-color-gray-5); }
+	.pcb { fill: #1f8f4e; stroke: #14532d; stroke-width: 4; }
+	.titre-carte { font: 800 17px sans-serif; fill: #ffffff; opacity: 0.9; letter-spacing: 1px; }
+	.etiq { font: 700 14px sans-serif; }
+	.etiq.petit { font-size: 12px; }
+	.lib { font: 700 17px sans-serif; }
+	.hit { fill: transparent; }
+
+	.el { cursor: pointer; outline: none; transition: opacity 0.2s; }
+	.etq { cursor: pointer; }
+	.el:focus-visible .hit { stroke: #1d4ed8; stroke-width: 2; stroke-dasharray: 5 4; }
+	.el:hover .corps, .el.surv .corps, .el:focus-visible .corps { stroke: #fde047; stroke-width: 4; }
+	.estompe { opacity: 0.15; }
+	.sel .corps { stroke: #fde047; stroke-width: 4; animation: pulse 1.1s ease-in-out infinite; }
+	.sel .lib { text-decoration: underline; }
+	@keyframes pulse { 50% { filter: drop-shadow(0 0 8px #fde047) brightness(1.25); } }
+
+	.led-etat { filter: drop-shadow(0 0 3px #22c55e); }
+	:global(.rpi[data-actif='led']) .led-etat { animation: clignote 0.9s steps(1) infinite; }
+	@keyframes clignote { 0%, 49% { opacity: 1; filter: drop-shadow(0 0 6px #22c55e); } 50%, 100% { opacity: 0.35; filter: none; } }
+	@media (prefers-reduced-motion: reduce) { .sel .corps, :global(.rpi[data-actif='led']) .led-etat { animation: none !important; } }
+
+	.info-bulle {
+		position: absolute; z-index: 5; max-width: 17rem; pointer-events: none;
+		padding: 0.5rem 0.7rem; border-radius: 0.5rem; font-size: 0.82rem; line-height: 1.35;
+		background: var(--sl-color-black); color: var(--sl-color-white);
+		border: 1px solid var(--sl-color-gray-3); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		display: flex; flex-direction: column; gap: 0.15rem;
+	}
+	.info-bulle[hidden] { display: none; }
+	.info-bulle em { color: var(--sl-color-accent-high); font-size: 0.75rem; }
+
+	.aide { margin: 0.6rem 0 0.3rem; font-size: var(--sl-text-xs); color: var(--sl-color-gray-2); }
+	.liste { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0 0 0.5rem; padding: 0; }
+	.liste li { margin: 0; padding: 0; transition: opacity 0.2s; }
+	.liste button {
+		margin: 0; cursor: pointer; padding: 0.2rem 0.6rem; font-size: 0.8rem; border-radius: 0.4rem;
+		border: 1px solid var(--sl-color-gray-4); border-left: 5px solid var(--c); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.liste button[aria-pressed='true'] { outline: 2px solid var(--sl-color-accent); }
+
+	.panneau {
+		margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-bleu-bord); background: var(--cadre-bleu-fond);
+	}
+	.invite { margin: 0; }
+	.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+	.badge { color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; }
+	.titre { margin: 0; font-size: 1.25rem; }
+	.resume { font-weight: 600; margin: 0.5rem 0; }
+	.points { margin: 0 0 0.75rem 1.2rem; }
+	.points li { margin: 0.2rem 0; }
+	.vide { margin: 0 0 0.6rem; font-style: italic; }
+	.repere { margin: 0.4rem 0 0; font-size: var(--sl-text-sm); }
+	.lien { margin: 0.5rem 0 0; font-weight: 600; }
+	.contenu[hidden], .invite[hidden], .vide[hidden], .lien[hidden] { display: none; }
+	.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
+	.nav button {
+		margin: 0; cursor: pointer; padding: 0.4rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.nav .suiv { background: var(--sl-color-accent); color: var(--sl-color-black); border-color: var(--sl-color-accent); }
+	.compteur { font-size: 0.85rem; opacity: 0.8; }
+</style>

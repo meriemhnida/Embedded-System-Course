@@ -1,0 +1,69 @@
+---
+title: Comprendre la carte Raspberry Pi 5
+description: "Explorer la carte Raspberry Pi 5 avec un schéma interactif : cliquez sur chaque composant pour lire son explication."
+---
+
+import RaspberryPi5 from '../../../../components/RaspberryPi5.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- nommer les composants de la carte Raspberry Pi 5 ;
+- **localiser** les broches GPIO et le processeur (CPU) ;
+- distinguer les connecteurs d'alimentation, d'affichage, de réseau et de périphériques.
+:::
+
+## Explorez la carte
+
+Voici le Raspberry Pi 5 vu de dessus, avec les broches GPIO en haut. **Passez la souris** sur un composant (ou sur son étiquette) pour un aperçu rapide, puis **cliquez dessus** pour lire son explication.
+
+Le bouton **Visite guidée : suivant** vous fait parcourir tous les composants dans l'ordre. Les boutons de couleur au-dessus de la carte servent à **mettre en évidence** une seule famille de composants. Sur téléphone, vous pouvez aussi choisir un composant dans la liste sous le schéma.
+
+<RaspberryPi5 />
+
+## Les composants par famille
+
+| Famille | Composants |
+|---|---|
+| **Traitement et mémoire** | Microprocesseur (CPU), Mémoire, Southbridge |
+| **Connectique** | Ports GPIO, Ports USB, Ports USB 3, Bus PCIe, Ethernet Gigabit, Port série, Sortie vidéo HDMI, Ports caméra et afficheurs LCD |
+| **Alimentation** | USB-C (alimentation), Connecteur batterie, PoE |
+| **Sans fil** | WiFi / Bluetooth |
+| **Commande et signalisation** | Bouton Power, LED d'état, Ventilateur |
+
+## Localiser les broches et le processeur
+
+Deux repères sont à retenir, car ils servent dans la suite du chapitre :
+
+- les **broches (pins) GPIO** — *General Purpose Input/Output*, entrées/sorties à usage général — sont alignées le long du bord supérieur de la carte ;
+- le **processeur (CPU)** est le **Broadcom 2712ZPKFSB00C1t**, la grande puce métallique au centre de la carte.
+
+:::note[Le processeur]
+Le Raspberry Pi 5 est équipé d'un processeur quadricœur Cortex-A76 cadencé à 2,4 GHz, accompagné d'un GPU VideoCore VII, et prend en charge le PCIe.
+:::
+
+<Question id="ch3-carte-q1" label="Q2.1">
+Sur la carte, où se trouvent les **broches GPIO** ? Où se trouve le **processeur** et quelle référence porte-t-il ?
+</Question>
+
+<Question id="ch3-carte-q2" label="Q2.2">
+Quel connecteur sert à **alimenter** la carte ? Quels autres composants du schéma touchent à l'alimentation ?
+</Question>
+
+<Question id="ch3-carte-q3" label="Q2.3">
+Citez les composants de la carte qui permettent de raccorder un **écran**, une **caméra**, un **réseau filaire** et des **périphériques USB**.
+</Question>
+
+<Question id="ch3-carte-q4" label="Q2.4">
+Quel composant fournit la connectivité **sans fil** de la carte ? Quelles technologies sont concernées ?
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais nommer les composants de la carte et dire à quelle famille ils appartiennent.
+- [ ] Je sais localiser les broches GPIO et le processeur.
+- [ ] Les questions Q2.1 à Q2.4 ont une réponse.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez aux [broches GPIO](/Embedded-System-Course/parcours/chapitre-3/03-broches-gpio/).
+:::

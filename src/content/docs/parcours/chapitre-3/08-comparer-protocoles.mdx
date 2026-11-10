@@ -1,0 +1,66 @@
+---
+title: Comparer I2C, SPI et UART
+description: "Synthèse du chapitre : tableau comparatif des protocoles I2C, SPI et UART et exercices de classement."
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- comparer **I2C**, **SPI** et **UART** : famille, nombre de fils, avantages, limites ;
+- associer un périphérique au protocole qui lui correspond ;
+- justifier le choix d'un protocole à partir de ses avantages et de ses limites.
+:::
+
+## Tableau comparatif
+
+| | **I2C** | **SPI** | **UART** |
+|---|---|---|---|
+| **Nom complet** | Inter-Integrated Circuit | Serial Peripheral Interface | Universal Asynchronous Receiver/Transmitter |
+| **Type** | série **synchrone** | série **synchrone** | série **asynchrone** |
+| **Nombre de fils** | 2 : SDA, SCL | 4 : MOSI, MISO, SCK, CS | 2 : TX, RX |
+| **Horloge** | oui : SCL | oui : SCLK | non : vitesse convenue à l'avance (baud rate) |
+| **Avantages** | peu de fils (2), facile à chaîner plusieurs périphériques | très rapide, stable | simple à mettre en place, très courant |
+| **Limites** | moins rapide que le SPI | plus de fils, une broche CS par périphérique | un seul périphérique à la fois |
+| **Broches du Pi** | GPIO 2 (SDA), GPIO 3 (SCL) | SPI0 : GPIO 10, 9, 11, 8, 7 | GPIO 14 (TXD), GPIO 15 (RXD) |
+| **Exemples** | BMP280, MPU6050, BH1750, PCA9685 | MAX31855, NRF24L01, MCP3008, OLED SPI | GPS NEO-6M, HC-05 / HC-06, MH-Z19, SIM800L |
+
+## Comment choisir ?
+
+Les avantages et les limites vus dans les pages précédentes guident le choix :
+
+- besoin de **raccorder plusieurs périphériques avec très peu de fils** : l'**I2C** ;
+- besoin de **vitesse** et de stabilité, quitte à utiliser plus de fils : le **SPI** ;
+- besoin d'une liaison **simple** avec **un seul** périphérique (GPS, module Bluetooth, capteur de CO₂, module GSM) : l'**UART**.
+
+## Retenir
+
+- Les **GPIO** ne sont que des entrées/sorties numériques simples (0 V ou 3,3 V) : pour des périphériques plus intelligents, il faut un **protocole de communication**.
+- **Synchrone** (I2C, SPI) : une **ligne d'horloge** partagée donne le moment de lecture de chaque bit.
+- **Asynchrone** (UART) : pas d'horloge, une vitesse (le **baud rate**) **convenue à l'avance**.
+
+<Question id="ch3-comp-q1" label="Q8.1">
+Complétez : pour chaque protocole (I2C, SPI, UART), indiquez la famille, le nombre de fils et le nom de chacun des fils.
+</Question>
+
+<Question id="ch3-comp-q2" label="Q8.2">
+Associez chaque composant au protocole qui lui correspond : **BMP280**, **NRF24L01**, **GPS NEO-6M**, **MCP3008**, **PCA9685**, **SIM800L**.
+</Question>
+
+<Question id="ch3-comp-q3" label="Q8.3">
+Vous devez raccorder quatre capteurs à un Raspberry Pi en utilisant le moins de fils possible. Quel protocole choisissez-vous et pourquoi ? Que se passerait-il avec l'UART ?
+</Question>
+
+<Question id="ch3-comp-q4" label="Q8.4">
+Vous avez besoin de transférer des données très rapidement vers un afficheur graphique. Quel protocole choisissez-vous ? Quel inconvénient cela entraîne-t-il ?
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais remplir le tableau comparatif sans le consulter.
+- [ ] Je sais associer un périphérique à son protocole.
+- [ ] Les questions Q8.1 à Q8.4 ont une réponse.
+
+:::note[Fin du chapitre 3]
+Validez cette page pour terminer le chapitre 3. La suite du cours porte sur la [sécurité des systèmes embarqués](/Embedded-System-Course/parcours/chapitre-4/01-menaces-et-stride/) : le chapitre 4.
+:::
