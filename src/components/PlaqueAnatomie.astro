@@ -1,0 +1,815 @@
+---
+// Anatomie d'une plaque de prototypage : quels trous sont reliés entre eux ?
+// Quatre scènes qui défilent : les rangées de 5 trous, la rainure centrale, les rails d'alimentation, puis la vue de
+// dessous avec les lamelles métalliques. Des boutons permettent d'afficher une scène à la fois, ou de mettre le
+// défilement en pause. Sans script, le défilement automatique fonctionne quand même ; avec la préférence « réduire les
+// animations », les trois premières scènes sont superposées dans une image fixe.
+// Le dessin est un schéma original aux couleurs fixes : il s'affiche sur un fond clair, y compris en thème sombre.
+const yb = 34; // haut de la plaque
+const colX0 = 59;
+const colonnes = Array.from({ length: 30 }, (_, i) => i);
+const numeros = [0, 4, 9, 14, 19, 24, 29];
+const yHaut = (k: number) => yb + 88 + 14 * k; // rangées a à e
+const yBas = (k: number) => yb + 178 + 14 * k; // rangées f à j
+const xCol = (i: number) => colX0 + 18 * i;
+const rail = {
+	stripeH: yb + 16, plusH: yb + 26, moinsH: yb + 42, bleuH: yb + 52,
+	stripeB: yb + 258, plusB: yb + 268, moinsB: yb + 284, bleuB: yb + 294,
+};
+const railX0 = 77;
+const railX1 = 572;
+const hauteur = yb + 308 + 34;
+
+// Colonne mise en avant dans la scène 1 : la huitième.
+const c = 7;
+const xc = xCol(c);
+
+// Étiquettes : largeur estimée d'après le nombre de caractères.
+const pill = (texte: string) => Math.round(texte.length * 7.6 + 20);
+const t1 = '5 trous reliés';
+const t2 = 'Aucun lien électrique';
+const t3 = 'Rail + : VCC (+5V, +3,3V…)';
+const t4 = 'Rail − : GND (masse)';
+const t5 = 'Lamelles métalliques';
+
+const etapes = [
+	{
+		n: 1,
+		titre: 'Les rangées',
+		texte: 'Les 5 trous d’une même rangée (par exemple 8a à 8e) sont reliés électriquement entre eux : c’est là que l’on branche ensemble les composants à relier.',
+	},
+	{
+		n: 2,
+		titre: 'La rainure centrale',
+		texte: 'Elle sépare la plaque en deux parties indépendantes, a–e d’un côté et f–j de l’autre. Il n’y a aucun lien électrique à travers la rainure.',
+	},
+	{
+		n: 3,
+		titre: 'Les rails d’alimentation',
+		texte: 'Les trous d’un même rail sont reliés sur toute la longueur. Le rail rouge (+) distribue le VCC (+5V, +3,3V…), le rail bleu ou noir (−) distribue le GND (masse).',
+	},
+	{
+		n: 4,
+		titre: 'Sous la plaque',
+		texte: 'Des lamelles métalliques relient les trous : une lamelle par groupe de 5 trous, et une longue lamelle par rail.',
+	},
+] as const;
+---
+
+<figure class="pa" data-scene="auto">
+	<svg class="pa__svg" viewBox={`0 0 640 ${hauteur}`} role="img" aria-labelledby="pa-titre pa-desc" xmlns="http://www.w3.org/2000/svg">
+		<title id="pa-titre">Anatomie d’une plaque de prototypage</title>
+		<desc id="pa-desc">
+			Schéma animé d’une plaque de prototypage : les cinq trous d’une même rangée sont reliés, la rainure centrale sépare deux moitiés
+			indépendantes, les rails d’alimentation sont reliés sur toute leur longueur, et des lamelles métalliques sous la plaque assurent ces
+			liaisons.
+		</desc>
+		<defs>
+			<pattern id="pa-trous-a" x={colX0 - 9} y={yHaut(0) - 7} width="18" height="14" patternUnits="userSpaceOnUse">
+				<rect class="pa__trou" x="6" y="4" width="6" height="6" rx="1"></rect>
+			</pattern>
+			<pattern id="pa-trous-b" x={colX0 - 9} y={yBas(0) - 7} width="18" height="14" patternUnits="userSpaceOnUse">
+				<rect class="pa__trou" x="6" y="4" width="6" height="6" rx="1"></rect>
+			</pattern>
+			<pattern id="pa-rail-h" x={railX0} y={rail.plusH - 8} width="99" height="32" patternUnits="userSpaceOnUse">
+				<g class="pa__trou">
+					{[6, 24, 42, 60, 78].map((x) => (
+						<>
+							<rect x={x} y="5" width="6" height="6" rx="1"></rect>
+							<rect x={x} y="21" width="6" height="6" rx="1"></rect>
+						</>
+					))}
+				</g>
+			</pattern>
+			<pattern id="pa-rail-b" x={railX0} y={rail.plusB - 8} width="99" height="32" patternUnits="userSpaceOnUse">
+				<g class="pa__trou">
+					{[6, 24, 42, 60, 78].map((x) => (
+						<>
+							<rect x={x} y="5" width="6" height="6" rx="1"></rect>
+							<rect x={x} y="21" width="6" height="6" rx="1"></rect>
+						</>
+					))}
+				</g>
+			</pattern>
+		</defs>
+
+		<rect class="pa__fond" x="0" y="0" width="640" height={hauteur}></rect>
+
+		<!-- Plaque de base -->
+		<g aria-hidden="true">
+			<rect class="pa__plaque" x="20" y={yb} width="600" height="308" rx="8"></rect>
+			<line class="pa__stripe pa__stripe--plus" x1={railX0} x2={railX1} y1={rail.stripeH} y2={rail.stripeH}></line>
+			<line class="pa__stripe pa__stripe--moins" x1={railX0} x2={railX1} y1={rail.bleuH} y2={rail.bleuH}></line>
+			<rect x={railX0} y={rail.plusH - 8} width="495" height="32" fill="url(#pa-rail-h)"></rect>
+			<text class="pa__t pa__signe pa__signe--plus" x="42" y={rail.plusH + 6} text-anchor="middle">+</text>
+			<text class="pa__t pa__signe pa__signe--moins" x="42" y={rail.moinsH + 6} text-anchor="middle">−</text>
+
+			{numeros.map((i) => <text class="pa__t pa__num" x={xCol(i)} y={yb + 79} text-anchor="middle">{i + 1}</text>)}
+			<rect x={colX0 - 9} y={yHaut(0) - 7} width="540" height="70" fill="url(#pa-trous-a)"></rect>
+			<rect class="pa__canal" x="28" y={yb + 150} width="584" height="14" rx="2"></rect>
+			<rect x={colX0 - 9} y={yBas(0) - 7} width="540" height="70" fill="url(#pa-trous-b)"></rect>
+			{numeros.map((i) => <text class="pa__t pa__num" x={xCol(i)} y={yb + 249} text-anchor="middle">{i + 1}</text>)}
+			{
+				['a', 'b', 'c', 'd', 'e'].map((l, k) => (
+					<>
+						<text class="pa__t pa__num" x="34" y={yHaut(k) + 3} text-anchor="middle">{l}</text>
+						<text class="pa__t pa__num" x="606" y={yHaut(k) + 3} text-anchor="middle">{l}</text>
+					</>
+				))
+			}
+			{
+				['f', 'g', 'h', 'i', 'j'].map((l, k) => (
+					<>
+						<text class="pa__t pa__num" x="34" y={yBas(k) + 3} text-anchor="middle">{l}</text>
+						<text class="pa__t pa__num" x="606" y={yBas(k) + 3} text-anchor="middle">{l}</text>
+					</>
+				))
+			}
+
+			<line class="pa__stripe pa__stripe--plus" x1={railX0} x2={railX1} y1={rail.stripeB} y2={rail.stripeB}></line>
+			<line class="pa__stripe pa__stripe--moins" x1={railX0} x2={railX1} y1={rail.bleuB} y2={rail.bleuB}></line>
+			<rect x={railX0} y={rail.plusB - 8} width="495" height="32" fill="url(#pa-rail-b)"></rect>
+			<text class="pa__t pa__signe pa__signe--plus" x="42" y={rail.plusB + 6} text-anchor="middle">+</text>
+			<text class="pa__t pa__signe pa__signe--moins" x="42" y={rail.moinsB + 6} text-anchor="middle">−</text>
+		</g>
+
+		<!-- Scène 1 : une rangée de 5 trous -->
+		<g class="pa__sc pa__sc1" aria-hidden="true">
+			<rect class="pa__cadre pa__cadre--ambre" x={xc - 12} y={yb + 81} width="24" height="69" rx="6"></rect>
+			<rect class="pa__cadre pa__cadre--vert" x={xc - 12} y={yb + 171} width="24" height="69" rx="6"></rect>
+			{[0, 1, 2, 3, 4].map((k) => <rect class="pa__trou-actif pa__trou-actif--ambre" x={xc - 3} y={yHaut(k) - 3} width="6" height="6" rx="1"></rect>)}
+			{[0, 1, 2, 3, 4].map((k) => <rect class="pa__trou-actif pa__trou-actif--vert" x={xc - 3} y={yBas(k) - 3} width="6" height="6" rx="1"></rect>)}
+			<line class="pa__pont pa__pont--ambre" x1={xc} x2={xc} y1={yHaut(0)} y2={yHaut(4)} pathLength="100"></line>
+			<line class="pa__pont pa__pont--vert" x1={xc} x2={xc} y1={yBas(0)} y2={yBas(4)} pathLength="100"></line>
+			<circle class="pa__point pa__point--ambre" cx={xc} cy={yHaut(0)} r="4"></circle>
+			<circle class="pa__point pa__point--vert" cx={xc} cy={yBas(0)} r="4"></circle>
+			<rect class="pa__pill pa__pill--ambre" x={xc + 20} y={yHaut(2) - 12} width={pill(t1)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x={xc + 20 + pill(t1) / 2} y={yHaut(2) + 4.5} text-anchor="middle">{t1}</text>
+			<rect class="pa__pill pa__pill--vert" x={xc + 20} y={yBas(2) - 12} width={pill(t1)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x={xc + 20 + pill(t1) / 2} y={yBas(2) + 4.5} text-anchor="middle">{t1}</text>
+		</g>
+
+		<!-- Scène 2 : la rainure centrale -->
+		<g class="pa__sc pa__sc2" aria-hidden="true">
+			<rect class="pa__moitie pa__moitie--ambre" x="26" y={yb + 76} width="588" height="78" rx="6"></rect>
+			<rect class="pa__moitie pa__moitie--vert" x="26" y={yb + 166} width="588" height="78" rx="6"></rect>
+			<rect class="pa__rainure" x="28" y={yb + 150} width="584" height="14" rx="2"></rect>
+			<line class="pa__tentative" x1="226" x2="226" y1={yb + 150} y2={yb + 164}></line>
+			<line class="pa__tentative" x1="296" x2="296" y1={yb + 150} y2={yb + 164}></line>
+			<line class="pa__tentative" x1="476" x2="476" y1={yb + 150} y2={yb + 164}></line>
+			<g class="pa__croix">
+				<circle cx="396" cy={yb + 157} r="9"></circle>
+				<path d={`M392 ${yb + 153} L400 ${yb + 161} M400 ${yb + 153} L392 ${yb + 161}`}></path>
+			</g>
+			<rect class="pa__pill pa__pill--rouge" x={396 + 16} y={yb + 145} width={pill(t2)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x={396 + 16 + pill(t2) / 2} y={yb + 161.5} text-anchor="middle">{t2}</text>
+			<text class="pa__t pa__moitie-t pa__moitie-t--ambre" x="598" y={yb + 98} text-anchor="end">Moitié a–e</text>
+			<text class="pa__t pa__moitie-t pa__moitie-t--vert" x="598" y={yb + 188} text-anchor="end">Moitié f–j</text>
+		</g>
+
+		<!-- Scène 3 : les rails d'alimentation -->
+		<g class="pa__sc pa__sc3" aria-hidden="true">
+			<rect class="pa__lueur pa__lueur--plus" x={railX0 - 3} y={rail.plusH - 8} width="499" height="16" rx="4"></rect>
+			<rect class="pa__lueur pa__lueur--moins" x={railX0 - 3} y={rail.moinsH - 8} width="499" height="16" rx="4"></rect>
+			<rect class="pa__lueur pa__lueur--plus" x={railX0 - 3} y={rail.plusB - 8} width="499" height="16" rx="4"></rect>
+			<rect class="pa__lueur pa__lueur--moins" x={railX0 - 3} y={rail.moinsB - 8} width="499" height="16" rx="4"></rect>
+			<line class="pa__flux pa__flux--plus" x1={railX0 + 4} x2={railX1 - 4} y1={rail.plusH} y2={rail.plusH}></line>
+			<line class="pa__flux pa__flux--moins" x1={railX0 + 4} x2={railX1 - 4} y1={rail.moinsH} y2={rail.moinsH}></line>
+			<line class="pa__flux pa__flux--plus" x1={railX0 + 4} x2={railX1 - 4} y1={rail.plusB} y2={rail.plusB}></line>
+			<line class="pa__flux pa__flux--moins" x1={railX0 + 4} x2={railX1 - 4} y1={rail.moinsB} y2={rail.moinsB}></line>
+			<line class="pa__guide pa__guide--plus" x1="190" x2="190" y1={yb - 8} y2={rail.plusH - 8}></line>
+			<rect class="pa__pill pa__pill--rouge" x={190 - pill(t3) / 2} y={yb - 32} width={pill(t3)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x="190" y={yb - 15.5} text-anchor="middle">{t3}</text>
+			<line class="pa__guide pa__guide--moins" x1="450" x2="450" y1={rail.moinsB + 8} y2={yb + 308 + 8}></line>
+			<rect class="pa__pill pa__pill--bleu" x={450 - pill(t4) / 2} y={yb + 308 + 8} width={pill(t4)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x="450" y={yb + 308 + 24.5} text-anchor="middle">{t4}</text>
+		</g>
+
+		<!-- Scène 4 : vue de dessous, les lamelles métalliques -->
+		<g class="pa__sc pa__sc4" aria-hidden="true">
+			<rect class="pa__voile" x="20" y={yb} width="600" height="308" rx="8"></rect>
+			{
+				colonnes.map((i) => (
+					<>
+						<rect class="pa__lamelle" style={`--i:${i}`} x={xCol(i) - 3.5} y={yHaut(0) - 7} width="7" height="64" rx="3.5"></rect>
+						<rect class="pa__lamelle" style={`--i:${i}`} x={xCol(i) - 3.5} y={yBas(0) - 7} width="7" height="64" rx="3.5"></rect>
+					</>
+				))
+			}
+			<rect class="pa__lamelle pa__lamelle--rail" style="--i:0" x={railX0 + 3} y={rail.plusH - 3.5} width="489" height="7" rx="3.5"></rect>
+			<rect class="pa__lamelle pa__lamelle--rail" style="--i:8" x={railX0 + 3} y={rail.moinsH - 3.5} width="489" height="7" rx="3.5"></rect>
+			<rect class="pa__lamelle pa__lamelle--rail" style="--i:16" x={railX0 + 3} y={rail.plusB - 3.5} width="489" height="7" rx="3.5"></rect>
+			<rect class="pa__lamelle pa__lamelle--rail" style="--i:24" x={railX0 + 3} y={rail.moinsB - 3.5} width="489" height="7" rx="3.5"></rect>
+			<rect x={colX0 - 9} y={yHaut(0) - 7} width="540" height="70" fill="url(#pa-trous-a)"></rect>
+			<rect x={colX0 - 9} y={yBas(0) - 7} width="540" height="70" fill="url(#pa-trous-b)"></rect>
+			<rect x={railX0} y={rail.plusH - 8} width="495" height="32" fill="url(#pa-rail-h)"></rect>
+			<rect x={railX0} y={rail.plusB - 8} width="495" height="32" fill="url(#pa-rail-b)"></rect>
+			<rect class="pa__pill pa__pill--gris" x={320 - pill(t5) / 2} y={yb + 145} width={pill(t5)} height="24" rx="12"></rect>
+			<text class="pa__t pa__pill-t" x="320" y={yb + 161.5} text-anchor="middle">{t5}</text>
+		</g>
+	</svg>
+
+	<p class="pa__controles" role="group" aria-label="Choisir une scène">
+		<button type="button" class="pa__btn" data-vue="1" aria-pressed="false">Rangées</button>
+		<button type="button" class="pa__btn" data-vue="2" aria-pressed="false">Rainure</button>
+		<button type="button" class="pa__btn" data-vue="3" aria-pressed="false">Rails</button>
+		<button type="button" class="pa__btn" data-vue="4" aria-pressed="false">Dessous</button>
+		<button type="button" class="pa__btn pa__btn--auto" data-auto aria-pressed="false">Mettre le défilement en pause</button>
+	</p>
+
+	<ol class="pa__etapes">
+		{
+			etapes.map((e) => (
+				<li class={`pa__etape pa__etape--${e.n}`}>
+					<strong>{e.titre}.</strong> {e.texte}
+				</li>
+			))
+		}
+	</ol>
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.pa').forEach((fig) => {
+		fig.classList.add('pa--js');
+		const vues = fig.querySelectorAll<HTMLButtonElement>('[data-vue]');
+		const auto = fig.querySelector<HTMLButtonElement>('[data-auto]');
+		if (!auto) return;
+		let enPause = false;
+		const rafraichir = () => {
+			const scene = fig.dataset.scene ?? 'auto';
+			vues.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.vue === scene)));
+			fig.classList.toggle('est-en-pause', scene === 'auto' && enPause);
+			if (scene !== 'auto') {
+				auto.textContent = 'Reprendre le défilement';
+				auto.setAttribute('aria-pressed', 'false');
+			} else {
+				auto.textContent = enPause ? 'Reprendre le défilement' : 'Mettre le défilement en pause';
+				auto.setAttribute('aria-pressed', String(enPause));
+			}
+		};
+		vues.forEach((b) =>
+			b.addEventListener('click', () => {
+				// un second clic sur la scène affichée revient au défilement
+				fig.dataset.scene = fig.dataset.scene === b.dataset.vue ? 'auto' : (b.dataset.vue ?? 'auto');
+				enPause = false;
+				rafraichir();
+			})
+		);
+		auto.addEventListener('click', () => {
+			if (fig.dataset.scene !== 'auto') {
+				fig.dataset.scene = 'auto';
+				enPause = false;
+			} else {
+				enPause = !enPause;
+			}
+			rafraichir();
+		});
+		rafraichir();
+	});
+</script>
+
+<style>
+	.pa {
+		margin: 1.5rem 0;
+		max-width: 36rem;
+		margin-inline: auto;
+	}
+	.pa__svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: 0.6rem;
+		background: #f4f5f6;
+	}
+	.pa__fond {
+		fill: #f4f5f6;
+	}
+	.pa__t {
+		font-family: inherit;
+	}
+
+	/* plaque */
+	.pa__plaque {
+		fill: #efeee8;
+		stroke: #c3c2b8;
+		stroke-width: 2;
+	}
+	.pa__trou {
+		fill: #7b7f84;
+	}
+	.pa__canal {
+		fill: #dcdbd3;
+	}
+	.pa__stripe {
+		stroke-width: 1.5;
+	}
+	.pa__stripe--plus {
+		stroke: #e08a84;
+	}
+	.pa__stripe--moins {
+		stroke: #8db4f0;
+	}
+	.pa__num {
+		font-size: 8px;
+		fill: #6b6f74;
+	}
+	.pa__signe {
+		font-size: 20px;
+		font-weight: 700;
+	}
+	.pa__signe--plus {
+		fill: #d93025;
+	}
+	.pa__signe--moins {
+		fill: #1f6feb;
+	}
+
+	/* étiquettes */
+	.pa__pill {
+		fill: #ffffff;
+		stroke-width: 2;
+	}
+	.pa__pill--ambre {
+		stroke: #d98b00;
+	}
+	.pa__pill--vert {
+		stroke: #0f8f7e;
+	}
+	.pa__pill--rouge {
+		stroke: #d93025;
+	}
+	.pa__pill--bleu {
+		stroke: #1f6feb;
+	}
+	.pa__pill--gris {
+		stroke: #6b6f74;
+	}
+	.pa__pill-t {
+		font-size: 14px;
+		font-weight: 600;
+		fill: #202124;
+	}
+
+	/* scène 1 */
+	.pa__cadre {
+		stroke-width: 2.5;
+	}
+	.pa__cadre--ambre {
+		fill: rgba(245, 166, 35, 0.2);
+		stroke: #d98b00;
+	}
+	.pa__cadre--vert {
+		fill: rgba(15, 157, 138, 0.2);
+		stroke: #0f8f7e;
+	}
+	.pa__trou-actif--ambre {
+		fill: #d98b00;
+	}
+	.pa__trou-actif--vert {
+		fill: #0f8f7e;
+	}
+	.pa__pont {
+		stroke-width: 4;
+		stroke-linecap: round;
+		stroke-dasharray: 100 100;
+	}
+	.pa__pont--ambre {
+		stroke: #d98b00;
+	}
+	.pa__pont--vert {
+		stroke: #0f8f7e;
+	}
+	.pa__point {
+		stroke: #ffffff;
+		stroke-width: 1.5;
+	}
+	.pa__point--ambre {
+		fill: #b87200;
+	}
+	.pa__point--vert {
+		fill: #0b7466;
+	}
+
+	/* scène 2 */
+	.pa__moitie--ambre {
+		fill: rgba(245, 166, 35, 0.14);
+	}
+	.pa__moitie--vert {
+		fill: rgba(15, 157, 138, 0.14);
+	}
+	.pa__moitie-t {
+		font-size: 12px;
+		font-weight: 700;
+	}
+	.pa__moitie-t--ambre {
+		fill: #9a5f00;
+	}
+	.pa__moitie-t--vert {
+		fill: #0b6f61;
+	}
+	.pa__rainure {
+		fill: #f0d9d6;
+		stroke: #d93025;
+		stroke-width: 1.5;
+		stroke-dasharray: 5 4;
+	}
+	.pa__tentative {
+		stroke: #d93025;
+		stroke-width: 2.5;
+		stroke-dasharray: 3 3;
+	}
+	.pa__croix circle {
+		fill: #d93025;
+	}
+	.pa__croix path {
+		stroke: #ffffff;
+		stroke-width: 2.4;
+		stroke-linecap: round;
+	}
+	.pa__croix {
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
+	/* scène 3 */
+	.pa__lueur--plus {
+		fill: rgba(217, 48, 37, 0.28);
+	}
+	.pa__lueur--moins {
+		fill: rgba(31, 111, 235, 0.28);
+	}
+	.pa__flux {
+		stroke-width: 3.5;
+		stroke-linecap: round;
+		stroke-dasharray: 5 13;
+	}
+	.pa__flux--plus {
+		stroke: #d93025;
+	}
+	.pa__flux--moins {
+		stroke: #1f6feb;
+	}
+	.pa__guide {
+		stroke-width: 2;
+	}
+	.pa__guide--plus {
+		stroke: #d93025;
+	}
+	.pa__guide--moins {
+		stroke: #1f6feb;
+	}
+
+	/* scène 4 */
+	.pa__voile {
+		fill: rgba(236, 235, 229, 0.93);
+	}
+	.pa__lamelle {
+		fill: #b9bec4;
+		stroke: #8b9096;
+		stroke-width: 1;
+	}
+
+	/* légende et boutons */
+	.pa__controles {
+		display: none;
+		margin: 0.7rem 0 0;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.4rem;
+	}
+	.pa--js .pa__controles {
+		display: flex;
+	}
+	.pa__btn {
+		margin: 0;
+		font: inherit;
+		font-size: var(--sl-text-xs);
+		padding: 0.25rem 0.8rem;
+		color: var(--sl-color-gray-2);
+		background: transparent;
+		border: 1px solid var(--sl-color-gray-4);
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	.pa__btn:hover,
+	.pa__btn:focus-visible {
+		color: var(--sl-color-white);
+		border-color: var(--sl-color-gray-2);
+	}
+	.pa__btn[aria-pressed='true']:not(.pa__btn--auto) {
+		color: var(--sl-color-black);
+		background: var(--sl-color-white);
+		border-color: var(--sl-color-white);
+	}
+	.pa__etapes {
+		margin: 0.8rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+		font-size: var(--sl-text-sm);
+		counter-reset: etape;
+	}
+	.pa__etape {
+		margin: 0;
+		padding: 0.3rem 0.7rem 0.3rem 2.3rem;
+		position: relative;
+		border: 1px solid transparent;
+		border-radius: 0.5rem;
+		counter-increment: etape;
+		line-height: 1.45;
+	}
+	.pa__etape::before {
+		content: counter(etape);
+		position: absolute;
+		inset-inline-start: 0.6rem;
+		top: 0.3rem;
+		width: 1.3rem;
+		height: 1.3rem;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		font-size: var(--sl-text-xs);
+		font-weight: 700;
+		color: var(--sl-color-gray-2);
+		border: 1px solid var(--sl-color-gray-4);
+	}
+
+	/* défilement automatique : 16 s, quatre scènes de 4 s */
+	.pa__sc {
+		opacity: 0;
+	}
+	.pa[data-scene='auto'] .pa__sc1 {
+		animation: pa-sc1 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__sc2 {
+		animation: pa-sc2 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__sc3 {
+		animation: pa-sc3 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__sc4 {
+		animation: pa-sc4 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__etape--1 {
+		animation: pa-et1 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__etape--2 {
+		animation: pa-et2 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__etape--3 {
+		animation: pa-et3 16s linear infinite;
+	}
+	.pa[data-scene='auto'] .pa__etape--4 {
+		animation: pa-et4 16s linear infinite;
+	}
+
+	/* une scène choisie à la main */
+	.pa[data-scene='1'] .pa__sc1,
+	.pa[data-scene='2'] .pa__sc2,
+	.pa[data-scene='3'] .pa__sc3,
+	.pa[data-scene='4'] .pa__sc4 {
+		opacity: 1;
+	}
+	.pa[data-scene='1'] .pa__etape--1,
+	.pa[data-scene='2'] .pa__etape--2,
+	.pa[data-scene='3'] .pa__etape--3,
+	.pa[data-scene='4'] .pa__etape--4 {
+		border-color: var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+	}
+
+	/* mouvements propres à chaque scène */
+	.pa__sc1 .pa__pont {
+		animation: pa-pont 2.6s ease-in-out infinite;
+	}
+	.pa__sc1 .pa__point {
+		animation: pa-point 2.6s ease-in-out infinite;
+	}
+	.pa__sc1 .pa__trou-actif {
+		animation: pa-trou 2.6s ease-in-out infinite;
+	}
+	.pa__sc2 .pa__tentative {
+		animation: pa-tentative 1.2s linear infinite;
+	}
+	.pa__sc2 .pa__croix {
+		animation: pa-croix 2s ease-in-out infinite;
+	}
+	.pa__sc3 .pa__flux {
+		animation: pa-flux 1.1s linear infinite;
+	}
+	.pa__sc4 .pa__lamelle {
+		animation: pa-lamelle 2.8s ease-in-out infinite;
+		animation-delay: calc(var(--i) * 45ms);
+	}
+	.pa.est-en-pause .pa__sc,
+	.pa.est-en-pause .pa__etape,
+	.pa.est-en-pause .pa__sc * {
+		animation-play-state: paused;
+	}
+
+	@keyframes pa-sc1 {
+		0%,
+		22% {
+			opacity: 1;
+		}
+		25%,
+		97% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@keyframes pa-sc2 {
+		0%,
+		22% {
+			opacity: 0;
+		}
+		25%,
+		47% {
+			opacity: 1;
+		}
+		50%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@keyframes pa-sc3 {
+		0%,
+		47% {
+			opacity: 0;
+		}
+		50%,
+		72% {
+			opacity: 1;
+		}
+		75%,
+		100% {
+			opacity: 0;
+		}
+	}
+	@keyframes pa-sc4 {
+		0%,
+		72% {
+			opacity: 0;
+		}
+		75%,
+		97% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+	@keyframes pa-et1 {
+		0%,
+		24% {
+			border-color: var(--cadre-bleu-bord);
+			background: var(--cadre-bleu-fond);
+		}
+		25%,
+		100% {
+			border-color: transparent;
+			background: transparent;
+		}
+	}
+	@keyframes pa-et2 {
+		0%,
+		24% {
+			border-color: transparent;
+			background: transparent;
+		}
+		25%,
+		49% {
+			border-color: var(--cadre-bleu-bord);
+			background: var(--cadre-bleu-fond);
+		}
+		50%,
+		100% {
+			border-color: transparent;
+			background: transparent;
+		}
+	}
+	@keyframes pa-et3 {
+		0%,
+		49% {
+			border-color: transparent;
+			background: transparent;
+		}
+		50%,
+		74% {
+			border-color: var(--cadre-bleu-bord);
+			background: var(--cadre-bleu-fond);
+		}
+		75%,
+		100% {
+			border-color: transparent;
+			background: transparent;
+		}
+	}
+	@keyframes pa-et4 {
+		0%,
+		74% {
+			border-color: transparent;
+			background: transparent;
+		}
+		75%,
+		100% {
+			border-color: var(--cadre-bleu-bord);
+			background: var(--cadre-bleu-fond);
+		}
+	}
+	@keyframes pa-pont {
+		0% {
+			stroke-dashoffset: 100;
+		}
+		35%,
+		100% {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes pa-point {
+		0%,
+		30% {
+			opacity: 0;
+			transform: translateY(0);
+		}
+		36% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		74% {
+			opacity: 1;
+			transform: translateY(56px);
+		}
+		80%,
+		100% {
+			opacity: 0;
+			transform: translateY(56px);
+		}
+	}
+	@keyframes pa-trou {
+		0%,
+		100% {
+			opacity: 0.55;
+		}
+		40% {
+			opacity: 1;
+		}
+	}
+	@keyframes pa-tentative {
+		to {
+			stroke-dashoffset: -12;
+		}
+	}
+	@keyframes pa-croix {
+		0%,
+		100% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.25);
+		}
+	}
+	@keyframes pa-flux {
+		to {
+			stroke-dashoffset: -18;
+		}
+	}
+	@keyframes pa-lamelle {
+		0%,
+		45%,
+		100% {
+			fill: #b9bec4;
+		}
+		20% {
+			fill: #ffd27a;
+		}
+	}
+
+	/* animations réduites : image fixe des trois premières scènes, plus de défilement ni de pause */
+	@media (prefers-reduced-motion: reduce) {
+		.pa__sc *,
+		.pa__sc,
+		.pa__etape {
+			animation: none !important;
+		}
+		.pa[data-scene='auto'] .pa__sc1,
+		.pa[data-scene='auto'] .pa__sc2,
+		.pa[data-scene='auto'] .pa__sc3 {
+			opacity: 1;
+		}
+		.pa__sc1 .pa__pont {
+			stroke-dashoffset: 0;
+		}
+		.pa__sc1 .pa__point {
+			opacity: 0;
+		}
+		.pa__btn--auto {
+			display: none;
+		}
+	}
+</style>

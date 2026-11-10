@@ -4,6 +4,8 @@ description: Exercice 7 du TP1 — utiliser une plaque de prototypage, câbler u
 ---
 
 import Question from '../../../../../components/Question.astro';
+import ConnexionAlimentation from '../../../../../components/ConnexionAlimentation.astro';
+import PlaqueAnatomie from '../../../../../components/PlaqueAnatomie.astro';
 
 :::note[Objectif de l'exercice]
 Câbler une **LED RVB** sur une plaque de prototypage et comprendre la logique d'une **anode commune** : c'est le voyant de couleur du contrôleur (exigence EF2).
@@ -11,13 +13,51 @@ Câbler une **LED RVB** sur une plaque de prototypage et comprendre la logique d
 
 ## La plaque de prototypage
 
-Commencez un **nouveau projet** Arduino Uno et ajoutez une plaque de prototypage (*breadboard*). Avant de placer les composants, reliez ses **rails d'alimentation** à la carte : rail **+** au **5V**, rail **−** au **GND**.
+Commencez un **nouveau projet** Arduino Uno et ajoutez une plaque de prototypage (*breadboard*).
+
+La plaque permet des **connexions temporaires sans soudure** : on ajoute, déplace et retire les composants en quelques secondes. C'est l'outil du prototypage rapide, avant de réaliser un circuit définitif.
+
+### Comment les trous sont-ils reliés ?
+
+Une plaque de prototypage se présente comme une grille de trous, mais ces trous ne sont pas indépendants : des **lamelles métalliques** cachées sous le plastique en relient certains. Pour câbler sans erreur, il faut savoir lesquels.
+
+<PlaqueAnatomie />
+
+| Zone de la plaque | Trous reliés entre eux | À quoi elle sert |
+|---|---|---|
+| **Une rangée** (5 trous : 8a à 8e, ou 8f à 8j) | les 5 trous du groupe | connecter des composants entre eux |
+| **La rainure centrale** | aucun : les deux moitiés a–e et f–j sont indépendantes | séparer les deux parties de la plaque |
+| **Un rail** (+ ou −) | tous les trous du rail, sur toute sa longueur | distribuer le **VCC** (+5V, +3,3V…) sur le rail rouge (+) ou le **GND** (masse) sur le rail bleu ou noir (−) |
+
+Deux composants placés dans la **même rangée** sont donc reliés ; placés dans **deux rangées différentes**, ils ne le sont pas, sauf si vous ajoutez un fil. Cette organisation en rangées et en rails donne beaucoup de souplesse pour monter un circuit.
+
+:::note[Rangées verticales ou horizontales ?]
+Selon que la plaque est posée en long ou en large, les rangées apparaissent verticales ou horizontales. Dans Wokwi, comme sur le schéma ci-dessus, la plaque est en large : les rangées sont verticales et les rails horizontaux. Seul compte le groupe de 5 trous.
+:::
+
+:::caution[Un rail peut être coupé en sections]
+Sur certaines plaques, un rail est interrompu par sections. Si des composants d'un côté sont alimentés et pas ceux de l'autre, vérifiez si le rail est coupé et, le cas échéant, reliez les deux sections par un fil.
+:::
+
+### Connexion de l'alimentation
+
+Avant de placer le moindre composant, **alimentez la plaque** : reliez la broche **5V** de l'Arduino à un port d'alimentation positive (**+**) de la plaque, et la broche **GND** à un port de masse (**−**). Les **rails d'alimentation** ainsi alimentés fournissent le courant à tous les circuits que vous monterez ensuite sur la plaque.
+
+<ConnexionAlimentation />
+
+1. Placez un fil depuis la broche **5V** de la carte jusqu'à un trou du rail marqué **+** (trait rouge).
+2. Placez un second fil depuis la broche **GND** de la carte jusqu'à un trou du rail marqué **−** (trait bleu).
+3. Par convention, on utilise un fil **rouge** pour le **+** et un fil **noir** pour la **masse** : en un coup d'œil, on repère l'alimentation et on évite les erreurs. Dans Wokwi, cliquez sur une broche, puis sur sa destination, pour tracer un fil ; un clic sur le fil permet d'en changer la couleur.
+
+:::caution[Ne reliez jamais le 5V directement au GND]
+Un fil entre le **5V** et le **GND**, ou entre le rail **+** et le rail **−** sans composant, est un **court-circuit** : il n'y a plus rien pour limiter le courant. Sur un montage réel, cela peut endommager la carte ou le port USB. Vérifiez toujours qu'un composant, par exemple une résistance, se trouve entre les deux.
+:::
+
+Voici le résultat attendu dans le simulateur :
 
 ![Carte UNO et plaque de prototypage dont les rails + et − sont reliés au 5 V et à la masse](../../../../../assets/parcours/chapitre-2/tp1/plaque-alimentation.webp)
 
-*Les rails d'alimentation de la plaque reliés au 5 V et à la masse.*
-
-La plaque permet des **connexions temporaires sans soudure** : on ajoute, déplace et retire les composants en quelques secondes. C'est l'outil du prototypage rapide, avant de réaliser un circuit définitif.
+*Les rails d'alimentation de la plaque reliés au 5 V (fil rouge) et à la masse (fil noir).*
 
 ## La LED RVB à anode commune
 
