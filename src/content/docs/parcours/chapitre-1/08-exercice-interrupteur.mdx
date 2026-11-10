@@ -3,6 +3,8 @@ title: Exercice — interrupteur coulissant
 description: Allumer et éteindre une LED avec un interrupteur coulissant, à réaliser sur Wokwi.
 ---
 
+import TirageEntree from '../../../../components/TirageEntree.astro';
+
 :::caution[Exercice à terminer avant la séance suivante]
 Enregistrez votre montage dans votre compte Wokwi (connexion GitHub) pour garder l'historique de vos projets.
 :::
@@ -48,8 +50,16 @@ void loop() {
 
 Dans l'atelier précédent, vous aviez ajouté une **résistance externe** pour fixer le niveau de l'entrée. Ici, `INPUT_PULLUP` active une résistance **interne à la carte**, qui maintient la broche à **HAUT (1)** quand rien ne la relie à la masse.
 
-- Interrupteur **ouvert** : rien ne relie la broche à GND, elle lit **HAUT (1)**.
-- Interrupteur **fermé** : la broche est reliée à GND, elle lit **BAS (0)**.
+Fermez puis ouvrez l'interrupteur sur le schéma, et suivez la couleur du fil : rouge pour 5 V, bleu pour 0 V. Les deux autres montages permettent de comparer : le tirage bas externe de l'atelier précédent, et le montage sans résistance, où la broche flotte (fil gris en pointillés) dès que le bouton est relâché.
+
+<TirageEntree mode="pullup" broche={5} />
+
+| Interrupteur | La broche est reliée à… | `digitalRead()` renvoie |
+|---|---|---|
+| **ouvert** | rien, sauf la résistance interne qui la tire vers 5 V | **HAUT (1)** |
+| **fermé** | GND, qui l'emporte sur la résistance interne | **BAS (0)** |
+
+La résistance interne est de forte valeur : elle laisse passer très peu de courant, et une liaison directe vers GND suffit à imposer 0 V. C'est pour cela que la logique est **inversée** : un interrupteur fermé donne BAS.
 
 :::danger[À retenir]
 `INPUT_PULLUP` remplace la résistance externe : la broche lit **HAUT** quand l'interrupteur est ouvert et **BAS** quand il est fermé. La logique est **inversée**.

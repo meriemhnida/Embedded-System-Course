@@ -3,6 +3,8 @@ title: Atelier 2 — bouton-poussoir
 description: Lire l'état d'un bouton-poussoir et allumer une LED en conséquence.
 ---
 
+import TirageEntree from '../../../../components/TirageEntree.astro';
+
 :::note[Objectifs de la leçon]
 À la fin de cet atelier, vous serez capables de :
 - utiliser une broche comme entrée numérique ;
@@ -34,6 +36,14 @@ Dans l'atelier précédent, la broche 13 **envoyait** un signal. Ici, la broche 
 Quand le bouton est relâché, la broche 2 n'est reliée à **rien**. Elle capte alors du bruit électrique, et sa valeur devient **imprévisible** : la LED pourrait clignoter toute seule.
 
 La résistance règle ce problème : elle relie la broche à la masse. Bouton relâché, la broche reste donc à 0 V, de manière stable. On parle de **résistance de tirage bas**, ou *pull-down*.
+
+Le schéma ci-dessous permet de le constater. La couleur du fil indique le niveau : rouge pour 5 V, bleu pour 0 V, gris en pointillés quand le niveau est indéterminé.
+
+1. Le schéma s'ouvre sur le montage **sans résistance**. Appuyez sur le bouton, puis relâchez-le : bouton relâché, la lecture de la broche 2 change toute seule.
+2. Passez au montage **avec la résistance de tirage bas** : bouton relâché, la broche lit BAS (0) de façon stable.
+3. Le troisième montage, le **tirage haut interne**, est celui de l'exercice suivant.
+
+<TirageEntree mode="flottant" broche={2} />
 
 :::danger[À retenir]
 Une entrée qui n'est reliée à rien est **flottante** : elle lit n'importe quoi. Il faut **toujours fixer son niveau** avec une résistance (tirage bas ou tirage haut).
@@ -72,7 +82,7 @@ Lancez la simulation et cliquez sur le bouton : la LED s'allume tant que vous ap
 <summary>Voir les réponses</summary>
 
 1. Appuyé : HAUT (1), car la broche reçoit 5 V. Relâché : BAS (0), grâce à la résistance vers GND.
-2. La broche devient flottante : la LED peut s'allumer ou clignoter sans raison.
+2. La broche devient flottante : la LED peut s'allumer ou clignoter sans raison. Vous pouvez le constater avec le montage « sans résistance » du schéma.
 3. Utiliser une variable `etat` qui change à chaque appui : `if (digitalRead(buttonPin) == HIGH) { etat = !etat; }`, puis `digitalWrite(LED_BUILTIN, etat);`.
 
 </details>

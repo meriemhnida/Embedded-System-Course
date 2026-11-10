@@ -1,0 +1,274 @@
+---
+// Que lit une broche d'entrée selon l'état de l'interrupteur ? Trois montages à comparer :
+//  - « flottant » : aucune résistance, le bouton relie la broche au 5 V ; relâché, la broche ne lit rien de fiable ;
+//  - « pulldown » : résistance de tirage bas externe, le bouton relie la broche au 5 V ;
+//  - « pullup » : résistance de tirage haut interne (INPUT_PULLUP), l'interrupteur relie la broche à GND.
+// mode : montage affiché au départ ; broche : numéro de la broche d'entrée dans l'exercice.
+interface Props {
+	mode?: 'flottant' | 'pulldown' | 'pullup';
+	broche?: number;
+}
+const { mode = 'pullup', broche = 2 } = Astro.props;
+---
+
+<figure class="te" data-mode={mode} data-broche={broche}>
+	<div class="te__mode" role="group" aria-label="Choisir le montage">
+		<button type="button" class="te__m" data-mode="flottant" aria-pressed={mode === 'flottant'}>Sans résistance : entrée flottante</button>
+		<button type="button" class="te__m" data-mode="pulldown" aria-pressed={mode === 'pulldown'}>Tirage bas : résistance externe</button>
+		<button type="button" class="te__m" data-mode="pullup" aria-pressed={mode === 'pullup'}>INPUT_PULLUP : tirage haut interne</button>
+	</div>
+
+	<svg class="te__svg" viewBox="0 0 680 335" role="img" aria-label="Schéma d'une broche d'entrée de l'Arduino reliée à un interrupteur, avec ou sans résistance de tirage">
+		<rect class="te__fond" x="0" y="0" width="680" height="335"></rect>
+		<rect x="40" y="30" width="260" height="260" rx="12" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="5 4"></rect>
+		<text class="te__t te__t--h" x="288" y="52" text-anchor="end">Carte Arduino</text>
+
+		<!-- Montage « tirage haut interne » -->
+		<g class="te__gA">
+			<g class="te__pill te__pill--5v"><rect x="95" y="36" width="50" height="22" rx="4"></rect><text class="te__t te__t--h" x="120" y="47" text-anchor="middle" dominant-baseline="central">5 V</text></g>
+			<path d="M120 58V90" fill="none" stroke="#E24B4A" stroke-width="2.5"></path>
+			<path d="M120 90L120 100L110 106L130 118L110 130L130 142L120 148L120 156" fill="none" stroke="#475569" stroke-width="2"></path>
+			<text class="te__t te__t--s" x="142" y="124">résistance interne</text>
+			<path class="te__lvl" d="M120 156V222" fill="none" stroke-width="2.5"></path>
+			<path class="te__lvl" d="M120 190H300" fill="none" stroke-width="2.5"></path>
+			<circle cx="120" cy="190" r="4" fill="#475569"></circle>
+			<circle cx="300" cy="190" r="6" fill="#f4f5f6" stroke="#475569" stroke-width="1.5"></circle>
+			<text class="te__t te__t--s" x="210" y="180" text-anchor="middle">Broche {broche}</text>
+			<path class="te__lvl" d="M306 190H380" fill="none" stroke-width="2.5"></path>
+			<circle cx="380" cy="190" r="4" fill="#475569"></circle>
+			<circle cx="480" cy="190" r="4" fill="#475569"></circle>
+			<line class="te__levierA" x1="380" y1="190" x2="480" y2="190" stroke="#0f172a" stroke-width="3" stroke-linecap="round"></line>
+			<path d="M484 190H560V248" fill="none" stroke="#378ADD" stroke-width="2.5"></path>
+			<g class="te__pill te__pill--gnd"><rect x="535" y="248" width="50" height="22" rx="4"></rect><text class="te__t te__t--h" x="560" y="259" text-anchor="middle" dominant-baseline="central">GND</text></g>
+			<path class="te__flux te__fluxA" d="M120 62V190H560V246" fill="none" stroke="#EF9F27" stroke-width="3.5" stroke-linecap="round"></path>
+			<text class="te__t te__t--s" x="430" y="228" text-anchor="middle">Interrupteur</text>
+			<g class="te__zone" role="button" tabindex="0" aria-label="Interrupteur : ouvrir ou fermer"><rect x="372" y="146" width="120" height="70"></rect></g>
+		</g>
+
+		<!-- Montages « tirage bas externe » et « flottant » : même bouton relié au 5 V, la résistance est en plus dans le premier -->
+		<g class="te__gB" style="display:none">
+			<path class="te__lvl" d="M300 190H170V222" fill="none" stroke-width="2.5"></path>
+			<circle cx="300" cy="190" r="6" fill="#f4f5f6" stroke="#475569" stroke-width="1.5"></circle>
+			<text class="te__t te__t--s" x="236" y="180" text-anchor="middle">Broche {broche}</text>
+			<path class="te__lvl" d="M306 190H420" fill="none" stroke-width="2.5"></path>
+			<circle cx="420" cy="190" r="4" fill="#475569"></circle>
+			<circle cx="520" cy="190" r="4" fill="#475569"></circle>
+			<line class="te__levierB" x1="420" y1="190" x2="520" y2="190" stroke="#0f172a" stroke-width="3" stroke-linecap="round"></line>
+			<path d="M524 190H580V150" fill="none" stroke="#E24B4A" stroke-width="2.5"></path>
+			<g class="te__pill te__pill--5v"><rect x="555" y="126" width="50" height="22" rx="4"></rect><text class="te__t te__t--h" x="580" y="137" text-anchor="middle" dominant-baseline="central">5 V</text></g>
+
+			<g class="te__res">
+				<circle cx="400" cy="190" r="4" fill="#475569"></circle>
+				<path class="te__lvl" d="M400 190V210" fill="none" stroke-width="2.5"></path>
+				<path d="M400 210L400 218L390 224L410 236L390 248L410 260L400 266L400 272" fill="none" stroke="#475569" stroke-width="2"></path>
+				<text class="te__t te__t--s" x="420" y="246">résistance externe</text>
+				<path d="M400 272V288" fill="none" stroke="#378ADD" stroke-width="2.5"></path>
+				<g class="te__pill te__pill--gnd"><rect x="375" y="288" width="50" height="22" rx="4"></rect><text class="te__t te__t--h" x="400" y="299" text-anchor="middle" dominant-baseline="central">GND</text></g>
+				<path class="te__flux te__fluxB" d="M580 150V190H400V286" fill="none" stroke="#EF9F27" stroke-width="3.5" stroke-linecap="round"></path>
+			</g>
+
+			<g class="te__bruit" style="display:none">
+				<path d="M316 164Q326 150 336 164T356 164T376 164T396 164" fill="none"></path>
+				<text class="te__t te__t--s" x="356" y="142" text-anchor="middle">bruit électrique</text>
+			</g>
+
+			<text class="te__t te__t--s" x="470" y="224" text-anchor="middle">Bouton-poussoir</text>
+			<g class="te__zone" role="button" tabindex="0" aria-label="Bouton-poussoir : appuyer ou relâcher"><rect x="412" y="146" width="120" height="70"></rect></g>
+		</g>
+
+		<!-- Ce que lit la broche -->
+		<g class="te__lecteur te__lecteur--bas">
+			<rect x="52" y="222" width="236" height="54" rx="8"></rect>
+			<text class="te__t te__t--s te__rd1" x="170" y="240" text-anchor="middle" dominant-baseline="central">tension sur la broche : 0 V</text>
+			<text class="te__t te__t--h te__rd2" x="170" y="260" text-anchor="middle" dominant-baseline="central">digitalRead({broche}) → BAS (0)</text>
+		</g>
+	</svg>
+
+	<div class="te__ctrl">
+		<button type="button" class="te__bascule">Fermer l'interrupteur</button>
+		<span class="te__etat"></span>
+		<button type="button" class="te__pause" aria-pressed="false">Mettre l'animation en pause</button>
+	</div>
+	<p class="te__phrase" aria-live="polite"></p>
+</figure>
+
+<script>
+	const ROUGE = '#E24B4A';
+	const BLEU = '#378ADD';
+	const GRIS = '#94a3b8';
+
+	document.querySelectorAll<HTMLElement>('.te').forEach((fig) => {
+		const q = <T extends Element>(s: string) => fig.querySelector<T>(s)!;
+		const broche = fig.dataset.broche ?? '2';
+		type Mode = 'flottant' | 'pulldown' | 'pullup';
+		const lireMode = (v: string | undefined): Mode => (v === 'flottant' || v === 'pulldown' ? v : 'pullup');
+		let mode: Mode = lireMode(fig.dataset.mode);
+		let ferme = false;
+		let hasard = 1; // valeur affichée tant que l'entrée flotte (elle change au hasard)
+		let minuteur: number | undefined;
+		const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		const gA = q<SVGGElement>('.te__gA');
+		const gB = q<SVGGElement>('.te__gB');
+		const res = q<SVGGElement>('.te__res');
+		const bruit = q<SVGGElement>('.te__bruit');
+		const niveaux = Array.from(fig.querySelectorAll<SVGPathElement>('.te__lvl'));
+		const lecteur = q<SVGGElement>('.te__lecteur');
+		const levA = q<SVGLineElement>('.te__levierA');
+		const levB = q<SVGLineElement>('.te__levierB');
+		const fluxA = q<SVGPathElement>('.te__fluxA');
+		const fluxB = q<SVGPathElement>('.te__fluxB');
+		const bascule = q<HTMLButtonElement>('.te__bascule');
+		const modes = Array.from(fig.querySelectorAll<HTMLButtonElement>('.te__m'));
+
+		// l'entrée « flotte » quand rien ne la relie ni au 5 V ni à GND
+		const flotte = () => mode === 'flottant' && !ferme;
+
+		const lecture = () => {
+			if (flotte()) {
+				q('.te__rd1').textContent = 'tension sur la broche : ?';
+				q('.te__rd2').textContent = mouvementReduit
+					? `digitalRead(${broche}) → 0 ou 1 ?`
+					: `digitalRead(${broche}) → ${hasard ? 'HAUT (1)' : 'BAS (0)'}`;
+				return;
+			}
+			const haut = mode === 'pullup' ? !ferme : ferme;
+			q('.te__rd1').textContent = `tension sur la broche : ${haut ? '5 V' : '0 V'}`;
+			q('.te__rd2').textContent = `digitalRead(${broche}) → ${haut ? 'HAUT (1)' : 'BAS (0)'}`;
+		};
+
+		// tant que l'entrée flotte, la valeur lue change au hasard (lentement, et pas du tout en mouvement réduit)
+		const gererMinuteur = () => {
+			const doit = flotte() && !mouvementReduit;
+			if (doit && minuteur === undefined) {
+				minuteur = window.setInterval(() => {
+					if (fig.classList.contains('est-en-pause')) return;
+					if (Math.random() < 0.65) hasard = 1 - hasard;
+					lecture();
+				}, 900);
+			} else if (!doit && minuteur !== undefined) {
+				window.clearInterval(minuteur);
+				minuteur = undefined;
+			}
+		};
+
+		const rendre = () => {
+			const A = mode === 'pullup';
+			gA.style.display = A ? '' : 'none';
+			gB.style.display = A ? 'none' : '';
+			res.style.display = mode === 'pulldown' ? '' : 'none';
+			bruit.style.display = flotte() ? '' : 'none';
+			modes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+
+			const haut = A ? !ferme : ferme;
+			const flou = flotte();
+			niveaux.forEach((p) => {
+				p.setAttribute('stroke', flou ? GRIS : haut ? ROUGE : BLEU);
+				if (flou) p.setAttribute('stroke-dasharray', '6 5');
+				else p.removeAttribute('stroke-dasharray');
+			});
+			lecteur.classList.toggle('te__lecteur--haut', !flou && haut);
+			lecteur.classList.toggle('te__lecteur--bas', !flou && !haut);
+			lecteur.classList.toggle('te__lecteur--flou', flou);
+			lecture();
+
+			levA.setAttribute('x2', ferme ? '480' : '470');
+			levA.setAttribute('y2', ferme ? '190' : '150');
+			levB.setAttribute('x2', ferme ? '520' : '510');
+			levB.setAttribute('y2', ferme ? '190' : '150');
+			// sans résistance, presque aucun courant ne circule : rien à animer
+			fluxA.style.display = ferme ? '' : 'none';
+			fluxB.style.display = ferme && mode === 'pulldown' ? '' : 'none';
+
+			if (A) {
+				bascule.textContent = ferme ? "Ouvrir l'interrupteur" : "Fermer l'interrupteur";
+				q('.te__etat').textContent = ferme ? 'Interrupteur fermé' : 'Interrupteur ouvert';
+				q('.te__phrase').textContent = ferme
+					? "La broche est reliée à GND, qui l'emporte sur la résistance interne : elle lit BAS (0). Un faible courant circule du 5 V vers GND à travers la résistance."
+					: "Rien ne relie la broche à GND. La résistance interne la tire vers 5 V : elle lit HAUT (1) au lieu de flotter.";
+			} else {
+				bascule.textContent = ferme ? 'Relâcher le bouton' : 'Appuyer sur le bouton';
+				q('.te__etat').textContent = ferme ? 'Bouton appuyé' : 'Bouton relâché';
+				if (mode === 'pulldown') {
+					q('.te__phrase').textContent = ferme
+						? "Le 5 V arrive sur la broche et l'emporte sur la résistance : elle lit HAUT (1)."
+						: "La résistance externe relie la broche à GND : elle lit BAS (0), de façon stable, au lieu de flotter.";
+				} else {
+					q('.te__phrase').textContent = ferme
+						? "Le 5 V arrive sur la broche : elle lit HAUT (1). Le montage semble fonctionner… jusqu'au relâchement."
+						: "La broche n'est reliée à rien : elle capte le bruit électrique ambiant et lit tantôt HAUT (1), tantôt BAS (0), sans raison. Une LED branchée dessus pourrait clignoter toute seule.";
+				}
+			}
+			gererMinuteur();
+		};
+
+		const inverser = () => { ferme = !ferme; rendre(); };
+		modes.forEach((b) => b.addEventListener('click', () => { mode = lireMode(b.dataset.mode); ferme = false; rendre(); }));
+		bascule.addEventListener('click', inverser);
+		fig.querySelectorAll<SVGGElement>('.te__zone').forEach((z) => {
+			z.addEventListener('click', inverser);
+			z.addEventListener('keydown', (ev) => {
+				const k = (ev as KeyboardEvent).key;
+				if (k === 'Enter' || k === ' ') { ev.preventDefault(); inverser(); }
+			});
+		});
+		const pause = q<HTMLButtonElement>('.te__pause');
+		pause.addEventListener('click', () => {
+			const enPause = fig.classList.toggle('est-en-pause');
+			pause.setAttribute('aria-pressed', String(enPause));
+			pause.textContent = enPause ? "Reprendre l'animation" : "Mettre l'animation en pause";
+		});
+		rendre();
+	});
+</script>
+
+<style>
+	.te { margin: 1.5rem auto; max-width: 42rem; }
+	.te__mode { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 0.75rem; }
+	.te__m, .te__bascule, .te__pause {
+		margin: 0; cursor: pointer; padding: 0.35rem 0.9rem; border-radius: 0.4rem; font-size: var(--sl-text-sm);
+		border: 1px solid var(--sl-color-gray-4); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.te__m[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); font-weight: 600; }
+	.te__bascule { font-weight: 600; border-color: var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black); }
+
+	.te__svg { display: block; width: 100%; height: auto; border: 1px solid var(--sl-color-hairline); border-radius: 0.6rem; background: #f4f5f6; }
+	.te__fond { fill: #f4f5f6; }
+	.te__t { font-family: inherit; fill: #0f172a; }
+	.te__t--s { font-size: 14.5px; fill: #334155; }
+	.te__t--h { font-size: 16px; font-weight: 700; }
+
+	.te__pill--5v rect { fill: #FCEBEB; stroke: #A32D2D; stroke-width: 1; }
+	.te__pill--5v .te__t { fill: #791F1F; }
+	.te__pill--gnd rect { fill: #E6F1FB; stroke: #185FA5; stroke-width: 1; }
+	.te__pill--gnd .te__t { fill: #0C447C; }
+	.te__lecteur rect { stroke-width: 1; }
+	.te__lecteur--haut rect { fill: #FCEBEB; stroke: #A32D2D; }
+	.te__lecteur--haut .te__t { fill: #791F1F; }
+	.te__lecteur--bas rect { fill: #E6F1FB; stroke: #185FA5; }
+	.te__lecteur--bas .te__t { fill: #0C447C; }
+	.te__lecteur--flou rect { fill: #FAEEDA; stroke: #854F0B; stroke-dasharray: 5 4; }
+	.te__lecteur--flou .te__t { fill: #633806; }
+
+	.te__bruit path { stroke: #BA7517; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+	.te__bruit .te__t { fill: #854F0B; }
+
+	.te__zone { cursor: pointer; outline: none; }
+	.te__zone rect { fill: transparent; }
+	.te__zone:hover rect { fill: rgba(37, 99, 235, 0.08); }
+	.te__zone:focus-visible rect { stroke: #1d4ed8; stroke-width: 2; stroke-dasharray: 5 4; }
+
+	.te__flux { stroke-dasharray: 3 10; animation: te-flux 1s linear infinite; }
+	@keyframes te-flux { to { stroke-dashoffset: -13; } }
+	.te.est-en-pause .te__flux { animation-play-state: paused; }
+
+	.te__ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 0.75rem 0 0; }
+	.te__etat { font-weight: 600; font-size: var(--sl-text-sm); }
+	.te__pause { margin-left: auto; }
+	.te__phrase { margin: 0.6rem 0 0; font-size: var(--sl-text-sm); min-height: 3.2em; }
+
+	@media (prefers-reduced-motion: reduce) {
+		.te__flux { animation: none; }
+		.te__pause { display: none; }
+	}
+</style>
