@@ -7,10 +7,25 @@ import SchemaAttaque from '../../../../components/SchemaAttaque.astro';
 import Question from '../../../../components/Question.astro';
 
 :::note[Objectif de la page]
-Comprendre comment trois capteurs qui mesurent une **position** ou une **distance** peuvent être trompés, et quelles défenses leur opposer. Les trois reposent sur un signal reçu à un instant précis : celui qui contrôle l'instant contrôle la mesure.
+Pour trois capteurs qui mesurent une **position** ou une **distance**, savoir ce qu'ils mesurent et ce qu'ils fournissent en sortie, comprendre comment ils peuvent être trompés et quelles défenses leur opposer. Les trois reposent sur un signal reçu à un instant précis : celui qui contrôle l'instant contrôle la mesure.
 :::
 
-## Usurpation GPS : une position falsifiée
+## GPS : une position falsifiée
+
+### Le capteur : le récepteur GNSS
+
+- **Définition.** Un récepteur GNSS (*Global Navigation Satellite System*, qui regroupe le GPS américain, Galileo, GLONASS et BeiDou) est un capteur **passif** : il ne fait que recevoir. Il calcule sa position en mesurant le temps de propagation des signaux radio émis par au moins quatre satellites, dont le message de navigation indique la position et l'heure d'émission. Ces signaux sont extrêmement faibles : le récepteur les extrait du bruit en les comparant à un code connu.
+- **Sortie.** Une **position** (latitude, longitude, altitude), une **heure** UTC, une vitesse et un cap, avec des indicateurs de qualité (nombre de satellites, précision estimée). Les modules pour cartes Arduino envoient ces données en texte, sous forme de trames **NMEA 0183**, sur une liaison série. Beaucoup de modules fournissent aussi une impulsion par seconde (*PPS*) pour synchroniser une horloge.
+
+Exemple de trame de position (`GGA`) :
+
+```text
+$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47
+```
+
+Elle se lit ainsi : heure 12 h 35 min 19 s UTC, latitude 48° 07,038′ nord, longitude 11° 31,000′ est, position valide (1), 8 satellites, précision horizontale estimée 0,9, altitude 545,4 m, et somme de contrôle `*47`.
+
+### L'attaque : usurpation GPS
 
 <SchemaAttaque type="gps" />
 
@@ -30,6 +45,13 @@ Un drone reçoit un GPS dont la position « saute » de plusieurs centaines de m
 
 ## LiDAR : des points fantômes
 
+### Le capteur : le LiDAR
+
+- **Définition.** Le LiDAR (*Light Detection and Ranging*) est un capteur de distance **optique et actif**. Il émet des impulsions laser, généralement infrarouges, et mesure le **temps de vol** de la lumière réfléchie par les objets : la distance vaut d = c × Δt / 2, où c est la vitesse de la lumière. Un miroir rotatif ou un balayage électronique oriente le faisceau pour couvrir tout le champ de vue.
+- **Sortie.** Un **nuage de points 3D** : à chaque impulsion correspond une distance et une direction, donc un point de coordonnées (x, y, z), souvent accompagné de l'intensité de la lumière revenue. Selon le modèle, cela représente de quelques milliers à plus d'un million de points par seconde, transmis en Ethernet pour les LiDAR 3D, ou en liaison série ou USB pour les LiDAR 2D économiques.
+
+### L'attaque : des points fantômes
+
 <SchemaAttaque type="lidar" />
 
 - **Cible.** Les LiDAR des véhicules autonomes, des drones et des robots mobiles.
@@ -43,6 +65,13 @@ La distance perçue par un LiDAR se calcule à partir du temps de vol de l'impul
 </Question>
 
 ## Radar millimétrique : un faux véhicule
+
+### Le capteur : le radar FMCW
+
+- **Définition.** Le radar millimétrique est un capteur **actif** qui émet des ondes radio de très haute fréquence (24 GHz ou bande de 76 à 81 GHz dans l'automobile). Dans le type **FMCW** (*Frequency-Modulated Continuous Wave*), la fréquence émise varie linéairement dans le temps, par rampes successives. En mélangeant l'écho reçu avec le signal émis, le radar obtient un battement dont la fréquence est proportionnelle à la **distance** ; la variation de phase d'une rampe à l'autre donne la **vitesse** (effet Doppler).
+- **Sortie.** Une **liste d'objets détectés**, chacun avec sa distance, sa vitesse radiale et, avec plusieurs antennes, son angle, parfois accompagnés de la puissance de l'écho. Dans un véhicule, cette liste est généralement transmise sur un bus **CAN**, vers le calculateur du régulateur de vitesse ou du freinage d'urgence.
+
+### L'attaque : un faux véhicule
 
 <SchemaAttaque type="radar" />
 
@@ -59,6 +88,7 @@ Comme pour les ultrasons (page suivante), l'écho n'est pas authentifié : un fa
 ## Critères de validation
 
 - [ ] Je sais expliquer la différence entre brouiller un récepteur GPS et l'usurper.
+- [ ] Je sais dire, pour chacun des trois capteurs, ce qu'il mesure et ce qu'il fournit en sortie.
 - [ ] Je sais relier la distance perçue par un LiDAR ou un radar à un temps de retour.
 - [ ] Je sais citer au moins deux défenses pour chacun des trois capteurs.
 - [ ] Les questions Q3.3 et Q3.4 ont une réponse justifiée.
