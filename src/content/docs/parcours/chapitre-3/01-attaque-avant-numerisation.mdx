@@ -10,12 +10,12 @@ import Question from '../../../../components/Question.astro';
 À la fin de ce chapitre, vous serez capables de :
 - expliquer pourquoi le chiffrement des messages ne protège pas une mesure falsifiée avant la numérisation ;
 - distinguer l'**usurpation** du **brouillage** et juger laquelle est la plus dangereuse ;
-- décrire, pour huit capteurs courants, la cible, le principe, l'effet et les défenses d'une attaque ;
+- décrire, pour des capteurs courants, la cible, le principe, l'effet et les défenses d'une attaque ;
 - situer les menaces et les défenses sur les **couches** d'un système embarqué ;
 - analyser les menaces d'un système avec la méthode **STRIDE**.
 :::
 
-Ce chapitre ne comporte pas de manipulation sur la carte : il se lit et se discute. Les attaques sont décrites au niveau des principes, sans paramètre de réalisation, car l'objectif est de savoir **s'en protéger**. Chaque attaque renvoie à une publication de référence, et chaque schéma est accompagné de sa source ; vous retrouverez toutes les références à la fin du chapitre.
+
 
 ## De la grandeur physique à la décision
 
@@ -28,10 +28,6 @@ Toute la sécurité « classique » (chiffrement, authentification, signatures) 
 :::caution[Une mesure authentique d'un phénomène falsifié]
 Le capteur fonctionne, le convertisseur fonctionne, le logiciel est exempt de bogue : la mesure est pourtant fausse, parce que le phénomène a été falsifié avant d'être mesuré. Le logiciel l'accepte comme vraie.
 :::
-
-<Question id="ch3-q3.1" label="Q3.1" lignes={5}>
-Placez le capteur DHT22 de votre contrôleur de température (exercice 11) sur la chaîne de mesure ci-dessus. Qu'est-ce qu'un attaquant pourrait falsifier **avant** que la mesure atteigne le programme ? Un chiffrement du lien série protégerait-il contre cette falsification ? Justifiez.
-</Question>
 
 ## Usurpation ou brouillage ?
 
@@ -54,7 +50,7 @@ Les trois pages suivantes détaillent huit attaques. Elles suivent toujours la m
 | Capteur | Grandeur falsifiée | Effet typique | Page |
 |---|---|---|---|
 | GPS (récepteur GNSS) | signaux de satellites | position ou heure fausses | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/02-position-distance/) |
-| LiDAR | impulsions laser | obstacles fantômes ou effacés | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/02-position-distance/) |
+| LiDAR (Light Detection and Ranging, soit la détection et la télémétrie par la lumière) | impulsions laser | obstacles fantômes ou effacés | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/02-position-distance/) |
 | Radar millimétrique | écho radar | faux véhicule | [Position et distance](/Embedded-System-Course/parcours/chapitre-3/02-position-distance/) |
 | Microphone | son (ultrasons, lumière) | commandes vocales inaudibles | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-3/03-son-vibrations/) |
 | IMU (accéléromètre, gyroscope) | vibration à la résonance | mouvement fantôme | [Son et vibrations](/Embedded-System-Course/parcours/chapitre-3/03-son-vibrations/) |

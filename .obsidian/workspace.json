@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "3b5d2e6f7f73dad7",
+        "id": "f31c16bb7e9fea45",
         "type": "tabs",
         "children": [
           {
-            "id": "13dc3bf1b6f81215",
+            "id": "c3fad84dea83f408",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -83,7 +83,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 664.5
   },
   "right": {
     "id": "3b6ea1988d568e31",
@@ -188,12 +188,14 @@
       "bases:Créer une nouvelle base": false
     }
   },
-  "active": "13dc3bf1b6f81215",
+  "active": "c3fad84dea83f408",
   "lastOpenFiles": [
+    "public/chapitre-3/schemas/camera.png",
+    "Sans titre.base",
+    "src/content/docs/parcours/chapitre-1/01-systeme-embarque.md",
     "Cours/Bienvenue.md",
     "Cours",
     "src/content/docs/parcours/chapitre-1/02-microcontroleur.md",
-    "src/content/docs/parcours/chapitre-1/01-systeme-embarque.md",
     "2026-11-04.md",
     "Sans titre.canvas",
     "Sans titre",
