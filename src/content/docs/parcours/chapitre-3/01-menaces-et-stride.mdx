@@ -1,0 +1,116 @@
+---
+title: "Les menaces de sécurité et la méthode STRIDE en bref"
+description: "Chapitre 3 — pourquoi un système embarqué est une cible, les propriétés à protéger, où agit un attaquant sur une chaîne capteur, carte, actionneur, et présentation brève de la méthode STRIDE."
+---
+
+import ArchitectureSysteme from '../../../../components/ArchitectureSysteme.astro';
+import SurfacesAttaque from '../../../../components/SurfacesAttaque.astro';
+
+:::note[Objectifs du chapitre]
+À la fin de ce chapitre, vous serez capables de :
+- identifier les **surfaces d'attaque** d'une chaîne **capteur, carte de traitement, actionneur** et décrire les menaces qui pèsent sur elle ;
+- expliquer pourquoi le chiffrement des messages ne protège pas une mesure falsifiée avant la numérisation ;
+- distinguer l'**usurpation** du **brouillage** et juger laquelle est la plus dangereuse ;
+- décrire, pour huit capteurs courants, la cible, le principe, l'effet et les défenses d'une attaque ;
+- situer les menaces et les défenses sur les **couches** d'un système embarqué ;
+- analyser les menaces d'un système avec la méthode **STRIDE**, puis choisir les mesures de sécurité à appliquer en priorité.
+:::
+
+Ce chapitre ne comporte pas de manipulation sur la carte : il se lit et se discute. Les menaces et les attaques sont décrites au niveau des principes, sans paramètre de réalisation, car l'objectif est de savoir **s'en protéger**. Chaque attaque renvoie à une publication de référence, et chaque schéma est accompagné de sa source ; vous retrouverez toutes les références à la fin du chapitre.
+
+## Pourquoi un système embarqué est une cible
+
+Un système embarqué n'est pas un ordinateur comme les autres. Quatre caractéristiques le rendent difficile à protéger :
+
+- il **agit sur le monde physique** : une commande falsifiée peut chauffer, ouvrir, freiner ou déplacer quelque chose ;
+- il est souvent **accessible physiquement** : armoire de maintenance, local technique, véhicule ;
+- il a des **ressources limitées** (mémoire, calcul, énergie), ce qui limite les protections qu'il peut embarquer ;
+- il reste **en service longtemps**, parfois sans que personne ne pense à le mettre à jour.
+
+Il est de plus en plus **connecté** : un accès réseau permet des attaques à distance, sans avoir à se trouver devant l'équipement.
+
+## Ce qu'il faut protéger : trois propriétés
+
+| Propriété | La question à se poser | Exemple pour un contrôleur de température |
+|---|---|---|
+| **Disponibilité** | Le système fonctionne-t-il quand on en a besoin ? | L'alarme se déclenche toujours quand il le faut. |
+| **Intégrité** | Les mesures, les consignes et le programme sont-ils exacts et non modifiés ? | Le seuil d'alarme n'a pas été changé. |
+| **Confidentialité** | Seules les personnes autorisées accèdent-elles aux données ? | Les relevés ne sont lisibles que par le superviseur. |
+
+:::tip[Dans un système qui agit sur le monde physique]
+La confidentialité compte, mais ce sont généralement l'**intégrité des commandes**, la **disponibilité** et le **passage en état sûr** qui sont les propriétés les plus critiques : une consigne falsifiée ou un service indisponible a des conséquences physiques.
+:::
+
+## Une architecture type : capteur, carte, actionneur
+
+<ArchitectureSysteme />
+
+Les montages de ce cours suivent tous ce schéma : un **capteur** mesure, une **carte de traitement** décide, un **actionneur** agit. Chaque élément, chaque liaison et chaque accès extérieur est une **surface d'attaque**, c'est-à-dire un endroit où un attaquant peut essayer d'agir. La carte occupe une place particulière : si elle est compromise, l'attaquant peut atteindre à la fois les capteurs et plusieurs actionneurs.
+
+## Où se situent les surfaces d'attaque ?
+
+Une **surface d'attaque** est un endroit où un attaquant peut essayer d'agir. Elle comprend les trois éléments de la chaîne, mais aussi ce qui les entoure : les liaisons, les accès de débogage et de maintenance, l'alimentation et le boîtier. Il faut examiner **les six**.
+
+<SurfacesAttaque />
+
+| Surface | Ce qu'un attaquant peut chercher à faire | Défenses principales | Pour en savoir plus |
+|---|---|---|---|
+| **01 · Capteur** | Falsifier la grandeur physique, ou se faire passer pour le capteur. | Redondance, contrôle de plausibilité, authentification du capteur. | Pages [02 à 05](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/) et [07](/Embedded-System-Course/parcours/chapitre-3/07-se-defendre/) |
+| **02 · Carte** | Modifier le firmware, extraire des secrets, exploiter un service exposé. | Démarrage sécurisé (Secure Boot), firmware signé, moindre privilège, peu de services exposés. | Pages [08](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/) et [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+| **03 · Actionneur** | Envoyer ou modifier une consigne, forcer un état dangereux. | Validation des commandes, état sûr, arrêt d'urgence indépendant du logiciel. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+| **04 · Réseau et bus** | Écouter, modifier, rejouer ou bloquer des messages. | Authentification, intégrité, fraîcheur, chiffrement, segmentation du réseau. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+| **05 · Débogage et maintenance** | Lire ou réécrire le programme, installer un firmware non autorisé. | Interfaces de débogage désactivées en production, mises à jour signées. | Page [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+| **06 · Alimentation et boîtier** | Accéder physiquement à la carte, couper l'alimentation, provoquer un redémarrage ou une erreur de calcul. | Boîtier fermé et contrôlé, watchdog, alimentation protégée, état sûr en cas de coupure. | Pages [06](/Embedded-System-Course/parcours/chapitre-3/06-couches/) et [09](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/) |
+
+Les surfaces 04, 05 et 06 sont souvent oubliées : elles ne font pas partie du programme que vous écrivez, mais elles donnent accès à tout le reste.
+
+## Cinq types de menaces
+
+Les surfaces indiquent **où** l'attaquant peut agir ; les menaces se rangent en cinq grandes catégories selon **ce qu'il vise**.
+
+| Ce que vise l'attaquant | Exemples |
+|---|---|
+| **La grandeur physique** | Un faux signal GPS, un son inaudible, un autocollant sur un panneau : la mesure est falsifiée avant d'être numérisée. |
+| **Les liaisons** (bus, radio, réseau) | Messages écoutés, modifiés ou rejoués ; faux capteur qui se fait passer pour le vrai sur un bus. |
+| **Le logiciel** | Firmware (le programme enregistré dans la carte) ou mise à jour à distance (OTA, *over the air*) falsifiés ; service réseau vulnérable. |
+| **Le matériel** | Accès aux ports de débogage de la carte, extraction du contenu de la mémoire. |
+| **L'exploitation** | Mots de passe par défaut, droits trop larges, absence de journaux, mises à jour jamais installées. |
+
+Les pages [L'attaque avant la numérisation](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/) à [Images et empreintes](/Embedded-System-Course/parcours/chapitre-3/05-images-empreintes/) détaillent la première ligne, la plus surprenante parce qu'elle échappe au chiffrement. Les autres lignes sont traitées dans [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/) et dans les [mesures de sécurité transversales](/Embedded-System-Course/parcours/chapitre-3/09-mesures-transversales/).
+
+## STRIDE en bref
+
+Pour ne pas oublier de famille de menaces, on les classe avec la méthode **STRIDE**, que Microsoft utilise pour catégoriser les menaces ([documentation Microsoft](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats)). Son nom est formé des initiales de six familles, et chacune viole une propriété de sécurité.
+
+| Famille | En clair | Propriété violée | Exemple sur la chaîne |
+|---|---|---|---|
+| **S**poofing, usurpation | Se faire passer pour un autre | Authenticité | Un faux capteur envoie des mesures. |
+| **T**ampering, falsification | Modifier des données ou un programme | Intégrité | Une consigne de vitesse est modifiée. |
+| **R**epudiation, répudiation | Nier une action, faute de trace | Traçabilité | Personne ne sait qui a changé la calibration. |
+| **I**nformation disclosure, divulgation | Révéler une information protégée | Confidentialité | Le mot de passe Wi-Fi est extrait de la carte. |
+| **D**enial of service, déni de service | Rendre le système indisponible | Disponibilité | Brouillage radio, saturation du bus. |
+| **E**levation of privilege, élévation de privilèges | Obtenir des droits que l'on ne devrait pas avoir | Autorisation | Un simple lecteur de télémétrie commande l'actionneur. |
+
+Le principe de la méthode est simple : pour **chaque élément** de la chaîne (capteur, carte, actionneur) et **chaque liaison**, on se demande si chacune des six familles s'applique. Vous la mettrez en pratique à la page [La méthode STRIDE](/Embedded-System-Course/parcours/chapitre-3/08-methode-stride/).
+
+:::caution[STRIDE ne suffit pas pour la sûreté]
+STRIDE couvre principalement la **cybersécurité**. Pour un système qui commande un moteur, une vanne, un frein ou un robot, il faut aussi conduire une analyse de **sûreté de fonctionnement**, par exemple une **AMDEC** (analyse des modes de défaillance, de leurs effets et de leur criticité, *FMEA* en anglais) ou une analyse **STPA** (*System-Theoretic Process Analysis*), afin de traiter les conséquences physiques. La page sur les [couches](/Embedded-System-Course/parcours/chapitre-3/06-couches/) revient sur la différence entre sûreté et sécurité.
+:::
+
+## Le plan du chapitre
+
+- **Pages 02 à 05** : les attaques sur les capteurs, c'est-à-dire sur la grandeur physique.
+- **Pages 06 et 07** : la sécurité en couches et les six réflexes de défense.
+- **Pages 08 et 09** : la méthode STRIDE appliquée à la chaîne capteur, carte, actionneur, puis les mesures de sécurité qui reviennent partout.
+- **Page 10** : l'essentiel à retenir et les références.
+
+## Critères de validation
+
+- [ ] Je sais décrire les trois éléments d'une chaîne capteur, carte, actionneur et citer les six surfaces d'attaque.
+- [ ] Je sais nommer les trois propriétés à protéger et dire lesquelles sont les plus critiques pour un système qui agit sur le monde physique.
+- [ ] Je sais citer les six familles de STRIDE et la propriété que chacune viole.
+- [ ] Je sais expliquer pourquoi STRIDE ne remplace pas une analyse de sûreté.
+
+:::note[Prochaine étape]
+Validez cette page, puis voyez pourquoi [l'attaque se joue avant la numérisation](/Embedded-System-Course/parcours/chapitre-3/02-attaque-avant-numerisation/).
+:::
