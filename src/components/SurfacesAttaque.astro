@@ -1,0 +1,223 @@
+---
+// Les six surfaces d'attaque d'un système embarqué : trois dans la chaîne (capteur, carte, actionneur) et trois autour
+// (réseau et bus, débogage et maintenance, alimentation et boîtier). Au centre, la photographie de la carte hôte.
+const dansLaChaine = [
+	{ n: '01', titre: 'Capteur', texte: 'Température, pression, position : la mesure qui alimente la décision.' },
+	{ n: '02', titre: 'Carte', texte: 'ESP32, Raspberry Pi, microcontrôleur ou automate (PLC) : calcul, firmware, réseau.' },
+	{ n: '03', titre: 'Actionneur', texte: 'Moteur, relais, servomoteur, vanne : l’effet physique réellement produit.' },
+] as const;
+
+const autour = [
+	{ n: '04', titre: 'Réseau et bus', texte: 'Wi-Fi, MQTT, HTTP, Modbus, I²C, SPI, UART, CAN.' },
+	{ n: '05', titre: 'Débogage et maintenance', texte: 'JTAG, UART, USB, carte SD, OTA : accès direct au code.' },
+	{ n: '06', titre: 'Alimentation et boîtier', texte: 'Accès physique, coupures, redémarrage (reset), injection de fautes.' },
+] as const;
+
+const base = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
+---
+
+<figure class="surf">
+	<div class="surf__grille">
+		<p class="surf__colonne surf__colonne--chaine">Dans la chaîne</p>
+		<p class="surf__colonne surf__colonne--autour">Autour de la chaîne</p>
+
+		<ol class="surf__liste surf__liste--chaine" start="1">
+			{
+				dansLaChaine.map((s) => (
+					<li class={`surf__carte surf__carte--chaine surf__carte--${s.n}`}>
+						<p class="surf__titre">
+							<span class="surf__num">{s.n}</span> {s.titre}
+						</p>
+						<p class="surf__texte">{s.texte}</p>
+					</li>
+				))
+			}
+		</ol>
+
+		<div class="surf__centre">
+			<img
+				class="surf__photo"
+				src={`${base}/chapitre-3/photos/carte-hote.png`}
+				width="217"
+				height="216"
+				alt="Photographie d’une carte Raspberry Pi 5 vue de dessus, avec son processeur, ses connecteurs USB, HDMI et réseau, et sa rangée de broches."
+				loading="lazy"
+				decoding="async"
+			/>
+			<p class="surf__legende">Raspberry Pi 5 · carte hôte</p>
+		</div>
+
+		<ol class="surf__liste surf__liste--autour" start="4">
+			{
+				autour.map((s) => (
+					<li class={`surf__carte surf__carte--autour surf__carte--${s.n}`}>
+						<p class="surf__titre">
+							<span class="surf__num">{s.n}</span> {s.titre}
+						</p>
+						<p class="surf__texte">{s.texte}</p>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+	<figcaption>Une surface d'attaque est un endroit où un attaquant peut essayer d'agir. Il faut examiner les six.</figcaption>
+</figure>
+
+<style>
+	.surf {
+		margin: 1.5rem 0;
+	}
+	.surf__grille {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(9rem, 12rem) minmax(0, 1fr);
+		grid-template-rows: auto 1fr;
+		column-gap: 1.8rem;
+		row-gap: 0.4rem;
+	}
+	.surf__colonne {
+		margin: 0;
+		font-size: var(--sl-text-xs);
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.surf__colonne--chaine {
+		grid-column: 1;
+		color: var(--cadre-bleu-titre);
+	}
+	.surf__colonne--autour {
+		grid-column: 3;
+		color: var(--cadre-jaune-titre);
+	}
+	.surf__liste {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-rows: repeat(3, 1fr);
+		gap: 0.7rem;
+		grid-row: 2;
+	}
+	.surf__liste--chaine {
+		grid-column: 1;
+	}
+	.surf__liste--autour {
+		grid-column: 3;
+	}
+	.surf__carte {
+		position: relative;
+		margin: 0;
+		padding: 0.55rem 0.75rem;
+		border: 2px solid;
+		border-radius: 0.6rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.15rem;
+	}
+	.surf__carte--chaine {
+		border-color: var(--cadre-bleu-bord);
+		background: var(--cadre-bleu-fond);
+	}
+	.surf__carte--autour {
+		border-color: var(--cadre-jaune-bord);
+		background: var(--cadre-jaune-fond);
+	}
+	.surf__titre {
+		margin: 0;
+		font-size: var(--sl-text-sm);
+		font-weight: 700;
+		color: var(--sl-color-white);
+	}
+	.surf__num {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		color: var(--sl-color-gray-3);
+	}
+	.surf__texte {
+		margin: 0;
+		font-size: var(--sl-text-xs);
+		line-height: 1.4;
+		color: var(--sl-color-gray-2);
+	}
+	/* flèches en pointillés : de la carte (02) vers le schéma, et du schéma vers le débogage (05) */
+	.surf__carte--02::after,
+	.surf__carte--05::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		width: 1.4rem;
+		border-top: 2px dashed var(--sl-color-gray-3);
+	}
+	.surf__carte--02::after {
+		inset-inline-end: -1.6rem;
+	}
+	.surf__carte--05::before {
+		inset-inline-start: -1.6rem;
+	}
+	.surf__centre {
+		grid-column: 2;
+		grid-row: 2;
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.surf__photo {
+		display: block;
+		width: 100%;
+		height: auto;
+		border: 1px solid var(--sl-color-gray-4);
+	}
+	.surf__legende {
+		margin: 0;
+		text-align: center;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+	figcaption {
+		margin-top: 0.8rem;
+		text-align: center;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	@media (max-width: 50rem) {
+		.surf__grille {
+			grid-template-columns: 1fr;
+			grid-template-rows: none;
+			row-gap: 0.6rem;
+		}
+		.surf__colonne,
+		.surf__liste,
+		.surf__centre {
+			grid-column: 1;
+			grid-row: auto;
+		}
+		.surf__centre {
+			order: -1;
+			max-width: 11rem;
+			margin-inline: auto;
+		}
+		.surf__colonne--autour {
+			order: 3;
+			margin-top: 0.6rem;
+		}
+		.surf__liste--autour {
+			order: 4;
+		}
+		.surf__liste--chaine {
+			order: 2;
+		}
+		.surf__colonne--chaine {
+			order: 1;
+		}
+		.surf__liste {
+			grid-template-rows: none;
+		}
+		.surf__carte--02::after,
+		.surf__carte--05::before {
+			display: none;
+		}
+	}
+</style>
