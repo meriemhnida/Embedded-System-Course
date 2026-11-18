@@ -145,6 +145,19 @@ export default defineConfig({
 						{ label: 'À retenir et références', slug: 'parcours/chapitre-4/10-retenir-references' },
 					],
 				},
+				{
+					// TP Pi Pico en MicroPython : une page par exercice.
+					label: 'Chapitre 5 : Pi Pico et MicroPython',
+					items: [
+						{ label: 'Présentation du TP', slug: 'parcours/chapitre-5/01-presentation' },
+						{ label: 'Exercice 1 · Découvrir la Pi Pico et la Pico W', slug: 'parcours/chapitre-5/ex01-decouvrir-pico' },
+						{ label: 'Exercice 2 · Premier projet MicroPython', slug: 'parcours/chapitre-5/ex02-premier-projet' },
+						{ label: 'Exercice 3 · Température et humidité', slug: 'parcours/chapitre-5/ex03-temperature-humidite' },
+						{ label: 'Exercice 4 · Plaque et photorésistance', slug: 'parcours/chapitre-5/ex04-plaque-photoresistance' },
+						{ label: 'Exercice 5 · Écran LCD et signalisation', slug: 'parcours/chapitre-5/ex05-lcd-signalisation' },
+						{ label: 'Synthèse · Détecteur de fuite de gaz', slug: 'parcours/chapitre-5/synthese-detecteur-gaz' },
+					],
+				},
 				{ label: 'Examen Blanc', slug: 'examen-blanc' },
 				{ label: 'Mon parcours', link: '/mon-parcours/' },
 				{ label: 'Mes réponses', link: '/mes-reponses/' },

@@ -1,0 +1,101 @@
+---
+title: "Exercice 3 — Afficher la température et l'humidité"
+description: Exercice 3 du TP Pi Pico — câbler un DHT22 sur la Pico, lire la température et l'humidité en MicroPython, acquérir à intervalle régulier et signaler chaque acquisition par la LED intégrée.
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Lire le capteur **DHT22** en MicroPython, afficher la température et l'humidité dans la console, puis rendre l'acquisition **périodique** et **visible**.
+:::
+
+Le DHT22 est le capteur déjà utilisé au [TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/ex06-capteur-dht22/) avec l'Arduino. Cette fois, il est relié à la Pico et lu en MicroPython.
+
+## Câblage
+
+Créez un nouveau projet **MicroPython** pour la Pi Pico et ajoutez un capteur **DHT22**.
+
+| DHT22 | Relier à la Pico |
+|---|---|
+| VCC | **3V3** (3V3 OUT) |
+| SDA (données) | **GP15** |
+| NC | rien (non connectée) |
+| GND | **GND** |
+
+## Étape 1 : lire et afficher
+
+En vous basant sur le code ci-dessous, réalisez le montage permettant de mesurer la température et l'humidité, et d'imprimer les valeurs dans la console.
+
+```python
+from dht import DHT22
+from machine import Pin
+from time import sleep
+
+dht = DHT22(Pin(15))
+
+try:
+    while True:
+        # Mesurer la température et l'humidité
+        dht.measure()
+        temp = dht.temperature()
+        hum = dht.humidity()
+
+        # Afficher la température et l'humidité sur la console
+        print(f"Température : {temp} °C   Humidité : {hum} %")
+
+except KeyboardInterrupt:
+    pass
+```
+
+Lancez la simulation, puis cliquez sur le capteur : des curseurs permettent de **modifier la température et l'humidité**. Vérifiez que la console suit vos réglages.
+
+<Question id="pico-q3.1" label="Q3.1">
+Que fait l'instruction `dht.measure()` ? Pourquoi faut-il l'appeler **avant** `dht.temperature()` et `dht.humidity()` ?
+</Question>
+
+<Question id="pico-q3.2" label="Q3.2">
+À quoi sert le bloc `try … except KeyboardInterrupt` ? Quand l'exception `KeyboardInterrupt` se produit-elle ?
+</Question>
+
+<Question id="pico-q3.3" label="Q3.3">
+La ligne `print(f"…{temp}…")` utilise une **f-string**. Expliquez son fonctionnement. Comment afficher la température avec **une seule décimale** ?
+</Question>
+
+<Question id="pico-q3.4" label="Q3.4">
+Ce premier programme ne contient **aucune pause**. Quel intervalle minimal faut-il respecter entre deux lectures du DHT22 ? Que risque-t-on sur une vraie carte si on l'interroge sans arrêt ?
+</Question>
+
+## Étape 2 : acquérir toutes les 5 secondes
+
+Modifiez le code précédent pour acquérir les données du DHT22 à **intervalle régulier : toutes les 5 secondes**.
+
+<Question id="pico-q3.5" label="Q3.5" type="code">
+Collez votre programme. Indiquez en commentaire la ligne qui fixe la période d'acquisition.
+</Question>
+
+## Étape 3 : signaler chaque acquisition
+
+Modifiez encore le code pour **allumer la LED intégrée** (broche 25) à chaque acquisition de données.
+
+<Question id="pico-q3.6" label="Q3.6" type="code">
+Collez votre programme.
+</Question>
+
+<Question id="pico-q3.7" label="Q3.7">
+Combien de temps la LED reste-t-elle allumée à chaque acquisition dans votre programme ? Est-ce suffisant pour être vu par un utilisateur ? Justifiez votre choix.
+</Question>
+
+<Question id="pico-q3.8" label="Q3.8">
+Collez le lien de votre projet Wokwi.
+</Question>
+
+## Critères de validation
+
+- [ ] La console affiche la température et l'humidité toutes les 5 secondes.
+- [ ] Les valeurs suivent les réglages faits en cliquant sur le capteur.
+- [ ] La LED intégrée s'allume à chaque acquisition.
+- [ ] Les questions Q3.1 à Q3.8 ont une réponse.
+
+:::note[Prochaine étape]
+**Enregistrez ce projet** : l'exercice 4 le complète. Validez cette page, puis passez à l'[exercice 4 : plaque de prototypage et photorésistance](/Embedded-System-Course/parcours/chapitre-5/ex04-plaque-photoresistance/).
+:::

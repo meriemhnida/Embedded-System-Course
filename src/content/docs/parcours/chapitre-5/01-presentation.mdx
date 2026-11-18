@@ -1,0 +1,62 @@
+---
+title: "TP — À la découverte de Pi Pico, Pi Pico W et MicroPython"
+description: Présentation du TP du chapitre 5 — MicroPython, objectifs, cinq exercices et un exercice de synthèse, préparation de Wokwi pour la Raspberry Pi Pico.
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs du TP]
+À la fin de ce TP, vous serez capables de :
+- présenter les cartes **Raspberry Pi Pico** et **Pico W** et leur microcontrôleur **RP2040** ;
+- créer un projet **MicroPython** sur Wokwi et piloter une sortie numérique ;
+- lire un capteur numérique (**DHT22**) et un capteur analogique (**photorésistance**) ;
+- afficher des mesures sur un **écran LCD I2C** et les signaler par des LED ;
+- concevoir une application embarquée complète : un **détecteur de fuite de gaz**.
+:::
+
+## MicroPython : Python sur microcontrôleur
+
+Dans l'écosystème de la Raspberry Pi Pico, une alternative au langage **C** est **MicroPython**. MicroPython est une version de Python adaptée, on dit aussi **portée**, pour fonctionner dans un environnement particulier : les microcontrôleurs. Cette alternative offre une approche plus simple aux programmeurs qui connaissent déjà Python.
+
+:::caution[À retenir]
+**MicroPython** est une implémentation du langage Python **optimisée pour les microcontrôleurs**. Elle offre la puissance et la simplicité d'un langage de **haut niveau**, adaptées à des ressources limitées : quelques centaines de kilo-octets de mémoire vive, pas de système d'exploitation.
+:::
+
+L'idée derrière MicroPython est de disposer d'un **langage de haut niveau porté sur microcontrôleur**. Le chapitre 3 en donne une première présentation : [la famille Raspberry Pi](/Embedded-System-Course/parcours/chapitre-3/01-famille-raspberry-pi/).
+
+<Question id="pico-q0.1" label="Q0.1">
+Pourquoi dit-on que Python est un langage de **haut niveau** ? Citez **deux avantages** et **deux limites** de MicroPython par rapport au C pour programmer un microcontrôleur.
+</Question>
+
+<Question id="pico-q0.2" label="Q0.2">
+Un programme Arduino est **compilé** sur l'ordinateur puis téléversé ; un programme MicroPython est **interprété** par la carte. Qu'est-ce que cela change pour le cycle « écrire, tester, corriger » ? Et pour la vitesse d'exécution ?
+</Question>
+
+## Les exercices
+
+| Exercice | Contenu |
+|---|---|
+| [1](/Embedded-System-Course/parcours/chapitre-5/ex01-decouvrir-pico/) | Découvrir les cartes Pi Pico, Pi Pico W et les comparer au Raspberry Pi 5 |
+| [2](/Embedded-System-Course/parcours/chapitre-5/ex02-premier-projet/) | Premier projet MicroPython : faire clignoter la LED intégrée |
+| [3](/Embedded-System-Course/parcours/chapitre-5/ex03-temperature-humidite/) | Mesurer la température et l'humidité avec le DHT22 |
+| [4](/Embedded-System-Course/parcours/chapitre-5/ex04-plaque-photoresistance/) | Plaque de prototypage et photorésistance |
+| [5](/Embedded-System-Course/parcours/chapitre-5/ex05-lcd-signalisation/) | Écran LCD et LED de signalisation |
+| [Synthèse](/Embedded-System-Course/parcours/chapitre-5/synthese-detecteur-gaz/) | Détecteur de fuite de gaz, sur Arduino ou sur Pi Pico |
+
+Les exercices 3, 4 et 5 se suivent : chacun complète le montage du précédent.
+
+## Préparation : Wokwi pour la Pi Pico
+
+Sur une vraie carte, la Pico se programme en MicroPython par son port **micro-USB**, avec l'IDE **Thonny**. Dans ce TP, vous utilisez **Wokwi**, le simulateur en ligne déjà employé au chapitre 2 : le montage et le code se font sur la même interface web.
+
+1. Ouvrez [wokwi.com](https://wokwi.com/) et connectez-vous avec votre **compte GitHub**.
+2. Créez un projet par exercice et nommez-le clairement, par exemple `Pico-Ex03-Dupont-Martin`.
+3. Quand un exercice complète le montage du précédent, partez d'une **copie** du projet précédent (« Save a copy »).
+
+:::tip[Pour aller plus loin]
+Pour programmer plus confortablement, vous pouvez utiliser l'extension **Wokwi pour VS Code** : le simulateur s'ouvre alors directement dans l'éditeur.
+:::
+
+:::note[Prochaine étape]
+Validez cette page, puis passez à l'[exercice 1 : découvrir la Pi Pico et la Pi Pico W](/Embedded-System-Course/parcours/chapitre-5/ex01-decouvrir-pico/).
+:::

@@ -1,0 +1,107 @@
+---
+title: "Exercice de synthèse — Détecteur de fuite de gaz"
+description: Exercice de synthèse du TP Pi Pico — concevoir, sur Arduino ou sur Pi Pico, une application embarquée qui détecte une fuite de gaz, déclenche une alarme et signale le niveau de gaz par des LED.
+---
+
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectif de l'exercice]
+Réinvestir tout le TP dans une **application embarquée complète**, sur **Arduino UNO** ou sur **Pi Pico**, au choix : de l'analyse du besoin jusqu'aux tests.
+:::
+
+## Le besoin
+
+Nous souhaitons construire une application embarquée qui nous **prévient en cas de fuite de gaz**. Un capteur simule un **détecteur de gaz** qui déclenche une **alarme** en cas de fuite. L'alarme sonne **jusqu'à ce que la fuite soit stoppée**. De plus, des LED s'allument en fonction de la **quantité de gaz** détectée par le capteur.
+
+### Cahier des charges
+
+| Exigence | Description |
+|---|---|
+| EF1 | Mesurer en continu la concentration de gaz avec le capteur **MQ-2** de Wokwi. |
+| EF2 | En cas de fuite, déclencher une **alarme sonore** qui retentit tant que la fuite n'est pas stoppée. |
+| EF3 | Si une **grande quantité** de gaz fuit, allumer la LED **rouge** et la faire **clignoter**. |
+| EF4 | Si la fuite est **faible**, allumer la LED **orange** (fixe). |
+| EF5 | En l'absence de fuite, allumer la LED **verte** et couper l'alarme. |
+
+### Affectation des broches
+
+| Composant | Pi Pico | Arduino UNO |
+|---|---|---|
+| Capteur de gaz MQ-2 : VCC | **3V3** | **5V** |
+| Capteur de gaz MQ-2 : AOUT | **GP26** (ADC0) | **A0** |
+| Capteur de gaz MQ-2 : GND | **GND** | **GND** |
+| LED verte, via 220 Ω | **GP10** | **D10** |
+| LED orange, via 220 Ω | **GP11** | **D11** |
+| LED rouge, via 220 Ω | **GP12** | **D12** |
+| Buzzer (+), l'autre broche vers GND | **GP13** | **D8** |
+
+Dans Wokwi, cherchez le composant **Gas Sensor (MQ2)**. Pendant la simulation, cliquez dessus pour régler la concentration de gaz, en **ppm** (parties par million).
+
+:::tip[Faire sonner le buzzer en MicroPython]
+Un buzzer piézo a besoin d'un signal **périodique**. Sur la Pico, utilisez une sortie **PWM** :
+
+```python
+from machine import Pin, PWM
+
+buzzer = PWM(Pin(13))
+buzzer.freq(1000)          # son de 1000 Hz
+buzzer.duty_u16(32768)     # 50 % : le buzzer sonne
+buzzer.duty_u16(0)         # 0 % : silence
+```
+
+Sur l'Arduino, utilisez `tone()` et `noTone()`, comme au [TP1](/Embedded-System-Course/parcours/chapitre-2/tp1/ex10-avertisseur-sonore/).
+:::
+
+## Étape 1 : analyser
+
+<Question id="pico-qs.1" label="QS.1">
+Quelle carte avez-vous choisie, et pourquoi ? Listez les **entrées** (capteurs) et les **sorties** (actionneurs) du système, puis décrivez sa **chaîne d'information** : acquérir, traiter, communiquer ou agir.
+</Question>
+
+<Question id="pico-qs.2" label="QS.2">
+Lancez la simulation et relevez la valeur lue sur la sortie AOUT pour **quatre concentrations** différentes, de la valeur par défaut (400 ppm) jusqu'au maximum du curseur. Quels **seuils** choisissez-vous pour distinguer « pas de fuite », « fuite faible » et « grande quantité » ? Justifiez.
+</Question>
+
+<Question id="pico-qs.3" label="QS.3">
+Décrivez le comportement du système sous forme d'**algorithme** (pseudo-code) ou de **diagramme d'états** : états *normal*, *fuite faible*, *fuite importante*, et conditions de passage d'un état à l'autre.
+</Question>
+
+## Étape 2 : réaliser
+
+<Question id="pico-qs.4" label="QS.4">
+La LED rouge doit clignoter **pendant que** le capteur continue d'être surveillé. Pourquoi un clignotement écrit avec `time.sleep()` (ou `delay()`) pose-t-il problème ici ? Proposez une solution.
+</Question>
+
+<Question id="pico-qs.5" label="QS.5" type="code" lignes={14}>
+Collez votre programme complet, commenté.
+</Question>
+
+<Question id="pico-qs.6" label="QS.6">
+Collez le lien de votre projet Wokwi.
+</Question>
+
+## Étape 3 : tester
+
+<Question id="pico-qs.7" label="QS.7">
+Rédigez un **plan de tests** sous forme de tableau : pour chaque concentration simulée, le comportement **attendu** (LED, alarme) et le comportement **observé**. Incluez les cas limites : une concentration exactement égale à un seuil, et le retour à la normale après une fuite.
+</Question>
+
+<Question id="pico-qs.8" label="QS.8" categorie="surete">
+Que fait votre système si le capteur est **débranché** ou **défaillant** (valeur nulle ou figée) ? Pour un détecteur de gaz, vaut-il mieux une fausse alarme ou une alarme manquée ? Proposez un moyen de détecter la panne du capteur.
+</Question>
+
+<Question id="pico-qs.9" label="QS.9">
+**Pour aller plus loin.** Avec une **Pico W**, comment prévenir l'occupant à distance, même absent de son domicile ? Décrivez la solution en vous appuyant sur la [chaîne IoT du chapitre 1](/Embedded-System-Course/parcours/chapitre-1/04-chaine-iot/).
+</Question>
+
+## Critères de validation
+
+- [ ] La LED verte est allumée et l'alarme est silencieuse en l'absence de fuite.
+- [ ] Une fuite faible allume la LED orange et déclenche l'alarme.
+- [ ] Une grande quantité de gaz fait clignoter la LED rouge, alarme active.
+- [ ] L'alarme s'arrête dès que la fuite est stoppée.
+- [ ] Le plan de tests est rempli, et les questions QS.1 à QS.9 ont une réponse.
+
+:::note[Fin du chapitre]
+Validez cette page pour terminer le chapitre 5. Pensez à **exporter vos réponses** depuis la page [Mes réponses](/Embedded-System-Course/mes-reponses/).
+:::
