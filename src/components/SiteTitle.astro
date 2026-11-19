@@ -1,0 +1,110 @@
+---
+// Titre du site (remplace celui de Starlight) précédé d'un bouton qui masque ou affiche le plan du cours
+// (la barre latérale de gauche). Le choix est mémorisé dans le navigateur et s'applique à toutes les pages.
+// Sur téléphone, le plan est déjà un menu escamotable : le bouton n'y apparaît pas.
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+
+const { hasSidebar } = Astro.locals.starlightRoute;
+---
+
+{
+	hasSidebar && (
+		<>
+			{/* Appliqué avant l'affichage de la barre latérale, pour éviter qu'elle apparaisse puis disparaisse. */}
+			<script is:inline>
+				try {
+					if (localStorage.getItem('systemes-embarques:plan-masque') === '1')
+						document.documentElement.setAttribute('data-plan-masque', '');
+				} catch {}
+			</script>
+			<button
+				type="button"
+				class="btn-plan print:hidden"
+				aria-controls="starlight__sidebar"
+				aria-expanded="true"
+				aria-label="Masquer le plan du cours"
+				title="Masquer le plan du cours"
+			>
+				<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+					<rect x="3" y="4" width="18" height="16" rx="2.5"></rect>
+					<line x1="9.5" y1="4" x2="9.5" y2="20"></line>
+					<path class="fleche-masquer" d="M16.5 9 13.5 12l3 3"></path>
+					<path class="fleche-afficher" d="M13.5 9l3 3-3 3"></path>
+				</svg>
+			</button>
+		</>
+	)
+}
+<Default />
+
+<script>
+	const CLE = 'systemes-embarques:plan-masque';
+	const racine = document.documentElement;
+
+	document.querySelectorAll<HTMLButtonElement>('.btn-plan').forEach((btn) => {
+		const maj = () => {
+			const masque = racine.hasAttribute('data-plan-masque');
+			const texte = masque ? 'Afficher le plan du cours' : 'Masquer le plan du cours';
+			btn.setAttribute('aria-expanded', String(!masque));
+			btn.setAttribute('aria-label', texte);
+			btn.title = texte;
+		};
+		btn.addEventListener('click', () => {
+			// Les transitions ne jouent qu'après un clic, pas au chargement de la page.
+			racine.setAttribute('data-plan-anime', '');
+			const masque = !racine.hasAttribute('data-plan-masque');
+			racine.toggleAttribute('data-plan-masque', masque);
+			try {
+				if (masque) localStorage.setItem(CLE, '1');
+				else localStorage.removeItem(CLE);
+			} catch {
+				/* navigation privée : le choix vaut pour cette page seulement */
+			}
+			maj();
+		});
+		maj();
+	});
+</script>
+
+<style>
+	.btn-plan {
+		display: none;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0.4rem;
+		background: transparent;
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+	}
+	.btn-plan:hover,
+	.btn-plan:focus-visible {
+		color: var(--sl-color-white);
+		background: var(--sl-color-gray-6);
+	}
+	.btn-plan svg {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.fleche-afficher,
+	:global(:root[data-plan-masque]) .fleche-masquer {
+		display: none;
+	}
+	:global(:root[data-plan-masque]) .fleche-afficher {
+		display: inline;
+	}
+	/* Le plan n'est une barre latérale fixe qu'à partir de 50rem de large. */
+	@media (min-width: 50rem) {
+		.btn-plan {
+			display: inline-flex;
+		}
+	}
+</style>

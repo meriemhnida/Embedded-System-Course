@@ -132,3 +132,34 @@
 	margin: 0 auto;
 }
 .sl-markdown-content td { vertical-align: middle; }
+
+/* Plan du cours masquable (bouton à gauche du titre, voir src/components/SiteTitle.astro).
+   À partir de 50rem, le plan est une barre latérale fixe : on la fait glisser hors de l'écran et le contenu
+   récupère la place. L'attribut data-plan-anime n'est posé qu'au clic, pour ne rien animer au chargement. */
+.btn-plan {
+	margin-inline-end: 0.5rem;
+}
+@media (min-width: 50rem) {
+	:root[data-plan-masque][data-has-sidebar] {
+		--sl-content-inline-start: 0rem;
+	}
+	:root[data-plan-masque] .sidebar-pane {
+		transform: translateX(-100%);
+		visibility: hidden;
+	}
+	:root[data-plan-anime] .sidebar-pane {
+		transition: transform 0.25s ease, visibility 0s linear 0s;
+	}
+	:root[data-plan-anime][data-plan-masque] .sidebar-pane {
+		transition: transform 0.25s ease, visibility 0s linear 0.25s;
+	}
+	:root[data-plan-anime] .main-frame {
+		transition: padding-inline-start 0.25s ease;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	:root[data-plan-anime] .sidebar-pane,
+	:root[data-plan-anime] .main-frame {
+		transition: none;
+	}
+}

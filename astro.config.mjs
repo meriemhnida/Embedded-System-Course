@@ -66,6 +66,9 @@ export default defineConfig({
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				Footer: './src/components/Footer.astro',
+				// Bouton « masquer le plan » devant le titre, bouton « plein écran » devant le choix du thème.
+				SiteTitle: './src/components/SiteTitle.astro',
+				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			sidebar: [
 				{

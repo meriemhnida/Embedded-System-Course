@@ -1,0 +1,122 @@
+---
+// Sélecteur de thème de Starlight, précédé d'un bouton « Plein écran ». Il apparaît dans l'en-tête et, sur
+// téléphone, dans le menu. Le bouton est masqué si le navigateur ne permet pas le plein écran (iPhone).
+import Default from '@astrojs/starlight/components/ThemeSelect.astro';
+---
+
+<button
+	type="button"
+	class="btn-plein-ecran print:hidden"
+	aria-pressed="false"
+	aria-label="Passer en plein écran"
+	title="Plein écran (Échap pour quitter)"
+	hidden
+>
+	<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+		<path class="entrer" d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path>
+		<path class="sortir" d="M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5"></path>
+	</svg>
+	<span class="texte">Plein écran</span>
+</button>
+<Default />
+
+<script>
+	type DocumentWebkit = Document & {
+		webkitFullscreenEnabled?: boolean;
+		webkitFullscreenElement?: Element | null;
+		webkitExitFullscreen?: () => void;
+	};
+	type ElementWebkit = HTMLElement & { webkitRequestFullscreen?: () => void };
+
+	const doc = document as DocumentWebkit;
+	const racine = document.documentElement as ElementWebkit;
+	const boutons = document.querySelectorAll<HTMLButtonElement>('.btn-plein-ecran');
+	const possible = document.fullscreenEnabled || doc.webkitFullscreenEnabled;
+	const actif = () => Boolean(document.fullscreenElement || doc.webkitFullscreenElement);
+
+	const maj = () => {
+		const a = actif();
+		boutons.forEach((btn) => {
+			btn.setAttribute('aria-pressed', String(a));
+			btn.setAttribute('aria-label', a ? 'Quitter le plein écran' : 'Passer en plein écran');
+			btn.title = a ? 'Quitter le plein écran (Échap)' : 'Plein écran (Échap pour quitter)';
+			btn.querySelector('.texte')!.textContent = a ? 'Quitter le plein écran' : 'Plein écran';
+		});
+	};
+
+	if (possible) {
+		boutons.forEach((btn) => {
+			btn.hidden = false;
+			btn.addEventListener('click', async () => {
+				try {
+					if (actif()) {
+						if (document.exitFullscreen) await document.exitFullscreen();
+						else doc.webkitExitFullscreen?.();
+					} else if (racine.requestFullscreen) await racine.requestFullscreen();
+					else racine.webkitRequestFullscreen?.();
+				} catch {
+					/* refusé par le navigateur : rien à faire */
+				}
+			});
+		});
+		document.addEventListener('fullscreenchange', maj);
+		document.addEventListener('webkitfullscreenchange', maj);
+		maj();
+	}
+</script>
+
+<style>
+	.btn-plein-ecran {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		flex: none;
+		height: 2.25rem;
+		margin: 0;
+		padding: 0 0.5rem;
+		border: 0;
+		border-radius: 0.4rem;
+		background: transparent;
+		color: var(--sl-color-gray-2);
+		font-size: var(--sl-text-sm);
+		cursor: pointer;
+	}
+	.btn-plein-ecran[hidden] {
+		display: none;
+	}
+	.btn-plein-ecran:hover,
+	.btn-plein-ecran:focus-visible {
+		color: var(--sl-color-white);
+		background: var(--sl-color-gray-6);
+	}
+	.btn-plein-ecran svg {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.9;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.sortir,
+	.btn-plein-ecran[aria-pressed='true'] .entrer {
+		display: none;
+	}
+	.btn-plein-ecran[aria-pressed='true'] .sortir {
+		display: inline;
+	}
+	/* Dans l'en-tête, l'icône suffit ; dans le menu du téléphone, le texte l'accompagne. */
+	@media (min-width: 50rem) {
+		:global(.header) .texte {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+		:global(.header) .btn-plein-ecran {
+			width: 2.25rem;
+			padding: 0;
+			justify-content: center;
+		}
+	}
+</style>
