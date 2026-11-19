@@ -1,0 +1,310 @@
+---
+// Simulateurs des signaux analogiques de l'ESP32.
+//   type="adc" : un potentiomètre sur GPIO 34, la tension et la valeur lue par analogRead(), un moniteur série.
+//   type="dac" : dacWrite() sur GPIO 25, la tension de sortie et un signal sinusoïdal en escalier.
+//   type="pwm" : analogWrite() sur une LED, le signal carré, son rapport cyclique et sa tension moyenne.
+interface Props {
+	type: 'adc' | 'dac' | 'pwm';
+}
+const { type } = Astro.props;
+const titres = {
+	adc: 'Simulateur : lire un potentiomètre avec l’ADC',
+	dac: 'Simulateur : produire une tension avec le DAC',
+	pwm: 'Simulateur : faire varier une LED en PWM',
+};
+---
+
+<figure class="esp-signal" data-type={type}>
+	<figcaption class="titre">{titres[type]}</figcaption>
+
+	{type === 'adc' && (
+		<div class="grille">
+			<svg class="schema" viewBox="0 0 240 220" role="img" aria-label="Potentiomètre dont le curseur est relié à GPIO 34 de l'ESP32">
+				<text class="t" x="120" y="18" text-anchor="middle">Potentiomètre</text>
+				<circle cx="120" cy="100" r="62" fill="#e2e8f0" stroke="#64748b" stroke-width="3"></circle>
+				<g class="bouton-pot">
+					<circle cx="120" cy="100" r="44" fill="#1f2937"></circle>
+					<rect x="116" y="58" width="8" height="30" rx="3" fill="#facc15"></rect>
+				</g>
+				<text class="t petit" x="40" y="178" text-anchor="middle">GND</text>
+				<text class="t petit" x="120" y="178" text-anchor="middle">GPIO 34</text>
+				<text class="t petit" x="200" y="178" text-anchor="middle">3V3</text>
+				<path d="M60 150 L40 166 M120 162 V166 M180 150 L200 166" stroke="#64748b" stroke-width="3"></path>
+				<text class="t petit" x="120" y="210" text-anchor="middle">0 V à gauche, 3,3 V à droite</text>
+			</svg>
+			<div class="commandes">
+				<label class="curseur">Tournez le potentiomètre
+					<input type="range" class="entree" min="0" max="1000" value="350" />
+				</label>
+				<label class="choix">Résolution
+					<select class="resolution">
+						<option value="12" selected>12 bits (0 à 4095)</option>
+						<option value="11">11 bits (0 à 2047)</option>
+						<option value="10">10 bits (0 à 1023)</option>
+						<option value="9">9 bits (0 à 511)</option>
+					</select>
+				</label>
+				<dl class="mesures">
+					<div><dt>Tension sur GPIO 34</dt><dd class="tension">—</dd></div>
+					<div><dt>analogRead(34)</dt><dd class="valeur">—</dd></div>
+				</dl>
+				<div class="jauge" aria-hidden="true"><span class="remplissage"></span></div>
+				<p class="formule"></p>
+			</div>
+			<div class="moniteur-zone">
+				<div class="moniteur-entete"><span>Moniteur série · 115200 bauds</span><button type="button" class="btn-moniteur" aria-pressed="false">▶ Lancer</button></div>
+				<pre class="moniteur" aria-live="off"></pre>
+			</div>
+		</div>
+	)}
+
+	{type === 'dac' && (
+		<div class="grille">
+			<svg class="schema" viewBox="0 0 240 200" role="img" aria-label="Voltmètre branché sur la sortie GPIO 25 (DAC1)">
+				<text class="t" x="120" y="18" text-anchor="middle">Voltmètre sur GPIO 25 (DAC1)</text>
+				<path d="M30 150 A90 90 0 0 1 210 150" fill="none" stroke="#cbd5e1" stroke-width="14"></path>
+				<path class="arc" d="M30 150 A90 90 0 0 1 210 150" fill="none" stroke="#a16207" stroke-width="14" pathLength="100" stroke-dasharray="0 100"></path>
+				<g class="aiguille"><line x1="120" y1="150" x2="120" y2="72" stroke="#0f172a" stroke-width="4" stroke-linecap="round"></line></g>
+				<circle cx="120" cy="150" r="8" fill="#0f172a"></circle>
+				<text class="t petit" x="30" y="176" text-anchor="middle">0 V</text>
+				<text class="t petit" x="210" y="176" text-anchor="middle">3,3 V</text>
+				<text class="t grand affichage" x="120" y="194" text-anchor="middle">—</text>
+			</svg>
+			<div class="commandes">
+				<label class="curseur">Valeur envoyée au DAC (0 à 255)
+					<input type="range" class="entree" min="0" max="255" value="128" />
+				</label>
+				<pre class="code"><code></code></pre>
+				<p class="formule"></p>
+				<button type="button" class="btn-sinus" aria-pressed="false">∿ Générer une sinusoïde</button>
+			</div>
+			<svg class="oscillo" viewBox="0 0 400 140" role="img" aria-label="Oscilloscope : tension de sortie du DAC au cours du temps">
+				<rect x="0" y="0" width="400" height="140" fill="#0b1220"></rect>
+				{[24, 72, 120].map((y) => <line x1="0" y1={y} x2="400" y2={y} stroke="#1e293b"></line>)}
+				<polyline class="trace" fill="none" stroke="#facc15" stroke-width="2.5" points=""></polyline>
+				<text x="6" y="16" fill="#94a3b8" font-size="11">3,3 V</text>
+				<text x="6" y="135" fill="#94a3b8" font-size="11">0 V</text>
+			</svg>
+		</div>
+	)}
+
+	{type === 'pwm' && (
+		<div class="grille">
+			<svg class="schema" viewBox="0 0 240 200" role="img" aria-label="LED reliée à GPIO 23 par une résistance, pilotée en PWM">
+				<text class="t" x="120" y="18" text-anchor="middle">LED sur GPIO 23 (via 220 Ω)</text>
+				<circle class="halo" cx="120" cy="92" r="58" fill="#facc15"></circle>
+				<path class="ampoule" d="M95 120 V80 a25 25 0 0 1 50 0 V120 Z" fill="#fde68a" stroke="#a16207" stroke-width="3"></path>
+				<rect x="90" y="120" width="60" height="10" rx="2" fill="#a16207"></rect>
+				<line x1="106" y1="130" x2="106" y2="170" stroke="#64748b" stroke-width="4"></line>
+				<line x1="134" y1="130" x2="134" y2="182" stroke="#64748b" stroke-width="4"></line>
+				<text class="t grand affichage" x="120" y="196" text-anchor="middle">—</text>
+			</svg>
+			<div class="commandes">
+				<label class="curseur">Rapport cyclique : analogWrite(23, valeur), valeur de 0 à 255
+					<input type="range" class="entree" min="0" max="255" value="64" />
+				</label>
+				<pre class="code"><code></code></pre>
+				<p class="formule"></p>
+			</div>
+			<svg class="oscillo" viewBox="0 0 400 140" role="img" aria-label="Oscilloscope : signal PWM carré et sa tension moyenne">
+				<rect x="0" y="0" width="400" height="140" fill="#0b1220"></rect>
+				<g class="defile"><polyline class="trace" fill="none" stroke="#22d3ee" stroke-width="2.5" points=""></polyline></g>
+				<line class="moyenne" x1="0" x2="400" y1="70" y2="70" stroke="#facc15" stroke-width="2" stroke-dasharray="6 5"></line>
+				<text x="6" y="16" fill="#94a3b8" font-size="11">3,3 V</text>
+				<text x="6" y="135" fill="#94a3b8" font-size="11">0 V</text>
+				<text class="moyenne-t" x="394" y="64" fill="#facc15" font-size="11" text-anchor="end">moyenne</text>
+			</svg>
+		</div>
+	)}
+</figure>
+
+<script>
+	const fmt = (v: number, d = 2) => v.toFixed(d).replace('.', ',');
+
+	document.querySelectorAll<HTMLElement>('.esp-signal').forEach((fig) => {
+		const type = fig.dataset.type;
+		const entree = fig.querySelector<HTMLInputElement>('.entree')!;
+		const formule = fig.querySelector<HTMLElement>('.formule')!;
+
+		if (type === 'adc') {
+			const res = fig.querySelector<HTMLSelectElement>('.resolution')!;
+			const tension = fig.querySelector<HTMLElement>('.tension')!;
+			const valeur = fig.querySelector<HTMLElement>('.valeur')!;
+			const jauge = fig.querySelector<HTMLElement>('.remplissage')!;
+			const pot = fig.querySelector<SVGGElement>('.bouton-pot')!;
+			const moniteur = fig.querySelector<HTMLElement>('.moniteur')!;
+			const btn = fig.querySelector<HTMLButtonElement>('.btn-moniteur')!;
+			let minuteur: number | undefined;
+			let lignes: string[] = [];
+			const lire = () => {
+				const v = (Number(entree.value) / 1000) * 3.3;
+				const max = 2 ** Number(res.value) - 1;
+				return { v, max, n: Math.round((v / 3.3) * max) };
+			};
+			const maj = () => {
+				const { v, max, n } = lire();
+				pot.style.transform = `rotate(${-135 + (Number(entree.value) / 1000) * 270}deg)`;
+				tension.textContent = `${fmt(v)} V`;
+				valeur.textContent = `${n}`;
+				jauge.style.width = `${(n / max) * 100}%`;
+				formule.textContent = `valeur = ${fmt(v)} V ÷ 3,3 V × ${max} ≈ ${n}`;
+			};
+			entree.addEventListener('input', maj);
+			res.addEventListener('change', maj);
+			btn.addEventListener('click', () => {
+				if (minuteur !== undefined) {
+					window.clearInterval(minuteur);
+					minuteur = undefined;
+					btn.textContent = '▶ Lancer';
+					btn.setAttribute('aria-pressed', 'false');
+					return;
+				}
+				btn.textContent = '■ Arrêter';
+				btn.setAttribute('aria-pressed', 'true');
+				minuteur = window.setInterval(() => {
+					lignes.push(`Analog value: ${lire().n}`);
+					lignes = lignes.slice(-9);
+					moniteur.textContent = lignes.join('\n');
+				}, 500);
+			});
+			maj();
+		}
+
+		if (type === 'dac') {
+			const aiguille = fig.querySelector<SVGGElement>('.aiguille')!;
+			const arc = fig.querySelector<SVGPathElement>('.arc')!;
+			const affichage = fig.querySelector<SVGTextElement>('.affichage')!;
+			const code = fig.querySelector<HTMLElement>('.code code')!;
+			const trace = fig.querySelector<SVGPolylineElement>('.trace')!;
+			const btn = fig.querySelector<HTMLButtonElement>('.btn-sinus')!;
+			let historique: number[] = Array(100).fill(Number(entree.value));
+			let anim: number | undefined;
+			let t = 0;
+			const dessiner = () => {
+				// Chaque échantillon dure 4 px : on voit l'escalier des 256 niveaux possibles.
+				const pts: string[] = [];
+				historique.forEach((n, i) => {
+					const y = 120 - (n / 255) * 96;
+					pts.push(`${i * 4},${y.toFixed(1)}`, `${(i + 1) * 4},${y.toFixed(1)}`);
+				});
+				trace.setAttribute('points', pts.join(' '));
+			};
+			const afficher = (n: number) => {
+				const v = (n / 255) * 3.3;
+				aiguille.style.transform = `rotate(${-90 + (n / 255) * 180}deg)`;
+				arc.setAttribute('stroke-dasharray', `${(n / 255) * 100} 100`);
+				affichage.textContent = `${fmt(v)} V`;
+				formule.textContent = `tension = ${n} ÷ 255 × 3,3 V ≈ ${fmt(v)} V`;
+			};
+			const maj = () => {
+				const n = Number(entree.value);
+				code.textContent = `dacWrite(25, ${n});   // DAC1 → GPIO 25`;
+				afficher(n);
+			};
+			const pas = () => {
+				t += 1;
+				const n = anim !== undefined ? Math.round(127.5 + 127.5 * Math.sin(t / 6)) : Number(entree.value);
+				historique = [...historique.slice(1), n];
+				if (anim !== undefined) { entree.value = String(n); afficher(n); code.textContent = 'for (int i = 0; i < 360; i += 10) {\n  dacWrite(25, 128 + 127 * sin(i * PI / 180));\n}'; }
+				dessiner();
+			};
+			entree.addEventListener('input', () => { if (anim !== undefined) btn.click(); maj(); });
+			btn.addEventListener('click', () => {
+				if (anim !== undefined) {
+					window.clearInterval(anim);
+					anim = undefined;
+					btn.textContent = '∿ Générer une sinusoïde';
+					btn.setAttribute('aria-pressed', 'false');
+					maj();
+					return;
+				}
+				btn.textContent = '■ Arrêter la sinusoïde';
+				btn.setAttribute('aria-pressed', 'true');
+				anim = window.setInterval(pas, 60);
+			});
+			window.setInterval(() => { if (anim === undefined) pas(); }, 120);
+			maj();
+			dessiner();
+		}
+
+		if (type === 'pwm') {
+			const code = fig.querySelector<HTMLElement>('.code code')!;
+			const trace = fig.querySelector<SVGPolylineElement>('.trace')!;
+			const moyenne = fig.querySelector<SVGLineElement>('.moyenne')!;
+			const moyenneT = fig.querySelector<SVGTextElement>('.moyenne-t')!;
+			const halo = fig.querySelector<SVGCircleElement>('.halo')!;
+			const ampoule = fig.querySelector<SVGPathElement>('.ampoule')!;
+			const affichage = fig.querySelector<SVGTextElement>('.affichage')!;
+			const maj = () => {
+				const n = Number(entree.value);
+				const r = n / 255;
+				const periode = 50;
+				const haut = 24;
+				const bas = 118;
+				const pts: string[] = [];
+				for (let x = -periode; x <= 400 + periode; x += periode) {
+					const fin = x + r * periode;
+					pts.push(`${x},${r > 0 ? haut : bas}`);
+					if (r > 0 && r < 1) pts.push(`${fin},${haut}`, `${fin},${bas}`);
+					pts.push(`${x + periode},${r < 1 ? bas : haut}`);
+					if (r > 0 && r < 1) pts.push(`${x + periode},${haut}`);
+				}
+				trace.setAttribute('points', pts.join(' '));
+				const y = bas - r * (bas - haut);
+				moyenne.setAttribute('y1', String(y));
+				moyenne.setAttribute('y2', String(y));
+				moyenneT.setAttribute('y', String(Math.max(38, y - 6)));
+				halo.setAttribute('opacity', String(0.08 + r * 0.6));
+				ampoule.setAttribute('fill', r === 0 ? '#e5e7eb' : `hsl(48 96% ${88 - r * 35}%)`);
+				affichage.textContent = `${Math.round(r * 100)} %`;
+				code.textContent = `analogWrite(23, ${n});   // ${Math.round(r * 100)} % du temps à 3,3 V`;
+				formule.textContent = `Tension moyenne = ${n} ÷ 255 × 3,3 V ≈ ${fmt(r * 3.3)} V. La LED clignote si vite que l’œil ne voit que cette moyenne.`;
+			};
+			entree.addEventListener('input', maj);
+			maj();
+		}
+	});
+</script>
+
+<style>
+	.esp-signal {
+		margin: 1.5rem 0; padding: 1rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-vert-bord); background: var(--cadre-vert-fond);
+	}
+	.titre { font-weight: 700; margin-bottom: 0.75rem; color: var(--cadre-vert-titre); }
+	.grille { display: grid; grid-template-columns: minmax(10rem, 15rem) 1fr; gap: 1rem; align-items: start; }
+	.grille > .moniteur-zone, .grille > .oscillo { grid-column: 1 / -1; }
+	@media (max-width: 40rem) { .grille { grid-template-columns: 1fr; } .schema { max-width: 15rem; margin-inline: auto; } }
+	.schema { width: 100%; height: auto; background: #f8fafc; border-radius: 0.6rem; border: 1px solid var(--sl-color-gray-5); }
+	.t { font: 700 13px sans-serif; fill: #0f172a; }
+	.t.petit { font-size: 11px; font-weight: 600; fill: #334155; }
+	.t.grand { font-size: 18px; }
+	.bouton-pot, .aiguille { transform-box: view-box; transform-origin: 120px 100px; transition: transform 0.15s; }
+	.aiguille { transform-origin: 120px 150px; }
+	.arc { transition: stroke-dasharray 0.15s; }
+	.commandes { display: flex; flex-direction: column; gap: 0.6rem; margin: 0; }
+	.commandes > * { margin: 0; }
+	.curseur, .choix { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 600; font-size: var(--sl-text-sm); }
+	.curseur input { width: 100%; accent-color: var(--sl-color-accent); }
+	.choix select { max-width: 14rem; padding: 0.2rem; }
+	.mesures { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+	.esp-signal .mesures > div { margin: 0; flex: 1 1 8rem; padding: 0.4rem 0.6rem; border-radius: 0.5rem; background: var(--sl-color-gray-6); border: 1px solid var(--sl-color-gray-5); }
+	.mesures dt { font-size: 0.75rem; opacity: 0.85; }
+	.mesures dd { margin: 0; font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+	.jauge { height: 0.8rem; border-radius: 999px; background: var(--sl-color-gray-5); overflow: hidden; }
+	.remplissage { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f97316, #ea580c); transition: width 0.15s; }
+	.formule { font-size: var(--sl-text-sm); font-variant-numeric: tabular-nums; }
+	.code { font-size: 0.8rem; margin: 0; }
+	.moniteur-zone { border-radius: 0.5rem; overflow: hidden; border: 1px solid #1f2937; }
+	.moniteur-entete { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.3rem 0.6rem; background: #1f2937; color: #e5e7eb; font-size: 0.8rem; }
+	.moniteur { margin: 0; height: 10.5rem; padding: 0.5rem 0.7rem; background: #0b1220; color: #a7f3d0; font-size: 0.8rem; line-height: 1.4; overflow: hidden; white-space: pre; }
+	button {
+		margin: 0; cursor: pointer; padding: 0.35rem 0.9rem; border-radius: 0.4rem; font-weight: 700; font-size: 0.85rem;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black); align-self: flex-start;
+	}
+	button[aria-pressed='true'] { background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+	.oscillo { width: 100%; height: auto; border-radius: 0.5rem; display: block; }
+	.defile { animation: defile 1s linear infinite; }
+	@keyframes defile { to { transform: translateX(-50px); } }
+	@media (prefers-reduced-motion: reduce) { .defile { animation: none; } }
+</style>

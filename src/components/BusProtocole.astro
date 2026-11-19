@@ -1,25 +1,38 @@
 ---
 // Câblage animé d'un protocole de communication entre le Raspberry Pi et ses périphériques.
 // type : 'i2c' (2 fils partagés), 'spi' (4 fils + une broche CS par périphérique), 'uart' (2 fils croisés, sans horloge).
+// carte : 'rpi' (Raspberry Pi, par défaut) ou 'esp32' (broches de l'ESP32 DevKit).
 interface Props {
 	type: 'i2c' | 'spi' | 'uart';
+	carte?: 'rpi' | 'esp32';
 }
-const { type } = Astro.props;
+const { type, carte = 'rpi' } = Astro.props;
+const esp = carte === 'esp32';
+const nomCarte = esp ? 'ESP32' : 'Raspberry Pi';
+const court = esp ? 'l’ESP32' : 'le Pi';
+const pin = esp
+	? { sda: 'GPIO 21', scl: 'GPIO 22', mosi: 'GPIO 23', miso: 'GPIO 19', sclk: 'GPIO 18', ce0: 'GPIO 5', ce1: 'GPIO 4', tx: 'GPIO 17', rx: 'GPIO 16' }
+	: { sda: 'GPIO 2', scl: 'GPIO 3', mosi: 'GPIO 10', miso: 'GPIO 9', sclk: 'GPIO 11', ce0: 'GPIO 8', ce1: 'GPIO 7', tx: 'GPIO 14', rx: 'GPIO 15' };
+const nom = esp
+	? { sclk: 'SCK', ce0: 'CS', ce1: 'CS2', ce: 'CS', tx: 'TX2', rx: 'RX2' }
+	: { sclk: 'SCLK', ce0: 'CE0', ce1: 'CE1', ce: 'CE0 / CE1', tx: 'TXD', rx: 'RXD' };
 
 const legendes = {
 	i2c: [
-		['sda', '<strong>SDA</strong> (GPIO 2) : transmet les <strong>données</strong>.'],
-		['scl', '<strong>SCL</strong> (GPIO 3) : envoie le <strong>signal d’horloge</strong> pour synchroniser la communication.'],
+		['sda', `<strong>SDA</strong> (${pin.sda}) : transmet les <strong>données</strong>.`],
+		['scl', `<strong>SCL</strong> (${pin.scl}) : envoie le <strong>signal d’horloge</strong> pour synchroniser la communication.`],
 	],
 	spi: [
-		['mosi', '<strong>MOSI</strong> (GPIO 10) : le Pi envoie des données vers le périphérique.'],
-		['miso', '<strong>MISO</strong> (GPIO 9) : le périphérique envoie des données vers le Pi.'],
-		['sclk', '<strong>SCLK</strong> (GPIO 11) : le Pi génère l’horloge pour synchroniser les bits.'],
-		['ce', '<strong>CE0 / CE1</strong> (GPIO 8 / 7) : le Pi dit « je parle à TOI » à un périphérique précis.'],
+		['mosi', `<strong>MOSI</strong> (${pin.mosi}) : ${court} envoie des données vers le périphérique.`],
+		['miso', `<strong>MISO</strong> (${pin.miso}) : le périphérique envoie des données vers ${court}.`],
+		['sclk', `<strong>${nom.sclk}</strong> (${pin.sclk}) : ${court} génère l’horloge pour synchroniser les bits.`],
+		['ce', esp
+			? `<strong>CS</strong> (${pin.ce0}, puis ${pin.ce1} pour un second périphérique) : l’ESP32 dit « je parle à TOI » à un périphérique précis. Toute sortie libre peut servir de CS supplémentaire.`
+			: `<strong>${nom.ce}</strong> (GPIO 8 / 7) : le Pi dit « je parle à TOI » à un périphérique précis.`],
 	],
 	uart: [
-		['tx', '<strong>TXD</strong> (GPIO 14) : le Pi envoie des données ; il est relié au RX du périphérique.'],
-		['rx', '<strong>RXD</strong> (GPIO 15) : le Pi reçoit des données ; il est relié au TX du périphérique.'],
+		['tx', `<strong>${nom.tx}</strong> (${pin.tx}) : ${court} envoie des données ; il est relié au RX du périphérique.`],
+		['rx', `<strong>${nom.rx}</strong> (${pin.rx}) : ${court} reçoit des données ; il est relié au TX du périphérique.`],
 	],
 }[type];
 
@@ -37,18 +50,18 @@ const peripheriques = [
 ];
 ---
 
-<figure class={`bp bp--${type}`}>
+<figure class={`bp bp--${type} bp--${carte}`}>
 	<svg class="bp__svg" viewBox="0 0 760 320" role="img" aria-label={titres}>
 		<rect class="bp__fond" x="0" y="0" width="760" height="320"></rect>
 
-		<!-- Raspberry Pi -->
+		<!-- Carte -->
 		<rect class="bp__pi" x="20" y="20" width="170" height="280" rx="10"></rect>
-		<text class="bp__t bp__t--pi" x="105" y={type === 'spi' ? 84 : 52} text-anchor="middle">Raspberry Pi</text>
+		<text class="bp__t bp__t--pi" x="105" y={type === 'spi' ? 84 : 52} text-anchor="middle">{nomCarte}</text>
 
 		{type === 'i2c' && (
 			<>
-				<text class="bp__t bp__t--pin" x="180" y="104" text-anchor="end">SDA · GPIO 2</text>
-				<text class="bp__t bp__t--pin" x="180" y="154" text-anchor="end">SCL · GPIO 3</text>
+				<text class="bp__t bp__t--pin" x="180" y="104" text-anchor="end">SDA · {pin.sda}</text>
+				<text class="bp__t bp__t--pin" x="180" y="154" text-anchor="end">SCL · {pin.scl}</text>
 				<!-- fils partagés -->
 				<path class="bp__fil" d="M190 100 H735"></path>
 				<path class="bp__fil" d="M190 150 H735"></path>
@@ -74,11 +87,11 @@ const peripheriques = [
 
 		{type === 'spi' && (
 			<>
-				<text class="bp__t bp__t--pin" x="180" y="44" text-anchor="end">CE0 · GPIO 8</text>
-				<text class="bp__t bp__t--pin" x="180" y="134" text-anchor="end">MOSI · GPIO 10</text>
-				<text class="bp__t bp__t--pin" x="180" y="164" text-anchor="end">MISO · GPIO 9</text>
-				<text class="bp__t bp__t--pin" x="180" y="194" text-anchor="end">SCLK · GPIO 11</text>
-				<text class="bp__t bp__t--pin" x="180" y="289" text-anchor="end">CE1 · GPIO 7</text>
+				<text class="bp__t bp__t--pin" x="180" y="44" text-anchor="end">{nom.ce0} · {pin.ce0}</text>
+				<text class="bp__t bp__t--pin" x="180" y="134" text-anchor="end">MOSI · {pin.mosi}</text>
+				<text class="bp__t bp__t--pin" x="180" y="164" text-anchor="end">MISO · {pin.miso}</text>
+				<text class="bp__t bp__t--pin" x="180" y="194" text-anchor="end">{nom.sclk} · {pin.sclk}</text>
+				<text class="bp__t bp__t--pin" x="180" y="289" text-anchor="end">{nom.ce1} · {pin.ce1}</text>
 
 				<!-- bus partagé -->
 				<path class="bp__fil" d="M190 130 H495"></path>
@@ -118,8 +131,8 @@ const peripheriques = [
 
 		{type === 'uart' && (
 			<>
-				<text class="bp__t bp__t--pin" x="180" y="114" text-anchor="end">TXD · GPIO 14</text>
-				<text class="bp__t bp__t--pin" x="180" y="214" text-anchor="end">RXD · GPIO 15</text>
+				<text class="bp__t bp__t--pin" x="180" y="114" text-anchor="end">{nom.tx} · {pin.tx}</text>
+				<text class="bp__t bp__t--pin" x="180" y="214" text-anchor="end">{nom.rx} · {pin.rx}</text>
 				<rect class="bp__periph" x="570" y="80" width="170" height="160" rx="8"></rect>
 				<text class="bp__t bp__t--cs" x="582" y="114" text-anchor="start">TX</text>
 				<text class="bp__t bp__t--cs" x="582" y="214" text-anchor="start">RX</text>
@@ -130,8 +143,8 @@ const peripheriques = [
 				<path class="bp__fil" d="M190 210 H330 L430 110 H570"></path>
 				<path class="bp__flux bp__flux--tx bp-anim" d="M190 110 H330 L430 210 H570"></path>
 				<path class="bp__flux bp__flux--rx bp-anim" d="M570 110 H430 L330 210 H190"></path>
-				<text class="bp__t bp__t--fil" x="300" y="100" text-anchor="middle" fill="#6d28d9">Pi → périphérique</text>
-				<text class="bp__t bp__t--fil" x="300" y="236" text-anchor="middle" fill="#0f766e">périphérique → Pi</text>
+				<text class="bp__t bp__t--fil" x="300" y="100" text-anchor="middle" fill="#6d28d9">{esp ? 'ESP32' : 'Pi'} → périphérique</text>
+				<text class="bp__t bp__t--fil" x="300" y="236" text-anchor="middle" fill="#0f766e">périphérique → {esp ? 'ESP32' : 'Pi'}</text>
 				<!-- pas d'horloge : un rythme convenu à l'avance -->
 				<rect class="bp__note" x="228" y="258" width="304" height="40" rx="8"></rect>
 				<text class="bp__t bp__t--note" x="380" y="275" text-anchor="middle">Aucun fil d’horloge : les deux appareils se sont</text>
@@ -180,6 +193,7 @@ const peripheriques = [
 	.bp__t--baud { font-size: 12.5px; font-weight: 700; fill: #1e293b; }
 
 	.bp__pi { fill: #1f8f4e; stroke: #14532d; stroke-width: 3; }
+	.bp--esp32 .bp__pi { fill: #27272a; stroke: #09090b; }
 	.bp__periph { fill: #e2e8f0; stroke: #64748b; stroke-width: 2; }
 	.bp__bus { fill: #94a3b8; }
 	.bp__fil { fill: none; stroke: #94a3b8; stroke-width: 4; stroke-linejoin: round; }

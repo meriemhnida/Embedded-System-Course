@@ -1,0 +1,130 @@
+---
+// Simulateur d'une broche tactile : un fil relié à GPIO 4 (Touch 0). Maintenez le doigt (ou la souris) sur
+// l'extrémité du fil : la valeur de touchRead() baisse ; sous le seuil, la LED GPIO 2 s'allume.
+---
+
+<figure class="esp-touch">
+	<figcaption class="titre">Simulateur : un bouton tactile sur GPIO 4 (Touch 0)</figcaption>
+	<div class="grille">
+		<svg class="schema" viewBox="0 0 420 220" role="img" aria-label="Carte ESP32 avec un fil relié à GPIO 4, terminé par une pastille métallique à toucher">
+			<rect x="20" y="40" width="190" height="120" rx="12" fill="#27272a"></rect>
+			<rect x="60" y="58" width="96" height="70" rx="5" fill="#d4d4d8"></rect>
+			<text x="108" y="98" text-anchor="middle" font-size="11" font-weight="700" fill="#18181b">ESP32</text>
+			<rect class="led" x="170" y="64" width="20" height="12" rx="2"></rect>
+			<text x="180" y="92" text-anchor="middle" font-size="10" font-weight="700" fill="#e4e4e7">GPIO 2</text>
+			<circle cx="196" cy="140" r="6" fill="#facc15"></circle>
+			<text x="180" y="156" text-anchor="end" font-size="10" font-weight="700" fill="#e4e4e7">D4</text>
+			<path d="M196 140 C 260 210, 300 60, 330 110" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round"></path>
+			<g class="pastille" tabindex="0" role="button" aria-label="Pastille tactile : maintenez appuyé pour la toucher" aria-pressed="false">
+				<circle class="cible" cx="345" cy="112" r="40" fill="transparent"></circle>
+				<circle class="metal" cx="345" cy="112" r="22" fill="#cbd5e1" stroke="#64748b" stroke-width="3"></circle>
+				<circle class="onde" cx="345" cy="112" r="22" fill="none" stroke="#22c55e" stroke-width="3"></circle>
+				<text x="345" y="174" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Maintenez ici</text>
+			</g>
+		</svg>
+		<div class="commandes">
+			<dl class="mesures">
+				<div><dt>touchRead(4)</dt><dd class="valeur">—</dd></div>
+				<div><dt>LED GPIO 2</dt><dd class="etat">—</dd></div>
+			</dl>
+			<label class="curseur">Seuil : <span class="seuil-v">30</span>
+				<input type="range" class="seuil" min="5" max="70" value="30" />
+			</label>
+			<pre class="code"><code></code></pre>
+		</div>
+		<svg class="courbe" viewBox="0 0 400 120" role="img" aria-label="Courbe des valeurs de touchRead au cours du temps, avec le seuil">
+			<rect x="0" y="0" width="400" height="120" fill="#0b1220"></rect>
+			<line class="seuil-l" x1="0" x2="400" y1="60" y2="60" stroke="#f97316" stroke-width="2" stroke-dasharray="6 5"></line>
+			<polyline class="trace" fill="none" stroke="#22c55e" stroke-width="2.5" points=""></polyline>
+			<text x="6" y="14" fill="#94a3b8" font-size="11">80</text>
+			<text x="6" y="117" fill="#94a3b8" font-size="11">0</text>
+			<text class="seuil-t" x="394" y="54" fill="#f97316" font-size="11" text-anchor="end">seuil</text>
+		</svg>
+	</div>
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.esp-touch').forEach((fig) => {
+		const pastille = fig.querySelector<SVGGElement>('.pastille')!;
+		const valeurEl = fig.querySelector<HTMLElement>('.valeur')!;
+		const etat = fig.querySelector<HTMLElement>('.etat')!;
+		const seuil = fig.querySelector<HTMLInputElement>('.seuil')!;
+		const seuilV = fig.querySelector<HTMLElement>('.seuil-v')!;
+		const code = fig.querySelector<HTMLElement>('.code code')!;
+		const trace = fig.querySelector<SVGPolylineElement>('.trace')!;
+		const seuilL = fig.querySelector<SVGLineElement>('.seuil-l')!;
+		const seuilT = fig.querySelector<SVGTextElement>('.seuil-t')!;
+		const Y = (v: number) => 104 - (v / 80) * 84;
+		let touche = false;
+		let valeur = 64;
+		let histo: number[] = Array(80).fill(64);
+
+		const majCode = () => {
+			const s = seuil.value;
+			seuilV.textContent = s;
+			seuilL.setAttribute('y1', String(Y(+s)));
+			seuilL.setAttribute('y2', String(Y(+s)));
+			seuilT.setAttribute('y', String(Y(+s) - 6));
+			code.textContent = `const int SEUIL = ${s};\nvoid loop() {\n  int valeur = touchRead(4);   // Touch 0\n  if (valeur < SEUIL) digitalWrite(2, HIGH);\n  else digitalWrite(2, LOW);\n}`;
+		};
+		const tic = () => {
+			const cible = touche ? 12 : 64;
+			valeur += (cible - valeur) * 0.35 + (Math.random() - 0.5) * 3;
+			const v = Math.max(0, Math.round(valeur));
+			histo = [...histo.slice(1), v];
+			trace.setAttribute('points', histo.map((h, i) => `${i * 5},${Y(h).toFixed(1)}`).join(' '));
+			const allumee = v < Number(seuil.value);
+			valeurEl.textContent = String(v);
+			etat.textContent = allumee ? 'allumée' : 'éteinte';
+			fig.classList.toggle('allumee', allumee);
+		};
+		const poser = (on: boolean) => {
+			touche = on;
+			fig.classList.toggle('touche', on);
+			pastille.setAttribute('aria-pressed', String(on));
+		};
+		pastille.addEventListener('pointerdown', (e) => {
+			e.preventDefault();
+			poser(true);
+			try { pastille.setPointerCapture(e.pointerId); } catch { /* capture facultative */ }
+		});
+		pastille.addEventListener('pointerup', () => poser(false));
+		pastille.addEventListener('pointercancel', () => poser(false));
+		pastille.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); poser(true); } });
+		pastille.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') poser(false); });
+		pastille.addEventListener('blur', () => poser(false));
+		seuil.addEventListener('input', majCode);
+		majCode();
+		window.setInterval(tic, 100);
+	});
+</script>
+
+<style>
+	.esp-touch {
+		margin: 1.5rem 0; padding: 1rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-vert-bord); background: var(--cadre-vert-fond);
+	}
+	.titre { font-weight: 700; margin-bottom: 0.75rem; color: var(--cadre-vert-titre); }
+	.grille { display: grid; grid-template-columns: minmax(14rem, 1.3fr) 1fr; gap: 1rem; align-items: start; }
+	.courbe { grid-column: 1 / -1; width: 100%; height: auto; border-radius: 0.5rem; display: block; }
+	@media (max-width: 40rem) { .grille { grid-template-columns: 1fr; } }
+	.schema { width: 100%; height: auto; background: #f8fafc; border-radius: 0.6rem; border: 1px solid var(--sl-color-gray-5); touch-action: none; }
+	.pastille { cursor: pointer; outline: none; }
+	.pastille:focus-visible .metal { stroke: #1d4ed8; stroke-width: 4; }
+	.onde { opacity: 0; }
+	.touche .metal { fill: #86efac; }
+	.touche .onde { animation: onde 0.9s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+	@keyframes onde { from { opacity: 0.9; transform: scale(1); } to { opacity: 0; transform: scale(1.8); } }
+	.led { fill: #1e3a8a; transition: fill 0.15s; }
+	.allumee .led { fill: #60a5fa; filter: drop-shadow(0 0 7px #3b82f6); }
+	.commandes { display: flex; flex-direction: column; gap: 0.6rem; }
+	.commandes > * { margin: 0; }
+	.mesures { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; }
+	.esp-touch .mesures > div { margin: 0; flex: 1 1 7rem; padding: 0.4rem 0.6rem; border-radius: 0.5rem; background: var(--sl-color-gray-6); border: 1px solid var(--sl-color-gray-5); }
+	.mesures dt { font-size: 0.75rem; opacity: 0.85; }
+	.mesures dd { margin: 0; font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+	.curseur { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 600; font-size: var(--sl-text-sm); }
+	.curseur input { width: 100%; accent-color: var(--sl-color-accent); }
+	.code { font-size: 0.78rem; margin: 0; }
+	@media (prefers-reduced-motion: reduce) { .touche .onde { animation: none; opacity: 0.6; } }
+</style>

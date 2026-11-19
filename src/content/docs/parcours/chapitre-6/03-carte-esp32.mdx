@@ -1,0 +1,94 @@
+---
+title: Découvrir la carte ESP32
+description: "Explorer la carte ESP32 DevKit avec un schéma interactif et animé : module, antenne, régulateur, convertisseur USB-série, boutons EN et BOOT, LED intégrée."
+---
+
+import Esp32Carte from '../../../../components/Esp32Carte.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- nommer et **localiser** les composants de la carte ESP32 DevKit ;
+- expliquer le rôle du **régulateur**, du **convertisseur USB-série** et des boutons **EN** et **BOOT** ;
+- écrire un premier programme avec la **LED intégrée** (GPIO 2).
+:::
+
+## Explorez la carte
+
+Voici la carte ESP32 DevKit du cours, antenne en haut et port USB en bas. **Passez la souris** sur un composant pour un aperçu, puis **cliquez dessus** pour lire son explication. Le bouton **Visite guidée** parcourt tous les composants dans l'ordre.
+
+La carte est animée :
+- **▶ Programme Blink** fait clignoter la LED intégrée, et la console affiche le programme ;
+- **⬆ Simuler un téléversement** montre le trajet du programme, du port USB jusqu'au module, avec les messages de l'IDE ;
+- un clic sur les boutons **EN** et **BOOT** de la carte montre un redémarrage et le passage en mode téléchargement.
+
+<Esp32Carte />
+
+## Les repères à retenir
+
+| Composant | Rôle |
+|---|---|
+| **Module ESP32-WROOM-32** | la puce ESP32 et sa mémoire flash, sous un capot métallique |
+| **Antenne** | Wi-Fi et Bluetooth, gravée sur le circuit |
+| **Port micro-USB** | alimentation 5 V, téléversement et moniteur série |
+| **Régulateur 3,3 V** | abaisse le 5 V à 3,3 V, la tension de travail de l'ESP32 |
+| **Convertisseur USB-série** | relie l'USB de l'ordinateur à l'UART0 (TX0, RX0) |
+| **Bouton EN** | redémarre le programme (reset) |
+| **Bouton BOOT** | maintenu au redémarrage : mode téléchargement |
+| **LED POWER** | la carte est alimentée |
+| **LED GPIO 2** | la LED intégrée, pilotable par programme |
+
+:::danger[À retenir]
+Les broches de l'ESP32 travaillent en **3,3 V**, et non en 5 V comme celles de l'Arduino UNO. Un signal de 5 V appliqué sur une broche peut **endommager** l'ESP32.
+:::
+
+## Premier programme : la LED intégrée
+
+**GPIO 2** est souvent utilisé comme **LED intégrée** sur les cartes ESP32 : un premier programme ne demande donc aucun câblage.
+
+```cpp
+const int LED = 2;   // LED intégrée
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED, HIGH);  // allumée : 3,3 V
+  delay(500);
+  digitalWrite(LED, LOW);   // éteinte : 0 V
+  delay(500);
+}
+```
+
+:::tip[À vous de jouer sur Wokwi]
+Créez un [nouveau projet ESP32 sur Wokwi](https://wokwi.com/projects/new/esp32). Wokwi propose la carte **ESP32 DevKit C V4** : elle a plus de broches que la carte du cours, mais les **numéros GPIO sont les mêmes**. Ajoutez une LED reliée à GPIO 2 par une résistance de 220 Ω, puis testez le programme ci-dessus.
+:::
+
+## Vérifiez vos acquis
+
+<Question id="esp32-q6.8" label="Q6.8">
+Le port USB fournit 5 V. Pourquoi la carte a-t-elle besoin d'un **régulateur** ? Quelle tension trouve-t-on sur la broche **3V3** ?
+</Question>
+
+<Question id="esp32-q6.9" label="Q6.9">
+À quoi sert le **convertisseur USB-série** ? Pourquoi évite-t-on de brancher un composant sur les broches **TX0** (GPIO 1) et **RX0** (GPIO 3) ?
+</Question>
+
+<Question id="esp32-q6.10" label="Q6.10">
+Le téléversement reste bloqué sur `Connecting.....`. Proposez **deux causes** possibles et ce que vous faites pour chacune (indice : le câble, le bouton BOOT).
+</Question>
+
+<Question id="esp32-q6.11" label="Q6.11" type="code">
+Modifiez le programme pour que la LED intégrée émette **trois éclairs rapides** (100 ms allumée, 100 ms éteinte), puis reste éteinte **2 secondes**, et ainsi de suite. Collez votre programme.
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais localiser le module, l'antenne, le régulateur, le convertisseur USB-série, les boutons EN et BOOT.
+- [ ] Je sais pourquoi l'ESP32 travaille en 3,3 V.
+- [ ] Je sais faire clignoter la LED intégrée (GPIO 2).
+
+:::note[Prochaine étape]
+Validez cette page, puis passez aux [broches GPIO](/Embedded-System-Course/parcours/chapitre-6/04-broches-gpio/).
+:::

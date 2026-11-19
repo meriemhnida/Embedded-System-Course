@@ -1,0 +1,73 @@
+---
+// Comparaison animée ESP32 / Arduino UNO, d'après le tableau du cours. Les barres poussent quand le
+// comparatif apparaît à l'écran ; « Rejouer » relance l'animation.
+const lignes = [
+	{ nom: 'Fréquence d’horloge', esp: 240, uno: 16, unite: 'MHz', espT: '240 MHz', unoT: '16 MHz' },
+	{ nom: 'Mémoire flash (programme)', esp: 4096, uno: 32, unite: 'Ko', espT: '4 Mo (extensible)', unoT: '32 Ko' },
+	{ nom: 'Mémoire vive (SRAM)', esp: 520, uno: 2, unite: 'Ko', espT: '520 Ko', unoT: '2 Ko' },
+	{ nom: 'Broches programmables', esp: 34, uno: 14, unite: '', espT: '34 broches', unoT: '14 broches' },
+];
+---
+
+<figure class="vs">
+	<div class="tetes">
+		<span class="tete esp">ESP32 <small>Xtensa double cœur, 32 bits</small></span>
+		<span class="tete uno">Arduino UNO <small>ATmega328P, AVR 8 bits</small></span>
+	</div>
+	{lignes.map((l) => {
+		const q = l.esp / l.uno;
+		const r = q < 10 ? q.toFixed(1).replace('.', ',') : String(Math.round(q));
+		return (
+			<div class="ligne">
+				<div class="nom">{l.nom} <span class="fois">× {r}</span></div>
+				<div class="barre esp"><span style={`--w:${100}%`}></span><b>{l.espT}</b></div>
+				<div class="barre uno"><span style={`--w:${Math.max(0.6, (l.uno / l.esp) * 100)}%`}></span><b>{l.unoT}</b></div>
+			</div>
+		);
+	})}
+	<div class="ligne">
+		<div class="nom">Connectivité sans fil</div>
+		<div class="sansfil esp">📶 Wi-Fi + Bluetooth, intégrés</div>
+		<div class="sansfil uno">Aucune : il faut un module externe</div>
+	</div>
+	<p class="pied"><button type="button" class="rejouer">↻ Rejouer l’animation</button> Longueur des barres proportionnelle aux valeurs.</p>
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.vs').forEach((fig) => {
+		const lancer = () => {
+			fig.classList.remove('anime');
+			void fig.offsetWidth;
+			fig.classList.add('anime');
+		};
+		fig.querySelector('.rejouer')!.addEventListener('click', lancer);
+		if ('IntersectionObserver' in window) {
+			const obs = new IntersectionObserver((entrees) => {
+				if (entrees.some((e) => e.isIntersecting)) { lancer(); obs.disconnect(); }
+			}, { threshold: 0.4 });
+			obs.observe(fig);
+		} else lancer();
+	});
+</script>
+
+<style>
+	.vs { margin: 1.5rem 0; padding: 1rem 1.1rem; border-radius: 0.75rem; border: 1px solid var(--sl-color-gray-5); background: var(--sl-color-gray-6); }
+	.tetes { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.6rem; }
+	.tete { font-weight: 800; display: inline-flex; align-items: center; gap: 0.4rem; }
+	.tete::before { content: ''; width: 0.9rem; height: 0.9rem; border-radius: 3px; background: var(--c); }
+	.tete small { font-weight: 500; opacity: 0.8; }
+	.esp { --c: #dc2626; }
+	.uno { --c: #0891b2; }
+	.ligne { margin: 0.7rem 0 0; }
+	.nom { font-weight: 700; font-size: var(--sl-text-sm); margin-bottom: 0.2rem; }
+	.fois { display: inline-block; margin-left: 0.4rem; padding: 0 0.45rem; border-radius: 999px; background: #dc2626; color: #fff; font-size: 0.75rem; opacity: 0; transform: scale(0.6); transition: opacity 0.4s 1.2s, transform 0.4s 1.2s; }
+	.anime .fois { opacity: 1; transform: scale(1); }
+	.barre { position: relative; display: flex; align-items: center; gap: 0.5rem; height: 1.5rem; margin: 0.15rem 0; }
+	.barre span { display: block; height: 100%; width: 0; border-radius: 0.3rem; background: var(--c); transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); flex: none; max-width: calc(100% - 9rem); }
+	.anime .barre span { width: calc(var(--w) * 0.75); }
+	.barre b { font-size: 0.82rem; white-space: nowrap; }
+	.sansfil { font-size: 0.85rem; padding: 0.2rem 0.6rem; margin: 0.15rem 0; border-left: 0.9rem solid var(--c); border-radius: 0.3rem; background: var(--sl-color-black); }
+	.pied { margin: 0.9rem 0 0; font-size: 0.8rem; opacity: 0.85; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+	.rejouer { margin: 0; cursor: pointer; padding: 0.25rem 0.7rem; border-radius: 0.4rem; border: 1px solid var(--sl-color-gray-4); background: var(--sl-color-gray-5); color: var(--sl-color-text); font-weight: 600; }
+	@media (prefers-reduced-motion: reduce) { .barre span, .fois { transition: none; } }
+</style>

@@ -1,0 +1,106 @@
+---
+title: "Produire une tension : DAC et PWM"
+description: "Les sorties analogiques de l'ESP32 : le DAC (GPIO 25 et 26) et la PWM, avec deux simulateurs interactifs, voltmètre et oscilloscope."
+---
+
+import Esp32Signal from '../../../../components/Esp32Signal.astro';
+import Question from '../../../../components/Question.astro';
+
+:::note[Objectifs]
+À la fin de cette page, vous serez capables de :
+- produire une **vraie tension analogique** avec le **DAC** ;
+- faire varier la luminosité d'une LED avec la **PWM** ;
+- expliquer la **différence** entre les deux.
+:::
+
+## Le DAC : convertisseur numérique-analogique
+
+L'ADC fait le chemin du monde physique vers le programme. Le **DAC** fait le chemin inverse.
+
+:::caution[À retenir]
+Les DAC **convertissent une valeur numérique en tension analogique**.
+- **DAC1** → **GPIO 25**
+- **DAC2** → **GPIO 26**
+:::
+
+Applications :
+- génération de **signaux analogiques** ;
+- commande d'une **tension variable** ;
+- **sortie audio**.
+
+Le DAC de l'ESP32 travaille sur **8 bits** : on lui donne une valeur de **0 à 255**, il produit une tension de **0 à 3,3 V**.
+
+```cpp
+void setup() {
+  dacWrite(25, 128);   // DAC1 : environ 1,65 V sur GPIO 25
+}
+
+void loop() {
+}
+```
+
+Réglez la valeur envoyée au DAC et observez le voltmètre. Le bouton **Générer une sinusoïde** envoie une suite de valeurs : l'oscilloscope montre alors un signal analogique, construit en petites marches.
+
+<Esp32Signal type="dac" />
+
+## La PWM
+
+Toutes les broches qui peuvent agir comme **sorties** peuvent être utilisées comme broches **PWM**. Les **GPIO 34 à 39** ne peuvent pas générer de PWM, puisqu'elles ne sont que des entrées.
+
+La PWM (*Pulse Width Modulation*, modulation de largeur d'impulsion) a été présentée avec la carte Arduino au [chapitre 2](/Embedded-System-Course/parcours/chapitre-2/02-presentation/). La broche bascule très vite entre 0 V et 3,3 V ; le **rapport cyclique** est la part du temps passée à 3,3 V. Une LED reçoit alors en moyenne une tension plus faible et brille moins.
+
+```cpp
+const int LED = 23;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  for (int v = 0; v <= 255; v++) {   // la LED s'allume progressivement
+    analogWrite(LED, v);
+    delay(10);
+  }
+}
+```
+
+Faites varier le rapport cyclique : le signal carré change sur l'oscilloscope, et la tension moyenne (en pointillés) suit la luminosité de la LED.
+
+<Esp32Signal type="pwm" />
+
+## DAC ou PWM ?
+
+| | DAC | PWM |
+|---|---|---|
+| Signal produit | une **vraie tension continue** | un **signal carré** : 0 V ou 3,3 V |
+| Broches | GPIO 25 et 26 seulement | toutes les sorties |
+| Instruction | `dacWrite(broche, 0 à 255)` | `analogWrite(broche, 0 à 255)` |
+| Usages typiques | signal analogique, son, tension de commande | luminosité d'une LED, vitesse d'un moteur |
+
+## Vérifiez vos acquis
+
+<Question id="esp32-q6.19" label="Q6.19">
+Quelle valeur faut-il envoyer à `dacWrite()` pour obtenir environ **1 V** sur GPIO 25 ? Détaillez le calcul, puis vérifiez avec le simulateur.
+</Question>
+
+<Question id="esp32-q6.20" label="Q6.20">
+Avec `analogWrite(23, 64)`, quelle est la **tension moyenne** sur la broche ? Que mesurerait un oscilloscope à un instant donné ? Pourquoi l'œil voit-il pourtant une LED faiblement allumée, et non une LED qui clignote ?
+</Question>
+
+<Question id="esp32-q6.21" label="Q6.21">
+Pour un haut-parleur qui doit jouer une **mélodie**, choisiriez-vous le DAC ou la PWM ? Et pour régler la **vitesse d'un ventilateur** ? Justifiez.
+</Question>
+
+<Question id="esp32-q6.22" label="Q6.22" type="code">
+Complétez le programme PWM pour que la LED **s'allume puis s'éteigne progressivement**, en boucle (effet « respiration »). Collez votre programme.
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais citer les deux broches DAC et calculer la tension produite.
+- [ ] Je sais expliquer le rapport cyclique et la tension moyenne d'un signal PWM.
+- [ ] Je sais choisir entre DAC et PWM.
+
+:::note[Prochaine étape]
+Validez cette page, puis passez aux [protocoles de communication : I2C, SPI et UART](/Embedded-System-Course/parcours/chapitre-6/07-communication/).
+:::

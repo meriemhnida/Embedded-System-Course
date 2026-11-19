@@ -1,0 +1,554 @@
+---
+// Brochage interactif de la carte ESP32 DevKit (30 broches), d'après le schéma de brochage du cours.
+// Cliquez sur une broche pour sa fiche ; les boutons de couleur mettent une famille en évidence et
+// affichent l'étiquette correspondante (canal ADC, numéro Touch, ligne SPI…). Le mode défi demande
+// de trouver la bonne broche.
+import { broches, familles, defis } from '../data/esp32-gpio';
+
+const couleur = Object.fromEntries(familles.map((f) => [f.id, f.couleur]));
+const Y = (position: number) => 112 + (15 - position) * 40;
+const gauche = broches.filter((b) => b.cote === 'gauche');
+const droite = broches.filter((b) => b.cote === 'droite');
+// Étiquette affichée par défaut, comme sur le schéma du cours : fonction de communication ou DAC, sinon canal ADC.
+const ordreDefaut = ['i2c', 'spi', 'uart', 'dac', 'adc1', 'adc2'] as const;
+const defaut = (b: (typeof broches)[number]) => {
+	for (const f of ordreDefaut) {
+		const t = b.etiquettes[f];
+		if (t) return { f, t: f === 'spi' ? t.replace(/^VSPI /, '') : t };
+	}
+	return null;
+};
+const geo = (b: (typeof broches)[number]) => {
+	const g = b.cote === 'gauche';
+	return {
+		pin: g ? 388 : 572,
+		num: g ? 322 : 610,
+		pill: g ? 232 : 644,
+		tag: g ? 128 : 734,
+		ligneDe: g ? 128 : 832,
+		ligneA: g ? 388 : 572,
+		silk: g ? 402 : 558,
+		ancre: g ? 'start' : 'end',
+		y: Y(b.position),
+	};
+};
+---
+
+<div class="esp-gpio" data-defis={JSON.stringify(defis)}>
+	<div class="legende" role="group" aria-label="Mettre en évidence une famille de broches">
+		{familles.map((f) => (
+			<button type="button" class="filtre" data-fam={f.id} aria-pressed="false">
+				<span class="pastille" style={`background:${f.couleur}`}></span>{f.nom}
+			</button>
+		))}
+	</div>
+
+	<div class="scene">
+		<svg viewBox="0 0 960 800" role="group" aria-label="Brochage de la carte ESP32 DevKit : 15 broches de chaque côté. Cliquez sur une broche pour obtenir son explication.">
+			<!-- Carte -->
+			<rect class="pcb" x="370" y="24" width="220" height="752" rx="18"></rect>
+			{[[392, 48], [568, 48], [392, 752], [568, 752]].map(([cx, cy]) => <circle class="trou" cx={cx} cy={cy} r="11"></circle>)}
+			<!-- Antenne gravée -->
+			<path class="antenne" d="M440 92 V46 H462 V82 H484 V46 H506 V82 H528 V46 H520"></path>
+			<g class="ondes" aria-hidden="true">
+				<path d="M496 30 a14 14 0 0 1 28 0"></path>
+				<path d="M488 30 a22 22 0 0 1 44 0"></path>
+			</g>
+			<!-- Module ESP-WROOM-32 -->
+			<rect class="module" x="432" y="100" width="96" height="250" rx="6"></rect>
+			<text class="module-t" x="480" y="150" text-anchor="middle">ESP-WROOM-32</text>
+			<text class="module-p" x="480" y="172" text-anchor="middle">Wi-Fi · Bluetooth</text>
+			<circle cx="446" cy="334" r="5" fill="#1f2937"></circle>
+			<!-- LED d'alimentation et LED intégrée (GPIO 2) -->
+			<rect class="led-power" x="440" y="404" width="16" height="10" rx="2"></rect>
+			<text class="mini" x="448" y="432" text-anchor="middle">POWER</text>
+			<rect class="led-bleue" x="506" y="404" width="16" height="10" rx="2"></rect>
+			<text class="mini" x="514" y="432" text-anchor="middle">GPIO 2</text>
+			<!-- Régulateur et convertisseur USB-série -->
+			<rect class="puce" x="420" y="520" width="44" height="74" rx="3"></rect>
+			<text class="mini clair" x="442" y="562" text-anchor="middle">3,3 V</text>
+			<rect class="puce" x="496" y="534" width="48" height="48" rx="3"></rect>
+			<text class="mini clair" x="520" y="562" text-anchor="middle">USB</text>
+			<!-- Boutons et port USB -->
+			<circle class="bouton" cx="412" cy="716" r="12"></circle>
+			<text class="mini" x="412" y="696" text-anchor="middle">EN</text>
+			<circle class="bouton" cx="548" cy="716" r="12"></circle>
+			<text class="mini" x="548" y="696" text-anchor="middle">BOOT</text>
+			<rect class="usb" x="452" y="736" width="56" height="48" rx="5"></rect>
+
+			{broches.map((b) => {
+				const g = geo(b);
+				const c = couleur[b.familles[0]];
+				const d = defaut(b);
+				return (
+					<g class="el pin" data-id={b.id} data-fams={b.familles.join(' ')} data-gpio={b.gpio ?? ''} tabindex="0" role="button" aria-label={`${b.principal}, broche ${b.position} côté ${b.cote} : ${b.fonction}`} style={`--c:${c}`}>
+						<rect class="hit" x={b.cote === 'gauche' ? 124 : 556} y={g.y - 17} width="280" height="34"></rect>
+						<line class="trait" x1={g.ligneDe} y1={g.y} x2={g.ligneA} y2={g.y}></line>
+						<rect class="tag" x={g.tag} y={g.y - 13} width="98" height="26" rx="5" fill={d ? couleur[d.f] : 'none'} data-defaut={d?.t ?? ''} data-defaut-c={d ? couleur[d.f] : ''} opacity={d ? 1 : 0}></rect>
+						<text class="tag-t" x={g.tag + 49} y={g.y + 5} text-anchor="middle">{d?.t ?? ''}</text>
+						<rect class="pill" x={g.pill} y={g.y - 13} width="84" height="26" rx="5" fill={c}></rect>
+						<text class="pill-t" x={g.pill + 42} y={g.y + 5} text-anchor="middle">{b.principal}</text>
+						<rect class="num" x={g.num} y={g.y - 12} width="28" height="24" rx="4"></rect>
+						<text class="num-t" x={g.num + 14} y={g.y + 5} text-anchor="middle">{b.position}</text>
+						<circle class="rond" cx={g.pin} cy={g.y} r="9"></circle>
+						<circle class="trou-pin" cx={g.pin} cy={g.y} r="4"></circle>
+						<text class="silk" x={g.silk} y={g.y + 4} text-anchor={g.ancre}>{b.serigraphie}</text>
+					</g>
+				);
+			})}
+			<text class="repere" x="128" y="44">Côté antenne</text>
+			<text class="repere" x="832" y="790" text-anchor="end">Côté port USB</text>
+		</svg>
+		<div class="info-bulle" role="tooltip" hidden></div>
+	</div>
+
+	<div class="defi" hidden>
+		<p class="defi-consigne"></p>
+		<p class="defi-retour" aria-live="polite"></p>
+		<div class="defi-boutons">
+			<span class="defi-score"></span>
+			<button type="button" class="defi-suivant" hidden>Défi suivant →</button>
+		</div>
+	</div>
+	<p class="actions">
+		<button type="button" class="btn-defi" aria-pressed="false">🎯 Mode défi : trouvez la bonne broche</button>
+	</p>
+
+	<details class="liste">
+		<summary>Liste des 30 broches (pratique sur téléphone)</summary>
+		<div class="grille">
+			{[gauche, droite].map((col) => (
+				<div class="col">
+					{col.map((b) => (
+						<button type="button" class="ligne" data-id={b.id} data-fams={b.familles.join(' ')} style={`--c:${couleur[b.familles[0]]}`}>
+							<span class="n">{b.position}</span><span class="lib">{b.principal}{b.gpio !== undefined ? ` · ${b.serigraphie}` : ''}</span>
+						</button>
+					))}
+				</div>
+			))}
+		</div>
+	</details>
+
+	<div class="panneau" aria-live="polite">
+		<p class="invite"><strong>Cliquez sur une broche</strong>, sur le schéma ou dans la liste, pour afficher ce qu'elle sait faire.</p>
+		<div class="contenu" hidden>
+			<div class="entete"><span class="badges"></span><h3 class="titre"></h3></div>
+			<p class="resume"></p>
+			<table class="capacites">
+				<caption>Ce que cette broche sait faire</caption>
+				<tbody></tbody>
+			</table>
+			<ul class="roles"></ul>
+			<pre class="code" hidden><code></code></pre>
+			<p class="liens" hidden></p>
+		</div>
+		<div class="nav">
+			<button type="button" class="prec">← Broche précédente</button>
+			<span class="compteur"></span>
+			<button type="button" class="suiv">Broche suivante →</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { broches, familles, roles, type Broche, type Famille } from '../data/esp32-gpio';
+
+	const fam = Object.fromEntries(familles.map((f) => [f.id, f]));
+	const ordre = [...broches.filter((b) => b.cote === 'gauche'), ...broches.filter((b) => b.cote === 'droite')];
+
+	const peut = (b: Broche) => {
+		const est = (f: Famille) => b.familles.includes(f);
+		const gpio = b.gpio !== undefined;
+		return {
+			entree: gpio,
+			sortie: gpio && !est('entree'),
+			pwm: est('pwm'),
+			adc: b.etiquettes.adc1 ?? b.etiquettes.adc2,
+			dac: b.etiquettes.dac,
+			touch: b.etiquettes.touch,
+			pullup: gpio && !est('entree'),
+		};
+	};
+
+	const exemple = (b: Broche) => {
+		if (b.gpio === undefined) return '';
+		const n = b.gpio;
+		const p = peut(b);
+		const l: string[] = [];
+		if (!p.sortie) {
+			l.push(`pinMode(${n}, INPUT);`, `int etat = digitalRead(${n});     // 0 ou 1`);
+			if (p.adc) l.push(`int valeur = analogRead(${n});   // ${p.adc} : 0 à 4095`);
+			l.push(`// pinMode(${n}, OUTPUT);  ✗ impossible : entrée seule`);
+			return l.join('\n');
+		}
+		l.push(`pinMode(${n}, OUTPUT);`, `digitalWrite(${n}, HIGH);   // 3,3 V`);
+		if (p.pwm) l.push(`analogWrite(${n}, 128);      // PWM : rapport cyclique 50 %`);
+		if (p.dac) l.push(`dacWrite(${n}, 128);         // ${p.dac} : environ 1,65 V`);
+		if (p.adc) l.push(`int v = analogRead(${n});   // ${p.adc} : 0 à 4095`);
+		if (p.touch) l.push(`int t = touchRead(${n});    // ${p.touch} : baisse au toucher`);
+		return l.join('\n');
+	};
+
+	document.querySelectorAll<HTMLElement>('.esp-gpio').forEach((racine) => {
+		const scene = racine.querySelector<HTMLElement>('.scene')!;
+		const bulle = racine.querySelector<HTMLElement>('.info-bulle')!;
+		const panneau = racine.querySelector<HTMLElement>('.panneau')!;
+		const contenu = panneau.querySelector<HTMLElement>('.contenu')!;
+		const invite = panneau.querySelector<HTMLElement>('.invite')!;
+		const compteur = panneau.querySelector<HTMLElement>('.compteur')!;
+		const noeuds = Array.from(racine.querySelectorAll<SVGGElement>('.pin'));
+		const lignes = Array.from(racine.querySelectorAll<HTMLButtonElement>('.ligne'));
+		const defis: { consigne: string; gpios: number[]; explication: string }[] = JSON.parse(racine.dataset.defis ?? '[]');
+		let courant = -1;
+		let filtre: Famille | null = null;
+
+		const ajouter = (parent: Element, balise: string, texte: string, classe?: string) => {
+			const e = document.createElement(balise);
+			e.textContent = texte;
+			if (classe) e.className = classe;
+			parent.append(e);
+			return e;
+		};
+
+		// --- Étiquettes animées selon la famille mise en évidence
+		const majEtiquettes = () => {
+			noeuds.forEach((g) => {
+				const b = broches.find((x) => x.id === g.dataset.id)!;
+				const tag = g.querySelector<SVGRectElement>('.tag')!;
+				const t = g.querySelector<SVGTextElement>('.tag-t')!;
+				let texte = tag.dataset.defaut ?? '';
+				let c = tag.dataset.defautC ?? '';
+				if (filtre) {
+					texte = b.familles.includes(filtre) ? b.etiquettes[filtre] ?? fam[filtre].nom : '';
+					c = fam[filtre].couleur;
+				}
+				g.classList.remove('flash');
+				void (g as unknown as HTMLElement).getBoundingClientRect();
+				if (filtre && texte) g.classList.add('flash');
+				t.textContent = texte;
+				tag.setAttribute('fill', texte ? c : 'none');
+				tag.setAttribute('opacity', texte ? '1' : '0');
+				g.classList.toggle('estompe', !!filtre && !b.familles.includes(filtre));
+			});
+			lignes.forEach((l) => {
+				const membres = (l.dataset.fams ?? '').split(' ');
+				l.classList.toggle('estompe', !!filtre && !membres.includes(filtre!));
+			});
+		};
+
+		const afficherBulle = (g: Element) => {
+			const b = broches.find((x) => x.id === (g as HTMLElement).dataset.id)!;
+			bulle.replaceChildren();
+			ajouter(bulle, 'strong', `${b.principal} · broche ${b.position}`);
+			ajouter(bulle, 'span', b.fonction);
+			ajouter(bulle, 'em', defiActif() ? 'Cliquez pour répondre' : 'Cliquez pour en savoir plus');
+			bulle.hidden = false;
+			const s = scene.getBoundingClientRect();
+			const box = g.querySelector('.pill')!.getBoundingClientRect();
+			const lb = bulle.offsetWidth;
+			let x = box.left + box.width / 2 - s.left - lb / 2;
+			x = Math.max(4, Math.min(x, s.width - lb - 4));
+			bulle.style.left = `${x}px`;
+			bulle.style.top = `${box.bottom - s.top + 8}px`;
+		};
+		const cacherBulle = () => { bulle.hidden = true; };
+
+		const choisir = (i: number) => {
+			const b = ordre[i];
+			if (!b) return;
+			courant = i;
+			noeuds.forEach((g) => g.classList.toggle('sel', g.dataset.id === b.id));
+			lignes.forEach((l) => l.setAttribute('aria-pressed', String(l.dataset.id === b.id)));
+			racine.classList.toggle('led-on', b.gpio === 2);
+			invite.hidden = true;
+			contenu.hidden = false;
+
+			const badges = contenu.querySelector<HTMLElement>('.badges')!;
+			badges.replaceChildren();
+			b.familles.forEach((f) => { ajouter(badges, 'span', fam[f].nom, 'badge').style.background = fam[f].couleur; });
+			contenu.querySelector('.titre')!.textContent =
+				b.gpio !== undefined ? `GPIO ${b.gpio} · ${b.serigraphie}` : b.principal;
+			contenu.querySelector('.resume')!.textContent = `${b.fonction} Broche ${b.position}, côté ${b.cote}.`;
+
+			const corps = contenu.querySelector<HTMLElement>('.capacites tbody')!;
+			const table = contenu.querySelector<HTMLElement>('.capacites')!;
+			corps.replaceChildren();
+			table.hidden = b.gpio === undefined;
+			if (b.gpio !== undefined) {
+				const p = peut(b);
+				const ligne = (k: string, ok: boolean | string | undefined) => {
+					const tr = document.createElement('tr');
+					ajouter(tr, 'th', k);
+					const td = ajouter(tr, 'td', ok ? `✓ ${typeof ok === 'string' ? ok : ''}`.trim() : '✗', ok ? 'oui' : 'non');
+					td.setAttribute('aria-label', ok ? 'oui' : 'non');
+					corps.append(tr);
+				};
+				ligne('Entrée numérique (digitalRead)', p.entree);
+				ligne('Sortie numérique (digitalWrite)', p.sortie);
+				ligne('PWM (analogWrite)', p.pwm);
+				ligne('Entrée analogique (analogRead)', p.adc);
+				ligne('Sortie analogique (dacWrite)', p.dac);
+				ligne('Tactile (touchRead)', p.touch);
+				ligne('Résistance de tirage interne (INPUT_PULLUP)', p.pullup);
+			}
+
+			const liste = contenu.querySelector<HTMLElement>('.roles')!;
+			liste.replaceChildren();
+			const liens: { texte: string; href: string }[] = [];
+			const vus = new Set<string>();
+			[...(b.remarques ?? [])].forEach((t) => { vus.add(t); ajouter(liste, 'li', t, 'remarque'); });
+			b.familles.forEach((f) => {
+				roles[f].texte.forEach((t) => { if (!vus.has(t)) { vus.add(t); ajouter(liste, 'li', t); } });
+				const l = roles[f].lien;
+				if (l && !liens.some((x) => x.href === l.href)) liens.push(l);
+			});
+
+			const code = contenu.querySelector<HTMLElement>('.code')!;
+			const ex = exemple(b);
+			code.hidden = !ex;
+			code.querySelector('code')!.textContent = ex;
+
+			const pl = contenu.querySelector<HTMLElement>('.liens')!;
+			pl.hidden = !liens.length;
+			pl.replaceChildren();
+			liens.forEach((l, k) => {
+				if (k) pl.append(' · ');
+				const a = document.createElement('a');
+				a.href = l.href;
+				a.textContent = `${l.texte} →`;
+				pl.append(a);
+			});
+			compteur.textContent = `${i + 1} / ${ordre.length}`;
+		};
+
+		// --- Mode défi
+		const zoneDefi = racine.querySelector<HTMLElement>('.defi')!;
+		const btnDefi = racine.querySelector<HTMLButtonElement>('.btn-defi')!;
+		const consigne = zoneDefi.querySelector<HTMLElement>('.defi-consigne')!;
+		const retour = zoneDefi.querySelector<HTMLElement>('.defi-retour')!;
+		const scoreEl = zoneDefi.querySelector<HTMLElement>('.defi-score')!;
+		const suivant = zoneDefi.querySelector<HTMLButtonElement>('.defi-suivant')!;
+		let etape = 0;
+		let score = 0;
+		let repondu = false;
+		const defiActif = () => !zoneDefi.hidden;
+
+		const poserDefi = () => {
+			repondu = false;
+			retour.textContent = '';
+			retour.className = 'defi-retour';
+			suivant.hidden = true;
+			noeuds.forEach((g) => g.classList.remove('bon', 'faux'));
+			if (etape >= defis.length) {
+				consigne.textContent = `Défi terminé : ${score} bonne${score > 1 ? 's' : ''} réponse${score > 1 ? 's' : ''} sur ${defis.length}.`;
+				scoreEl.textContent = '';
+				suivant.textContent = 'Recommencer';
+				suivant.hidden = false;
+				return;
+			}
+			consigne.textContent = `Défi ${etape + 1} / ${defis.length} — ${defis[etape].consigne}`;
+			scoreEl.textContent = `Score : ${score}`;
+			suivant.textContent = 'Défi suivant →';
+		};
+
+		const repondre = (g: SVGGElement | HTMLElement) => {
+			if (repondu || etape >= defis.length) return;
+			const d = defis[etape];
+			const b = broches.find((x) => x.id === g.dataset.id)!;
+			const ok = b.gpio !== undefined && d.gpios.includes(b.gpio);
+			repondu = true;
+			if (ok) score++;
+			noeuds.forEach((n) => {
+				const bb = broches.find((x) => x.id === n.dataset.id)!;
+				if (bb.gpio !== undefined && d.gpios.includes(bb.gpio)) n.classList.add('bon');
+			});
+			if (!ok) noeuds.find((n) => n.dataset.id === b.id)?.classList.add('faux');
+			retour.className = `defi-retour ${ok ? 'ok' : 'ko'}`;
+			retour.textContent = `${ok ? '✓ Bonne réponse !' : `✗ ${b.principal} ne convient pas.`} ${d.explication}`;
+			scoreEl.textContent = `Score : ${score}`;
+			suivant.hidden = false;
+		};
+
+		suivant.addEventListener('click', () => {
+			if (etape >= defis.length) { etape = 0; score = 0; } else etape++;
+			poserDefi();
+		});
+		btnDefi.addEventListener('click', () => {
+			const actif = zoneDefi.hidden;
+			zoneDefi.hidden = !actif;
+			btnDefi.setAttribute('aria-pressed', String(actif));
+			btnDefi.textContent = actif ? 'Quitter le mode défi' : '🎯 Mode défi : trouvez la bonne broche';
+			noeuds.forEach((g) => g.classList.remove('bon', 'faux'));
+			if (actif) { etape = 0; score = 0; poserDefi(); zoneDefi.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+		});
+
+		const activer = (el: SVGGElement | HTMLElement) => {
+			const i = ordre.findIndex((b) => b.id === el.dataset.id);
+			if (defiActif()) repondre(el);
+			choisir(i);
+		};
+
+		noeuds.forEach((g) => {
+			g.addEventListener('pointerenter', (ev) => { if ((ev as PointerEvent).pointerType !== 'touch') afficherBulle(g); });
+			g.addEventListener('pointerleave', cacherBulle);
+			g.addEventListener('focus', () => afficherBulle(g));
+			g.addEventListener('blur', cacherBulle);
+			g.addEventListener('click', (ev) => { activer(g); if ((ev as PointerEvent).pointerType === 'touch') cacherBulle(); });
+			g.addEventListener('keydown', (ev) => {
+				const k = (ev as KeyboardEvent).key;
+				if (k === 'Enter' || k === ' ') { ev.preventDefault(); activer(g); }
+			});
+		});
+		lignes.forEach((l) => l.addEventListener('click', () => { activer(l); cacherBulle(); }));
+		panneau.querySelector('.prec')!.addEventListener('click', () => choisir(courant <= 0 ? ordre.length - 1 : courant - 1));
+		panneau.querySelector('.suiv')!.addEventListener('click', () => choisir(courant >= ordre.length - 1 ? 0 : courant + 1));
+
+		racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				filtre = filtre === btn.dataset.fam ? null : (btn.dataset.fam as Famille);
+				racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.fam === filtre)));
+				majEtiquettes();
+			});
+		});
+	});
+</script>
+
+<style>
+	.esp-gpio { margin-block: 1.5rem; }
+	.legende { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.filtre {
+		display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; margin: 0;
+		padding: 0.25rem 0.65rem; font-size: 0.8rem;
+		border: 1px solid var(--sl-color-gray-4); border-radius: 999px;
+		background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.filtre[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); }
+	.pastille { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; }
+
+	.scene { position: relative; }
+	svg { width: 100%; height: auto; display: block; border-radius: 0.75rem; background: #f8fafc; border: 1px solid var(--sl-color-gray-5); }
+	.pcb { fill: #3f3f46; stroke: #18181b; stroke-width: 3; }
+	.trou { fill: #f8fafc; stroke: #a1a1aa; stroke-width: 2; }
+	.antenne { fill: none; stroke: #e4e4e7; stroke-width: 5; stroke-linejoin: round; }
+	.ondes path { fill: none; stroke: #38bdf8; stroke-width: 3; stroke-linecap: round; opacity: 0; animation: onde 2.4s ease-out infinite; }
+	.ondes path:nth-child(2) { animation-delay: 0.4s; }
+	@keyframes onde { 0% { opacity: 0; } 30% { opacity: 0.9; } 100% { opacity: 0; } }
+	.module { fill: #d4d4d8; stroke: #71717a; stroke-width: 2; }
+	.module-t { font: 700 10.5px sans-serif; fill: #18181b; }
+	.module-p { font: 600 10px sans-serif; fill: #3f3f46; }
+	.mini { font: 700 9.5px sans-serif; fill: #e4e4e7; }
+	.mini.clair { fill: #e4e4e7; }
+	.puce { fill: #18181b; stroke: #52525b; }
+	.led-power { fill: #ef4444; filter: drop-shadow(0 0 4px #ef4444); }
+	.led-bleue { fill: #1e3a8a; transition: fill 0.2s; }
+	.led-on .led-bleue { animation: clignote 1s steps(1) infinite; }
+	@keyframes clignote { 0% { fill: #60a5fa; filter: drop-shadow(0 0 6px #3b82f6); } 50% { fill: #1e3a8a; filter: none; } }
+	.bouton { fill: #27272a; stroke: #a1a1aa; stroke-width: 3; }
+	.usb { fill: #d4d4d8; stroke: #71717a; stroke-width: 2; }
+
+	.hit { fill: transparent; }
+	.trait { stroke: #94a3b8; stroke-width: 1.5; }
+	.tag { transition: opacity 0.25s; }
+	.tag-t, .pill-t { font: 700 12px sans-serif; fill: #ffffff; pointer-events: none; }
+	.num { fill: #ffffff; stroke: #94a3b8; }
+	.num-t { font: 700 12px sans-serif; fill: #0369a1; pointer-events: none; }
+	.rond { fill: #d4d4d8; stroke: #a1a1aa; stroke-width: 2; }
+	.trou-pin { fill: #3f3f46; }
+	.silk { font: 700 10px sans-serif; fill: #f4f4f5; pointer-events: none; }
+	.repere { font: 600 13px sans-serif; fill: #64748b; }
+
+	.el { cursor: pointer; outline: none; transition: opacity 0.25s; }
+	.el:focus-visible .hit { stroke: #1d4ed8; stroke-width: 2; stroke-dasharray: 5 4; }
+	.el:hover .pill, .el:focus-visible .pill { stroke: #facc15; stroke-width: 3; }
+	.sel .pill { stroke: #facc15; stroke-width: 4; }
+	.sel .rond { fill: #facc15; animation: pulse 1.1s ease-in-out infinite; }
+	.flash .tag, .flash .tag-t { animation: apparait 0.45s ease-out; }
+	@keyframes apparait { from { opacity: 0; } }
+	.estompe { opacity: 0.18; }
+	.bon .pill { stroke: #22c55e; stroke-width: 5; }
+	.bon .rond { fill: #22c55e; }
+	.faux .pill { stroke: #ef4444; stroke-width: 5; }
+	.faux .rond { fill: #ef4444; }
+	@keyframes pulse { 50% { filter: drop-shadow(0 0 6px #facc15); } }
+	@media (prefers-reduced-motion: reduce) {
+		.sel .rond, .ondes path, .flash .tag, .flash .tag-t, .led-on .led-bleue { animation: none !important; }
+		.led-on .led-bleue { fill: #60a5fa; }
+	}
+
+	.info-bulle {
+		position: absolute; z-index: 5; max-width: 17rem; pointer-events: none;
+		padding: 0.5rem 0.7rem; border-radius: 0.5rem; font-size: 0.82rem; line-height: 1.35;
+		background: var(--sl-color-black); color: var(--sl-color-white);
+		border: 1px solid var(--sl-color-gray-3); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		display: flex; flex-direction: column; gap: 0.15rem;
+	}
+	.info-bulle[hidden] { display: none; }
+	.info-bulle :global(em) { color: var(--sl-color-accent-high); font-size: 0.75rem; }
+
+	.actions { margin: 0.75rem 0 0; }
+	.btn-defi {
+		margin: 0; cursor: pointer; padding: 0.45rem 1rem; border-radius: 0.45rem; font-weight: 700;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black);
+	}
+	.btn-defi[aria-pressed='true'] { background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+	.defi {
+		margin-top: 0.75rem; padding: 0.8rem 1rem; border-radius: 0.6rem;
+		border: 2px dashed var(--cadre-jaune-bord); background: var(--cadre-jaune-fond);
+	}
+	.defi[hidden] { display: none; }
+	.defi p { margin: 0 0 0.4rem; }
+	.defi-consigne { font-weight: 700; }
+	.defi-retour.ok { color: var(--cadre-vert-titre); font-weight: 600; }
+	.defi-retour.ko { color: var(--cadre-rouge-titre); font-weight: 600; }
+	.defi-boutons { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+	.defi-score { font-weight: 700; }
+	.defi-suivant {
+		margin: 0; cursor: pointer; padding: 0.35rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black);
+	}
+	.defi-suivant[hidden] { display: none; }
+
+	.liste { margin-top: 0.8rem; }
+	.liste summary { cursor: pointer; font-weight: 600; font-size: var(--sl-text-sm); }
+	.grille { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; max-width: 34rem; }
+	.col { display: flex; flex-direction: column; gap: 0.2rem; }
+	.ligne {
+		display: flex; align-items: center; gap: 0.5rem; margin: 0; cursor: pointer; transition: opacity 0.2s;
+		padding: 0.15rem 0.5rem; font-size: 0.8rem; border-radius: 0.35rem; text-align: left;
+		border: 1px solid var(--sl-color-gray-4); border-left: 6px solid var(--c); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.ligne .n { font-weight: 700; min-width: 1.4rem; text-align: center; }
+	.ligne[aria-pressed='true'] { outline: 2px solid var(--sl-color-accent); }
+	.ligne.estompe { opacity: 0.3; }
+
+	.panneau {
+		margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-bleu-bord); background: var(--cadre-bleu-fond);
+	}
+	.invite { margin: 0; }
+	.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+	.badges { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; }
+	.badges :global(.badge) { color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; }
+	.titre { margin: 0; font-size: 1.25rem; }
+	.resume { font-weight: 600; margin: 0.5rem 0; }
+	.capacites { margin: 0.4rem 0 0.7rem; font-size: var(--sl-text-sm); border-collapse: collapse; width: auto; display: table; }
+	.capacites[hidden] { display: none; }
+	.capacites caption { text-align: left; font-weight: 700; padding-bottom: 0.3rem; }
+	.capacites :global(th) { text-align: left; font-weight: 500; padding: 0.15rem 1rem 0.15rem 0; border: 0; background: none; }
+	.capacites :global(td) { padding: 0.15rem 0; font-weight: 700; border: 0; }
+	.capacites :global(td.oui) { color: var(--cadre-vert-titre); }
+	.capacites :global(td.non) { color: var(--cadre-rouge-titre); }
+	.roles { margin: 0 0 0.6rem 1.2rem; }
+	.roles :global(li) { margin: 0.2rem 0; }
+	.roles :global(li.remarque) { font-weight: 600; }
+	.code { margin: 0.4rem 0 0.6rem; font-size: 0.8rem; }
+	.code[hidden], .contenu[hidden], .invite[hidden], .liens[hidden] { display: none; }
+	.liens { margin: 0.4rem 0 0; font-size: var(--sl-text-sm); font-weight: 600; }
+	.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
+	.nav button {
+		margin: 0; cursor: pointer; padding: 0.4rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.nav .suiv { background: var(--sl-color-accent); color: var(--sl-color-black); border-color: var(--sl-color-accent); }
+	.compteur { font-size: 0.85rem; opacity: 0.8; }
+</style>

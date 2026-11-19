@@ -1,0 +1,459 @@
+---
+// Schéma interactif de la carte ESP32 DevKit : cliquez sur un composant pour sa fiche. Animations :
+// ondes de l'antenne, programme Blink sur la LED GPIO 2, redémarrage (EN), mode téléchargement (BOOT)
+// et téléversement simulé, avec les messages de la console.
+import { categories, elements, ordre } from '../data/esp32-carte';
+
+const couleur = Object.fromEntries(categories.map((c) => [c.id, c.couleur]));
+const col = (id: string) => couleur[elements[id].categorie];
+const cat = (id: string) => elements[id].categorie;
+const label = (id: string) => elements[id].label;
+const pinsY = Array.from({ length: 15 }, (_, i) => 120 + i * 38);
+
+type Etiquette = { id: string; texte: string; x: number; y: number; ancre: 'start' | 'end'; vers: [number, number] };
+const etiquettes: Etiquette[] = [
+	{ id: 'antenne', texte: 'Antenne Wi-Fi / Bluetooth', x: 300, y: 84, ancre: 'end', vers: [372, 80] },
+	{ id: 'broches', texte: 'Broches (15 de chaque côté)', x: 300, y: 304, ancre: 'end', vers: [338, 300] },
+	{ id: 'ledpower', texte: 'LED POWER', x: 300, y: 444, ancre: 'end', vers: [384, 440] },
+	{ id: 'regulateur', texte: 'Régulateur 3,3 V', x: 300, y: 554, ancre: 'end', vers: [372, 550] },
+	{ id: 'en', texte: 'Bouton EN (reset)', x: 300, y: 704, ancre: 'end', vers: [354, 700] },
+	{ id: 'module', texte: 'Module ESP32-WROOM-32', x: 600, y: 234, ancre: 'start', vers: [528, 230] },
+	{ id: 'led2', texte: 'LED intégrée (GPIO 2)', x: 600, y: 444, ancre: 'start', vers: [516, 440] },
+	{ id: 'usbserie', texte: 'Convertisseur USB-série', x: 600, y: 550, ancre: 'start', vers: [530, 546] },
+	{ id: 'boot', texte: 'Bouton BOOT (GPIO 0)', x: 600, y: 704, ancre: 'start', vers: [546, 700] },
+	{ id: 'usb', texte: 'Port micro-USB', x: 600, y: 764, ancre: 'start', vers: [480, 752] },
+];
+---
+
+<div class="esp-carte" data-ordre={JSON.stringify(ordre)}>
+	<div class="legende" role="group" aria-label="Mettre en évidence un type de composant">
+		{categories.map((c) => (
+			<button type="button" class="filtre" data-cat={c.id} aria-pressed="false">
+				<span class="pastille" style={`background:${c.couleur}`}></span>{c.nom}
+			</button>
+		))}
+	</div>
+
+	<div class="scene">
+		<svg viewBox="0 0 900 790" role="group" aria-label="Schéma interactif de la carte ESP32 DevKit. Cliquez sur un composant pour obtenir son explication.">
+			<rect class="pcb" x="330" y="30" width="240" height="722" rx="20"></rect>
+			{[[352, 52], [548, 52], [352, 730], [548, 730]].map(([cx, cy]) => <circle class="trou" cx={cx} cy={cy} r="11"></circle>)}
+
+			<!-- Antenne -->
+			<g class="el" data-id="antenne" data-cat={cat('antenne')} tabindex="0" role="button" aria-label={label('antenne')}>
+				<rect class="hit" x="372" y="36" width="156" height="84"></rect>
+				<path class="antenne" d="M388 112 V54 H414 V100 H440 V54 H466 V100 H492 V54 H512 V112"></path>
+				<g class="ondes" aria-hidden="true">
+					<path d="M436 30 a14 14 0 0 1 28 0"></path>
+					<path d="M426 30 a24 24 0 0 1 48 0"></path>
+					<path d="M416 30 a34 34 0 0 1 68 0"></path>
+				</g>
+			</g>
+
+			<!-- Module -->
+			<g class="el" data-id="module" data-cat={cat('module')} tabindex="0" role="button" aria-label={label('module')}>
+				<rect class="hit" x="366" y="120" width="168" height="296"></rect>
+				<rect class="module" x="372" y="126" width="156" height="284" rx="8"></rect>
+				<text class="module-t" x="450" y="190" text-anchor="middle">ESP-WROOM-32</text>
+				<text class="module-s" x="450" y="214" text-anchor="middle">Wi-Fi · Bluetooth</text>
+				<rect class="puce-int" x="410" y="250" width="80" height="80" rx="4"></rect>
+				<text class="module-s" x="450" y="286" text-anchor="middle">ESP32</text>
+				<text class="module-s" x="450" y="304" text-anchor="middle">D0WDQ6</text>
+				<text class="module-s petit" x="450" y="356" text-anchor="middle">puce + flash 4 Mo</text>
+				<circle cx="388" cy="394" r="5" fill="#1f2937"></circle>
+			</g>
+
+			<!-- LED POWER -->
+			<g class="el" data-id="ledpower" data-cat={cat('ledpower')} tabindex="0" role="button" aria-label={label('ledpower')}>
+				<rect class="hit" x="374" y="426" width="42" height="40"></rect>
+				<rect class="led-power" x="384" y="434" width="22" height="13" rx="2"></rect>
+				<text class="mini" x="395" y="462" text-anchor="middle">POWER</text>
+			</g>
+
+			<!-- LED GPIO 2 -->
+			<g class="el" data-id="led2" data-cat={cat('led2')} tabindex="0" role="button" aria-label={label('led2')}>
+				<rect class="hit" x="484" y="426" width="42" height="40"></rect>
+				<rect class="led-bleue" x="494" y="434" width="22" height="13" rx="2"></rect>
+				<text class="mini" x="505" y="462" text-anchor="middle">GPIO 2</text>
+			</g>
+
+			<!-- Régulateur -->
+			<g class="el" data-id="regulateur" data-cat={cat('regulateur')} tabindex="0" role="button" aria-label={label('regulateur')}>
+				<rect class="hit" x="366" y="494" width="68" height="112"></rect>
+				<rect class="puce" x="380" y="500" width="40" height="18" rx="2"></rect>
+				<rect class="puce" x="372" y="518" width="56" height="62" rx="3"></rect>
+				{[384, 398, 412].map((x) => <rect class="patte" x={x} y="580" width="6" height="20"></rect>)}
+				<text class="mini" x="400" y="546" text-anchor="middle">AMS1117</text>
+				<text class="mini" x="400" y="562" text-anchor="middle">3.3</text>
+			</g>
+
+			<!-- Convertisseur USB-série -->
+			<g class="el" data-id="usbserie" data-cat={cat('usbserie')} tabindex="0" role="button" aria-label={label('usbserie')}>
+				<rect class="hit" x="470" y="512" width="68" height="68"></rect>
+				<rect class="puce" x="478" y="520" width="52" height="52" rx="3"></rect>
+				<text class="mini" x="504" y="544" text-anchor="middle">CP2102</text>
+				<text class="mini" x="504" y="558" text-anchor="middle">USB ↔ série</text>
+			</g>
+
+			<!-- Flux de données du téléversement -->
+			<path class="flux" d="M450 700 V640 H504 V572 M504 520 V470 H450 V410"></path>
+
+			<!-- Boutons -->
+			<g class="el bouton-el" data-id="en" data-cat={cat('en')} tabindex="0" role="button" aria-label={label('en')}>
+				<rect class="hit" x="346" y="676" width="52" height="62"></rect>
+				<rect class="socle" x="354" y="682" width="36" height="36" rx="4"></rect>
+				<circle class="bouton" cx="372" cy="700" r="12"></circle>
+				<text class="mini" x="372" y="676" text-anchor="middle">EN</text>
+			</g>
+			<g class="el bouton-el" data-id="boot" data-cat={cat('boot')} tabindex="0" role="button" aria-label={label('boot')}>
+				<rect class="hit" x="502" y="676" width="52" height="62"></rect>
+				<rect class="socle" x="510" y="682" width="36" height="36" rx="4"></rect>
+				<circle class="bouton" cx="528" cy="700" r="12"></circle>
+				<text class="mini" x="528" y="676" text-anchor="middle">BOOT</text>
+			</g>
+
+			<!-- Port micro-USB -->
+			<g class="el" data-id="usb" data-cat={cat('usb')} tabindex="0" role="button" aria-label={label('usb')}>
+				<rect class="hit" x="414" y="684" width="72" height="96"></rect>
+				<rect class="usb" x="420" y="700" width="60" height="70" rx="6"></rect>
+				<rect class="usb-int" x="432" y="742" width="36" height="12" rx="3"></rect>
+			</g>
+
+			<!-- Broches -->
+			<g class="el" data-id="broches" data-cat={cat('broches')} tabindex="0" role="button" aria-label={label('broches')}>
+				<rect class="hit" x="334" y="104" width="28" height="566"></rect>
+				<rect class="hit" x="538" y="104" width="28" height="566"></rect>
+				{pinsY.map((y) => (
+					<>
+						<circle class="rond" cx="348" cy={y} r="8"></circle>
+						<circle class="rond" cx="552" cy={y} r="8"></circle>
+					</>
+				))}
+			</g>
+
+			<!-- Étiquettes -->
+			{etiquettes.map((e) => (
+				<g class="el etiq" data-id={e.id} data-cat={cat(e.id)} aria-hidden="true">
+					<line class="trait" x1={e.ancre === 'end' ? e.x + 6 : e.x - 6} y1={e.y - 4} x2={e.vers[0]} y2={e.vers[1]} stroke={col(e.id)}></line>
+					<text class="etiq-t" x={e.x} y={e.y} text-anchor={e.ancre} fill={col(e.id)}>{e.texte}</text>
+				</g>
+			))}
+		</svg>
+		<div class="info-bulle" role="tooltip" hidden></div>
+	</div>
+
+	<div class="actions" role="group" aria-label="Animations">
+		<button type="button" class="btn-blink" aria-pressed="false">▶ Programme Blink (GPIO 2)</button>
+		<button type="button" class="btn-upload">⬆ Simuler un téléversement</button>
+	</div>
+	<pre class="console" aria-live="polite" aria-label="Console">Console : cliquez sur un bouton ci-dessus, ou sur les boutons EN et BOOT de la carte.</pre>
+
+	<div class="panneau" aria-live="polite">
+		<p class="invite"><strong>Cliquez sur un composant</strong> (ou sur son étiquette) pour lire son explication, ou lancez la visite guidée.</p>
+		<div class="contenu" hidden>
+			<div class="entete"><span class="badge"></span><h3 class="titre"></h3></div>
+			<p class="resume"></p>
+			<ul class="points"></ul>
+			<p class="repere"></p>
+			<p class="lien" hidden></p>
+		</div>
+		<div class="nav">
+			<button type="button" class="prec">← Précédent</button>
+			<span class="compteur"></span>
+			<button type="button" class="suiv">Visite guidée : suivant →</button>
+		</div>
+	</div>
+	<details class="liste">
+		<summary>Liste des composants (pratique sur téléphone)</summary>
+		<div class="boutons-liste">
+			{ordre.map((id) => <button type="button" class="item" data-id={id} style={`--c:${col(id)}`}>{label(id)}</button>)}
+		</div>
+	</details>
+</div>
+
+<script>
+	import { categories, elements } from '../data/esp32-carte';
+
+	const cats = Object.fromEntries(categories.map((c) => [c.id, c]));
+
+	document.querySelectorAll<HTMLElement>('.esp-carte').forEach((racine) => {
+		const ordre: string[] = JSON.parse(racine.dataset.ordre ?? '[]');
+		const scene = racine.querySelector<HTMLElement>('.scene')!;
+		const bulle = racine.querySelector<HTMLElement>('.info-bulle')!;
+		const panneau = racine.querySelector<HTMLElement>('.panneau')!;
+		const contenu = panneau.querySelector<HTMLElement>('.contenu')!;
+		const invite = panneau.querySelector<HTMLElement>('.invite')!;
+		const compteur = panneau.querySelector<HTMLElement>('.compteur')!;
+		const consoleEl = racine.querySelector<HTMLElement>('.console')!;
+		const btnBlink = racine.querySelector<HTMLButtonElement>('.btn-blink')!;
+		const btnUpload = racine.querySelector<HTMLButtonElement>('.btn-upload')!;
+		const noeuds = Array.from(racine.querySelectorAll<SVGGElement>('.el'));
+		const items = Array.from(racine.querySelectorAll<HTMLButtonElement>('.item'));
+		let courant = -1;
+		let filtre: string | null = null;
+		let minuteurs: number[] = [];
+
+		const ajouter = (parent: Element, balise: string, texte: string) => {
+			const e = document.createElement(balise);
+			e.textContent = texte;
+			parent.append(e);
+			return e;
+		};
+
+		const choisir = (id: string) => {
+			const e = elements[id];
+			if (!e) return;
+			courant = ordre.indexOf(id);
+			noeuds.forEach((g) => g.classList.toggle('sel', g.dataset.id === id));
+			items.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
+			invite.hidden = true;
+			contenu.hidden = false;
+			const badge = contenu.querySelector<HTMLElement>('.badge')!;
+			badge.textContent = cats[e.categorie].nom;
+			badge.style.background = cats[e.categorie].couleur;
+			contenu.querySelector('.titre')!.textContent = e.titre;
+			contenu.querySelector('.resume')!.textContent = e.resume;
+			const ul = contenu.querySelector<HTMLElement>('.points')!;
+			ul.replaceChildren();
+			e.points.forEach((p) => ajouter(ul, 'li', p));
+			contenu.querySelector('.repere')!.textContent = `📍 ${e.repere}`;
+			const l = contenu.querySelector<HTMLElement>('.lien')!;
+			l.hidden = !e.lien;
+			l.replaceChildren();
+			if (e.lien) {
+				const a = document.createElement('a');
+				a.href = e.lien.href;
+				a.textContent = `${e.lien.texte} →`;
+				l.append(a);
+			}
+			compteur.textContent = `${courant + 1} / ${ordre.length}`;
+		};
+
+		const afficherBulle = (g: Element) => {
+			const e = elements[(g as HTMLElement).dataset.id ?? ''];
+			if (!e) return;
+			bulle.replaceChildren();
+			ajouter(bulle, 'strong', e.label);
+			ajouter(bulle, 'span', e.resume);
+			ajouter(bulle, 'em', 'Cliquez pour en savoir plus');
+			bulle.hidden = false;
+			const s = scene.getBoundingClientRect();
+			const box = g.getBoundingClientRect();
+			const lb = bulle.offsetWidth;
+			let x = box.left + box.width / 2 - s.left - lb / 2;
+			x = Math.max(4, Math.min(x, s.width - lb - 4));
+			bulle.style.left = `${x}px`;
+			bulle.style.top = `${Math.min(box.bottom - s.top + 8, s.height - 20)}px`;
+		};
+		const cacherBulle = () => { bulle.hidden = true; };
+
+		// --- Animations
+		const ecrire = (lignes: string[], effacer = true) => {
+			consoleEl.textContent = (effacer ? '' : consoleEl.textContent + '\n') + lignes.join('\n');
+			consoleEl.scrollTop = consoleEl.scrollHeight;
+		};
+		const annuler = () => { minuteurs.forEach((t) => window.clearTimeout(t)); minuteurs = []; };
+		const plus = (ms: number, f: () => void) => { minuteurs.push(window.setTimeout(f, ms)); };
+		const blink = (actif: boolean) => {
+			racine.classList.toggle('blink', actif);
+			btnBlink.setAttribute('aria-pressed', String(actif));
+			btnBlink.textContent = actif ? '■ Arrêter Blink' : '▶ Programme Blink (GPIO 2)';
+		};
+
+		btnBlink.addEventListener('click', () => {
+			annuler();
+			racine.classList.remove('upload', 'reset', 'download');
+			const actif = !racine.classList.contains('blink');
+			blink(actif);
+			if (actif) ecrire(['// Programme Blink : la LED bleue (GPIO 2) clignote', 'void setup() {', '  pinMode(2, OUTPUT);', '}', 'void loop() {', '  digitalWrite(2, HIGH);  // allumée (3,3 V)', '  delay(500);', '  digitalWrite(2, LOW);   // éteinte (0 V)', '  delay(500);', '}']);
+			else ecrire(['Programme arrêté.']);
+		});
+
+		btnUpload.addEventListener('click', () => {
+			annuler();
+			blink(false);
+			racine.classList.remove('reset', 'download');
+			racine.classList.add('upload');
+			btnUpload.disabled = true;
+			ecrire(['Téléversement du programme Blink…', 'Connecting.....']);
+			plus(900, () => ecrire(['Chip is ESP32-D0WDQ6', 'Features: WiFi, BT, Dual Core, 240MHz'], false));
+			[25, 50, 75, 100].forEach((p, i) => plus(1500 + i * 600, () => ecrire([`Writing at 0x000${(1 + i) * 1}0000... (${p} %)`], false)));
+			plus(4200, () => ecrire(['Hash of data verified.', 'Hard resetting via RTS pin...'], false));
+			plus(4900, () => {
+				racine.classList.remove('upload');
+				btnUpload.disabled = false;
+				ecrire(['✓ Programme téléversé : il démarre aussitôt, la LED GPIO 2 clignote.'], false);
+				blink(true);
+			});
+		});
+
+		const presserEN = () => {
+			annuler();
+			const enMarche = racine.classList.contains('blink');
+			blink(false);
+			racine.classList.remove('upload', 'download');
+			racine.classList.add('reset');
+			ecrire(['Bouton EN : redémarrage (reset)…']);
+			plus(700, () => {
+				racine.classList.remove('reset');
+				ecrire(['rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)', 'Le programme repart du début : setup(), puis loop().'], false);
+				if (enMarche) blink(true);
+			});
+		};
+		const presserBOOT = () => {
+			annuler();
+			blink(false);
+			racine.classList.remove('upload', 'reset');
+			racine.classList.add('download');
+			ecrire(['BOOT maintenu enfoncé pendant un appui sur EN :', 'rst:0x1 (POWERON_RESET),boot:0x3 (DOWNLOAD_BOOT(UART0/UART1/SDIO_REI_REO_V2))', 'waiting for download', '→ L’ESP32 attend un nouveau programme. Appuyez sur EN pour revenir au programme actuel.']);
+		};
+
+		const activer = (id: string) => {
+			choisir(id);
+			if (id === 'en') presserEN();
+			if (id === 'boot') presserBOOT();
+			if (id === 'led2' && !racine.classList.contains('blink')) btnBlink.click();
+		};
+
+		noeuds.forEach((g) => {
+			const id = g.dataset.id!;
+			g.addEventListener('pointerenter', (ev) => { if ((ev as PointerEvent).pointerType !== 'touch') afficherBulle(g); });
+			g.addEventListener('pointerleave', cacherBulle);
+			g.addEventListener('focus', () => afficherBulle(g));
+			g.addEventListener('blur', cacherBulle);
+			g.addEventListener('click', () => { activer(id); cacherBulle(); });
+			g.addEventListener('keydown', (ev) => {
+				const k = (ev as KeyboardEvent).key;
+				if (k === 'Enter' || k === ' ') { ev.preventDefault(); activer(id); }
+			});
+		});
+		items.forEach((b) => b.addEventListener('click', () => choisir(b.dataset.id!)));
+		panneau.querySelector('.prec')!.addEventListener('click', () => choisir(ordre[courant <= 0 ? ordre.length - 1 : courant - 1]));
+		panneau.querySelector('.suiv')!.addEventListener('click', () => choisir(ordre[courant >= ordre.length - 1 ? 0 : courant + 1]));
+
+		racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				filtre = filtre === btn.dataset.cat ? null : btn.dataset.cat!;
+				racine.querySelectorAll<HTMLButtonElement>('.filtre').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.cat === filtre)));
+				noeuds.forEach((g) => g.classList.toggle('estompe', !!filtre && g.dataset.cat !== filtre));
+			});
+		});
+	});
+</script>
+
+<style>
+	.esp-carte { margin-block: 1.5rem; }
+	.legende { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+	.filtre {
+		display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; margin: 0;
+		padding: 0.25rem 0.65rem; font-size: 0.8rem;
+		border: 1px solid var(--sl-color-gray-4); border-radius: 999px;
+		background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.filtre[aria-pressed='true'] { border-color: var(--sl-color-accent); outline: 2px solid var(--sl-color-accent); }
+	.pastille { width: 0.75rem; height: 0.75rem; border-radius: 50%; display: inline-block; }
+
+	.scene { position: relative; }
+	svg { width: 100%; height: auto; display: block; border-radius: 0.75rem; background: #f8fafc; border: 1px solid var(--sl-color-gray-5); }
+	.pcb { fill: #27272a; stroke: #09090b; stroke-width: 3; }
+	.trou { fill: #f8fafc; stroke: #a1a1aa; stroke-width: 2; }
+	.hit { fill: transparent; }
+	.antenne { fill: none; stroke: #e4e4e7; stroke-width: 6; stroke-linejoin: round; }
+	.ondes path { fill: none; stroke: #0ea5e9; stroke-width: 3.5; stroke-linecap: round; opacity: 0; animation: onde 2.4s ease-out infinite; }
+	.ondes path:nth-child(2) { animation-delay: 0.35s; }
+	.ondes path:nth-child(3) { animation-delay: 0.7s; }
+	@keyframes onde { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+	.module { fill: #d4d4d8; stroke: #71717a; stroke-width: 2.5; transition: filter 0.3s, opacity 0.3s; }
+	.module-t { font: 800 15px sans-serif; fill: #18181b; }
+	.module-s { font: 600 12px sans-serif; fill: #3f3f46; }
+	.module-s.petit { font-size: 11px; }
+	.puce-int { fill: #a1a1aa; stroke: #52525b; stroke-dasharray: 4 3; }
+	.puce { fill: #18181b; stroke: #52525b; stroke-width: 1.5; }
+	.patte { fill: #a1a1aa; }
+	.mini { font: 700 10px sans-serif; fill: #e4e4e7; pointer-events: none; }
+	.led-power { fill: #ef4444; filter: drop-shadow(0 0 5px #ef4444); }
+	.led-bleue { fill: #1e3a8a; }
+	.blink .led-bleue { animation: clignote 1s steps(1) infinite; }
+	@keyframes clignote { 0% { fill: #60a5fa; filter: drop-shadow(0 0 8px #3b82f6); } 50% { fill: #1e3a8a; filter: none; } }
+	.socle { fill: #3f3f46; stroke: #a1a1aa; }
+	.bouton { fill: #18181b; stroke: #a1a1aa; stroke-width: 2; transition: transform 0.1s; transform-box: fill-box; transform-origin: center; }
+	.bouton-el:active .bouton { transform: scale(0.8); }
+	.usb { fill: #d4d4d8; stroke: #71717a; stroke-width: 2; }
+	.usb-int { fill: #52525b; }
+	.rond { fill: #d4d4d8; stroke: #a1a1aa; stroke-width: 2; }
+	.flux { fill: none; stroke: #22d3ee; stroke-width: 5; stroke-dasharray: 10 10; opacity: 0; pointer-events: none; }
+	.upload .flux { opacity: 1; animation: flux 0.6s linear infinite; }
+	@keyframes flux { to { stroke-dashoffset: -20; } }
+	.upload .module, .download .module { filter: drop-shadow(0 0 10px #22d3ee); }
+	.reset .module { opacity: 0.35; }
+	.download .led-bleue { fill: #1e3a8a; }
+	.trait { stroke-width: 2; }
+	.etiq-t { font: 700 15px sans-serif; }
+
+	.el { cursor: pointer; outline: none; transition: opacity 0.25s; }
+	.el:focus-visible .hit { stroke: #1d4ed8; stroke-width: 2; stroke-dasharray: 5 4; }
+	.el:hover .hit, .sel .hit { fill: rgba(250, 204, 21, 0.18); stroke: #facc15; stroke-width: 3; }
+	.etiq.sel .hit, .etiq:hover .hit { fill: none; stroke: none; }
+	.etiq.sel .etiq-t { text-decoration: underline; }
+	.sel .hit { animation: pulse 1.2s ease-in-out infinite; }
+	@keyframes pulse { 50% { stroke-opacity: 0.35; } }
+	.estompe { opacity: 0.15; }
+	@media (prefers-reduced-motion: reduce) {
+		.ondes path, .sel .hit, .upload .flux { animation: none !important; }
+		.ondes path { opacity: 0.7; }
+		.blink .led-bleue { animation: none; fill: #60a5fa; }
+	}
+
+	.info-bulle {
+		position: absolute; z-index: 5; max-width: 17rem; pointer-events: none;
+		padding: 0.5rem 0.7rem; border-radius: 0.5rem; font-size: 0.82rem; line-height: 1.35;
+		background: var(--sl-color-black); color: var(--sl-color-white);
+		border: 1px solid var(--sl-color-gray-3); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+		display: flex; flex-direction: column; gap: 0.15rem;
+	}
+	.info-bulle[hidden] { display: none; }
+	.info-bulle :global(em) { color: var(--sl-color-accent-high); font-size: 0.75rem; }
+
+	.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+	.actions button {
+		margin: 0; cursor: pointer; padding: 0.45rem 1rem; border-radius: 0.45rem; font-weight: 700;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black);
+	}
+	.actions button[aria-pressed='true'] { background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+	.actions button:disabled { opacity: 0.5; cursor: wait; }
+	.console {
+		margin: 0.6rem 0 0; min-height: 4.5rem; max-height: 14rem; overflow: auto; white-space: pre-wrap;
+		padding: 0.6rem 0.8rem; border-radius: 0.5rem; font-size: 0.78rem; line-height: 1.45;
+		background: #0b1220; color: #a7f3d0; border: 1px solid #1f2937;
+	}
+
+	.panneau {
+		margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+		border: 2px solid var(--cadre-bleu-bord); background: var(--cadre-bleu-fond);
+	}
+	.invite { margin: 0; }
+	.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+	.badge { color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 999px; }
+	.titre { margin: 0; font-size: 1.25rem; }
+	.resume { font-weight: 600; margin: 0.5rem 0; }
+	.points { margin: 0 0 0.5rem 1.2rem; }
+	.points :global(li) { margin: 0.2rem 0; }
+	.repere, .lien { margin: 0.3rem 0 0; font-size: var(--sl-text-sm); }
+	.lien { font-weight: 600; }
+	.contenu[hidden], .invite[hidden], .lien[hidden] { display: none; }
+	.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.75rem; }
+	.nav button {
+		margin: 0; cursor: pointer; padding: 0.4rem 0.9rem; border-radius: 0.4rem; font-weight: 600;
+		border: 1px solid var(--sl-color-accent); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.nav .suiv { background: var(--sl-color-accent); color: var(--sl-color-black); border-color: var(--sl-color-accent); }
+	.compteur { font-size: 0.85rem; opacity: 0.8; }
+	.liste { margin-top: 0.8rem; }
+	.liste summary { cursor: pointer; font-weight: 600; font-size: var(--sl-text-sm); }
+	.boutons-liste { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+	.item {
+		margin: 0; cursor: pointer; padding: 0.25rem 0.6rem; font-size: 0.8rem; border-radius: 0.35rem;
+		border: 1px solid var(--sl-color-gray-4); border-left: 6px solid var(--c); background: var(--sl-color-gray-6); color: var(--sl-color-text);
+	}
+	.item[aria-pressed='true'] { outline: 2px solid var(--sl-color-accent); }
+</style>

@@ -1,0 +1,59 @@
+---
+title: "ESP32 : à retenir"
+description: "La synthèse du chapitre ESP32 : fiche des broches par fonction, points essentiels et une question de synthèse sur l'affectation des broches."
+---
+
+import Question from '../../../../components/Question.astro';
+
+## L'essentiel
+
+:::danger[À retenir]
+- L'**ESP32** est un microcontrôleur **32 bits double cœur** (Xtensa, jusqu'à 240 MHz, 520 Ko de SRAM), conçu par **Espressif**, avec **Wi-Fi** et **Bluetooth** intégrés.
+- Ses broches travaillent en **3,3 V**.
+- **GPIO 34, 35, 36 et 39** : **entrées seules**, jamais de `pinMode(pin, OUTPUT)`.
+- **ADC** : tension de 0 à 3,3 V → valeur de **0 à 4095** (12 bits). Avec le Wi-Fi actif, seul l'**ADC1** fonctionne.
+- **DAC** : valeur de 0 à 255 → tension de 0 à 3,3 V, sur **GPIO 25** et **GPIO 26**.
+- **PWM** : sur **toutes les sorties**.
+- **GPIO 2** commande la **LED intégrée** de la carte.
+:::
+
+## Fiche des broches par fonction
+
+| Fonction | Broches de la carte | Instruction |
+|---|---|---|
+| Entrée seule | GPIO 34, 35, 36, 39 | `digitalRead()`, `analogRead()` |
+| Entrée/sortie numérique | toutes les autres GPIO | `pinMode()`, `digitalRead()`, `digitalWrite()` |
+| ADC1 | GPIO 36, 39, 34, 35, 32, 33 | `analogRead()` |
+| ADC2 (pas avec le Wi-Fi) | GPIO 4, 2, 15, 13, 12, 14, 27, 25, 26 | `analogRead()` |
+| DAC | GPIO 25 (DAC1), GPIO 26 (DAC2) | `dacWrite()` |
+| PWM | toutes les sorties | `analogWrite()` |
+| Tactile | GPIO 4, 2, 15, 13, 12, 14, 27, 33, 32 | `touchRead()` |
+| I2C | GPIO 21 (SDA), GPIO 22 (SCL) | bibliothèque `Wire` |
+| SPI (VSPI) | GPIO 23 (MOSI), 19 (MISO), 18 (SCK), 5 (CS) | bibliothèque `SPI` |
+| SPI (HSPI) | GPIO 13 (MOSI), 12 (MISO), 14 (SCK), 15 (CS) | bibliothèque `SPI` |
+| UART0 (USB) | GPIO 1 (TX0), GPIO 3 (RX0) | `Serial` |
+| UART2 | GPIO 17 (TX2), GPIO 16 (RX2) | `Serial2` |
+| Broches de démarrage | GPIO 2, 5, 12, 15 | à choisir en dernier |
+| LED intégrée | GPIO 2 | `digitalWrite(2, HIGH)` |
+
+## Question de synthèse
+
+<Question id="esp32-q6.29" label="Q6.29" lignes={10}>
+Vous concevez une **station connectée** à base d'ESP32, avec le **Wi-Fi actif**. Elle comprend :
+- un capteur de température **DHT22** (signal numérique) ;
+- une **photorésistance** (signal analogique) ;
+- un **écran LCD I2C** ;
+- une **LED** dont la luminosité varie ;
+- un **bouton tactile** pour changer d'affichage.
+
+Proposez une **broche** pour chaque composant et **justifiez** chaque choix en vous appuyant sur ce chapitre.
+</Question>
+
+## Critères de validation
+
+- [ ] Je sais choisir une broche pour un capteur numérique, un capteur analogique, une sortie PWM, un bus I2C et un bouton tactile.
+- [ ] Je sais quelles broches éviter, et pourquoi.
+
+:::note[Fin du chapitre]
+Validez cette page pour terminer le chapitre 6, le dernier du cours. Pensez à **exporter vos réponses** depuis la page [Mes réponses](/Embedded-System-Course/mes-reponses/).
+:::
